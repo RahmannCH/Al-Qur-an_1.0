@@ -34,7 +34,7 @@ npm install
 
 # Setup environment (untuk AI Chat)
 # Buat file .env.local dengan:
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=
 
 # Jalankan dev server
 npm run dev

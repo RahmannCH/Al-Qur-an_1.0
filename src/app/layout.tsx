@@ -3,6 +3,7 @@ import { Inter, Amiri, Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { Footer } from "@/components/layout/footer";
 import { AnimatedBackground } from "@/components/layout/animated-background";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { XpToastContainer } from "@/components/ui/xp-toast";
@@ -39,12 +40,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${amiri.variable} ${plusJakarta.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col pb-16 md:pb-0">
+      <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <TooltipProvider>
             <AnimatedBackground />
             <Header />
             <main className="flex-1">{children}</main>
+            <Footer />
             <BottomNav />
             <XpToastContainer />
           </TooltipProvider>

@@ -76,8 +76,26 @@ export default function TriviaGame() {
     
     if (filteredQs.length === 0) filteredQs = allQuestions;
     
-    // Acak soal dan ambil maksimal 5 soal
-    const shuffled = [...filteredQs].sort(() => Math.random() - 0.5).slice(0, 5);
+    // Anti-duplicate logic: get played questions from local storage
+    const playedRaw = localStorage.getItem("trivia_played");
+    const playedQIds: string[] = playedRaw ? JSON.parse(playedRaw) : [];
+
+    // Filter out played questions
+    let availableQs = filteredQs.filter(q => !playedQIds.includes(String(q.id)));
+
+    // If all questions in this category have been played, reset the history for this category
+    if (availableQs.length < 5) {
+       const remainingPlayedIds = playedQIds.filter(id => !filteredQs.some(fq => String(fq.id) === id));
+       localStorage.setItem("trivia_played", JSON.stringify(remainingPlayedIds));
+       availableQs = filteredQs; // Reset
+    }
+    
+    const shuffled = [...availableQs].sort(() => Math.random() - 0.5).slice(0, 5);
+    
+    // Mark these as played
+    const newPlayedIds = [...playedQIds, ...shuffled.map(q => String(q.id))];
+    localStorage.setItem("trivia_played", JSON.stringify(newPlayedIds));
+
     setQuestions(shuffled);
     setSelectedCategory(catId);
     setCurrentQ(0);

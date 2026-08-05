@@ -3,34 +3,23 @@ import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-const systemPrompt = `Kamu adalah sahabat Muslim yang membantu pengguna belajar Islam dengan cara yang natural dan bersahabat.
+const systemPrompt = `Kamu adalah Mentor Islam Digital yang sangat pintar, ramah, interaktif, dan gaul. 
+Nama kamu adalah "Al-Qur'an Digital AI".
 
-PENTING: Jawab dengan santai dan natural seperti teman mengobrol. Tidak perlu terlalu formal atau kaku.
+PENTING:
+- Bertindaklah seperti sahabat ngobrol, gunakan sapaan santai, tapi tetap sangat beradab.
+- Gunakan emoji untuk menghidupkan suasana.
+- Jika pengguna ingin di-test/kuis, JANGAN beri soal yang terlalu mudah. Berikan pertanyaan tajam dan berbobot. Evaluasi jawaban mereka dan beri nilai/XP imaginer.
+- Format jawabanmu dengan Markdown yang rapi (Gunakan bold, italic, bullet points, atau tabel jika perlu).
+- Selalu sertakan kutipan dalil (Al-Qur'an/Hadits) yang valid jika membahas syariat atau akidah.
+- Jika ditanya tentang doa, sertakan Teks Arab, Transliterasi, dan Artinya.
+- Jangan ragu untuk melempar pertanyaan balik (engaging loop) agar user terus berinteraksi denganmu!
 
-Kamu boleh:
-- Ngobrol santai tentang topik apapun (tidak harus selalu Islam)
-- Kasih jokes Islami yang ringan (kalau relevan)
-- Cerita pengalaman dari sudut pandang seorang Muslim
-- Tanya balik ke user untuk lebih interaktif
-- Kasih emoji kadang-kadang untuk lebih friendly
-- Jujur bilang "Aku kurang tau nih" kalau memang tidak tahu
+Contoh Respons:
+User: "Test hafalan juz 30 ku dong!"
+Kamu: "Wahh masyaAllah, semangat banget nih! 🔥 Ayo kita mulai. Coba tebak, surah apa yang ayat pertamanya berbunyi 'عَمَّ يَتَسَاءَلُونَ' (Amma yatasaa-aluun)? Dan apa terjemahannya? Ditunggu jawabannya ya! 😉"
 
-Tapi tetap:
-- Berikan sumber yang jelas kalau bahas ayat/hadits (contoh: "QS. Al-Baqarah: 255" atau "HR. Bukhari")
-- Jujur kalau tidak tahu atau tidak yakin
-- Tidak memberikan fatwa yang kompleks (sarankan konsultasi ke ulama)
-- Sopan dan menghormati
-
-Contoh jawaban bagus:
-User: "Halo"
-Kamu: "Wa'alaikumsalam! Ada yang bisa aku bantu hari ini? 😊"
-
-User: "Apa arti QS. Al-Fatihah ayat 1?"
-Kamu: "Ayat itu berbunyi 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' (Bismillahir rahmanir rahim), artinya 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.'
-
-Ayat ini mengajarkan kita untuk memulai segala sesuatu dengan menyebut nama Allah. Simpel tapi powerful banget maknanya! Kamu pernah perhatikan kalau di setiap surah (kecuali At-Taubah) dimulai dengan bismillah? 🌟"
-
-Intinya: Jadilah AI yang helpful, friendly, dan ga kaku!`;
+Jika user menanyakan hal di luar konteks Islam atau moral yang baik, arahkan kembali secara halus ke topik pengembangan diri atau nilai Islami.`;
 
 export async function POST(req: Request) {
   try {
@@ -38,41 +27,32 @@ export async function POST(req: Request) {
     const { message, history } = body;
 
     if (!message || typeof message !== "string" || message.trim() === "") {
-      return NextResponse.json(
-        { error: "Pesan tidak boleh kosong" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Pesan tidak boleh kosong" }, { status: 400 });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "") {
       return NextResponse.json(
-        { 
-          reply: "Maaf, fitur chat belum dikonfigurasi dengan benar. API key Gemini belum di-setup. Silakan hubungi developer untuk menambahkan GEMINI_API_KEY ke .env.local" 
+        {
+          reply: "⚠️ **API Key Gemini Belum Valid!**\n\nWah, sepertinya kunci API Gemini kamu belum disetting dengan benar di file `.env.local` nih. Pastikan kamu sudah memasukkan `GEMINI_API_KEY=KODE_KAMU_DISINI` tanpa tanda kutip ya! Hubungi developer kalau masih bingung. 🛠️"
         },
         { status: 200 }
       );
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
+      model: "gemini-3.5-flash", // Updated to the latest fast model
       generationConfig: {
         temperature: 0.9,
         topP: 0.95,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 2048,
       }
     });
 
     const chat = model.startChat({
       history: [
-        {
-          role: "user",
-          parts: [{ text: systemPrompt }],
-        },
-        {
-          role: "model",
-          parts: [{ text: "Wa'alaikumsalam! Siap membantu dengan pertanyaan apapun. Mau ngobrol tentang apa hari ini? 😊" }],
-        },
-        ...(Array.isArray(history) ? history.slice(-5) : []).flatMap((msg: { role: string; content: string }) => {
+        { role: "user", parts: [{ text: systemPrompt }] },
+        { role: "model", parts: [{ text: "Siap laksanakan! Saya akan menjadi sahabat ngobrol Islami yang interaktif dan berwawasan luas. Mari kita mulai! ✨" }] },
+        ...(Array.isArray(history) ? history.slice(-8) : []).flatMap((msg: { role: string; content: string }) => {
           if (!msg.role || !msg.content) return [];
           return [{
             role: msg.role === "user" ? "user" : "model",
@@ -84,27 +64,28 @@ export async function POST(req: Request) {
 
     const result = await chat.sendMessage(message);
     const response = result.response;
-    const text = response.text();
+    let text = response.text();
+
+    if (!text) text = "Wah, aku nge-blank nih. Boleh ulangi pertanyaannya? 🤔";
 
     return NextResponse.json({ reply: text });
   } catch (error: any) {
     console.error("Gemini API error:", error);
-    
-    let userMessage = "Maaf, terjadi kesalahan saat memproses pesanmu. ";
-    
+
+    let userMessage = "⚠️ **Terjadi Kesalahan Jaringan!**\n\n";
+
     if (error.message?.includes("API_KEY_INVALID")) {
-      userMessage += "API key Gemini tidak valid. Silakan periksa konfigurasi.";
+      userMessage += "Kunci API Gemini kamu salah atau sudah kedaluwarsa. Tolong dicek lagi file `.env.local`-nya ya.";
     } else if (error.message?.includes("RATE_LIMIT")) {
-      userMessage += "Terlalu banyak request. Tunggu sebentar ya, lalu coba lagi.";
+      userMessage += "Waduh, terlalu banyak yang nanya nih. Servernya lagi sibuk (Rate Limit). Kita jeda 1 menit dulu ya! ⏱️";
     } else if (error.message?.includes("SAFETY")) {
-      userMessage += "Maaf, pesanmu tidak bisa diproses karena alasan keamanan. Coba pakai kata-kata yang berbeda.";
+      userMessage += "Maaf, aku nggak bisa ngejawab itu karena terfilter oleh sistem keamanan Google (Safety Block). Coba pakai kata-kata lain. 🛡️";
+    } else if (error.message?.includes("model is not supported")) {
+      userMessage += "Model Gemini yang diminta sepertinya tidak didukung oleh paket langganan API-mu. Hubungi developer ya.";
     } else {
-      userMessage += "Coba lagi sebentar lagi. Kalau masih error, hubungi developer.";
+      userMessage += `Ada error misterius nih: \`${error.message}\`. Hubungi tim developer biar bisa dibenerin! 💻`;
     }
-    
-    return NextResponse.json(
-      { reply: userMessage },
-      { status: 200 }
-    );
+
+    return NextResponse.json({ reply: userMessage }, { status: 200 });
   }
 }
