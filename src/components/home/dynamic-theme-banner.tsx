@@ -1,10 +1,21 @@
-"use client";
+﻿"use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Gamepad2, Sparkles, Sunrise, Sun, Sunset, Moon } from "lucide-react";
 
-export function DynamicThemeBanner({ hour }: { hour: number }) {
+export function DynamicThemeBanner() {
+  const [hour, setHour] = useState(12); // Default
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setHour(new Date().getHours());
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   let theme = {
     bg: "from-blue-600 via-cyan-600 to-teal-500",
     icon: <Gamepad2 className="h-8 w-8 text-white" />,

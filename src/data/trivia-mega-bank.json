@@ -1,0 +1,233 @@
+{
+  "database": {
+    "categories": [
+      {
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "description": "Kisah Nabi & Rasul, Khulafaur Rasyidin, Perang Besar, hingga Dinasti Islam.",
+        "icon": "📜",
+        "color": "from-amber-600 to-orange-700"
+      },
+      {
+        "categoryId": "cat_002",
+        "categoryName": "Syariat & Fiqih Ibadah",
+        "description": "Hukum Wudhu, Shalat, Puasa, Zakat, hingga Manasik Haji.",
+        "icon": "🕌",
+        "color": "from-emerald-600 to-teal-700"
+      },
+      {
+        "categoryId": "cat_003",
+        "categoryName": "Akidah & Tauhid",
+        "description": "Pemahaman Rukun Iman, Asmaul Husna, Sifat Allah, dan Malaikat.",
+        "icon": "⭐",
+        "color": "from-gold to-yellow-600"
+      },
+      {
+        "categoryId": "cat_004",
+        "categoryName": "Hari Besar & Kalender",
+        "description": "Bulan Hijriah, Peristiwa Sejarah Islam (Ramadan, Idul Fitri, Asyura).",
+        "icon": "📅",
+        "color": "from-rose-600 to-red-700"
+      },
+      {
+        "categoryId": "cat_005",
+        "categoryName": "Al-Qur'an & Tajwid",
+        "description": "Hukum bacaan, Asbabun Nuzul, dan Keutamaan Surah-surah.",
+        "icon": "📖",
+        "color": "from-blue-600 to-indigo-700"
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_001_001",
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "difficulty": "easy",
+        "question": "Berapa banyak Khalifah Rasyidin yang memimpin umat Islam setelah Nabi Muhammad SAW wafat?",
+        "options": ["Tiga orang", "Empat orang", "Lima orang", "Enam orang"],
+        "answer": 1,
+        "explanation": "Ada 4 Khalifah Rasyidin: Abu Bakar As-Shiddiq, Umar bin Al-Khattab, Utsman bin Affan, dan Ali bin Abi Thalib. Mereka memimpin umat selama sekitar 30 tahun."
+      },
+      {
+        "id": "q_001_002",
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "difficulty": "medium",
+        "question": "Nabi yang pernah ditelan oleh ikan paus raksasa karena meninggalkan kaumnya dalam keadaan marah adalah...",
+        "options": ["Nabi Ayyub AS", "Nabi Yunus AS", "Nabi Yusuf AS", "Nabi Yaqub AS"],
+        "answer": 1,
+        "explanation": "Nabi Yunus AS ditelan ikan paus (Nun) dan beliau membaca doa pengakuan kesalahan: 'La ilaha illa anta subhanaka inni kuntu minadz dzalimin'."
+      },
+      {
+        "id": "q_001_003",
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "difficulty": "medium",
+        "question": "Perang pertama dalam sejarah Islam yang dimenangkan oleh kaum Muslimin dengan jumlah pasukan yang jauh lebih sedikit adalah...",
+        "options": ["Perang Uhud", "Perang Khandaq", "Perang Badar", "Perang Mut'ah"],
+        "answer": 2,
+        "explanation": "Perang Badar terjadi pada 17 Ramadhan tahun 2 Hijriah. Kaum muslimin yang berjumlah sekitar 313 orang berhasil mengalahkan seribuan lebih pasukan Quraisy."
+      },
+      {
+        "id": "q_001_004",
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "difficulty": "hard",
+        "question": "Panglima militer Muslim legendaris yang membebaskan Mesir, Suriah, dan merebut kembali Yerusalem dalam Perang Salib adalah...",
+        "options": ["Tariq bin Ziyad", "Muhammad Al-Fatih", "Khalid bin Al-Walid", "Salahuddin Al-Ayyubi"],
+        "answer": 3,
+        "explanation": "Salahuddin Al-Ayyubi (Saladin) adalah pendiri Dinasti Ayyubiyah. Beliau merebut kembali Yerusalem pada Pertempuran Hattin (1187 M)."
+      },
+      {
+        "id": "q_001_005",
+        "categoryId": "cat_001",
+        "categoryName": "Sejarah Islam",
+        "difficulty": "medium",
+        "question": "Sahabat Nabi yang membebaskan kota Konstantinopel (Istanbul) pada tahun 1453 Masehi adalah...",
+        "options": ["Sultan Salahuddin", "Sultan Muhammad Al-Fatih", "Sultan Sulaiman Al-Qanuni", "Tariq Bin Ziyad"],
+        "answer": 1,
+        "explanation": "Sultan Muhammad II atau lebih dikenal dengan Muhammad Al-Fatih membebaskan Konstantinopel saat usianya masih 21 tahun, membuktikan nubuwat Rasulullah."
+      },
+      {
+        "id": "q_002_001",
+        "categoryId": "cat_002",
+        "categoryName": "Syariat & Fiqih Ibadah",
+        "difficulty": "easy",
+        "question": "Rukun Islam yang ke-2 yang menjadi tiang agama adalah...",
+        "options": ["Membaca Syahadat", "Mendirikan Shalat", "Berpuasa di bulan Ramadhan", "Menunaikan Zakat"],
+        "answer": 1,
+        "explanation": "Shalat adalah rukun Islam kedua setelah syahadat. Rasulullah menyebut shalat sebagai tiang agama (Imad ad-Din)."
+      },
+      {
+        "id": "q_002_002",
+        "categoryId": "cat_002",
+        "categoryName": "Syariat & Fiqih Ibadah",
+        "difficulty": "medium",
+        "question": "Berapakah besaran nishab zakat emas murni yang wajib dikeluarkan zakatnya (2.5%) setelah mencapai satu tahun (haul)?",
+        "options": ["20 gram emas", "50 gram emas", "85 gram emas", "100 gram emas"],
+        "answer": 2,
+        "explanation": "Nishab zakat emas adalah 85 gram (atau 20 dinar pada masa lalu). Jika tabungan/emas menyentuh nilai ini dan mengendap setahun, wajib dikeluarkan 2.5%."
+      },
+      {
+        "id": "q_002_003",
+        "categoryId": "cat_002",
+        "categoryName": "Syariat & Fiqih Ibadah",
+        "difficulty": "easy",
+        "question": "Gerakan diam sejenak dan tenang (tidak terburu-buru) dalam setiap perpindahan rukun shalat dinamakan...",
+        "options": ["Iftitah", "Tuma'ninah", "Tahiyat", "Khusyu'"],
+        "answer": 1,
+        "explanation": "Tuma'ninah adalah rukun shalat (wajib). Jika seseorang shalat dengan sangat tergesa-gesa tanpa tuma'ninah, shalatnya tidak sah."
+      },
+      {
+        "id": "q_002_004",
+        "categoryId": "cat_002",
+        "categoryName": "Syariat & Fiqih Ibadah",
+        "difficulty": "medium",
+        "question": "Shalat sunnah muakkad yang dikerjakan mengiringi (sebelum atau sesudah) shalat fardhu 5 waktu disebut shalat...",
+        "options": ["Rawatib", "Dhuha", "Tahajud", "Hajat"],
+        "answer": 0,
+        "explanation": "Shalat Sunnah Rawatib adalah shalat sunnah yang mengiringi shalat wajib. Ada yang ditekankan (Muakkad) seperti 2 rakaat sebelum subuh, dan ada yang Ghairu Muakkad."
+      },
+      {
+        "id": "q_003_001",
+        "categoryId": "cat_003",
+        "categoryName": "Akidah & Tauhid",
+        "difficulty": "easy",
+        "question": "Berapakah jumlah malaikat Allah yang namanya wajib kita ketahui dan imani?",
+        "options": ["5 Malaikat", "10 Malaikat", "25 Malaikat", "99 Malaikat"],
+        "answer": 1,
+        "explanation": "Ada 10 malaikat utama yang wajib diketahui: Jibril, Mikail, Israfil, Izrail, Munkar, Nakir, Raqib, Atid, Malik, dan Ridwan."
+      },
+      {
+        "id": "q_003_002",
+        "categoryId": "cat_003",
+        "categoryName": "Akidah & Tauhid",
+        "difficulty": "medium",
+        "question": "Malaikat yang bertugas meniup sangkakala (terompet) pada hari kiamat kelak adalah malaikat...",
+        "options": ["Israfil", "Mikail", "Izrail", "Raqib"],
+        "answer": 0,
+        "explanation": "Malaikat Israfil AS ditugaskan Allah untuk meniup sangkakala sebanyak dua kali: tiupan pertama menghancurkan alam semesta, tiupan kedua membangkitkan orang mati."
+      },
+      {
+        "id": "q_003_003",
+        "categoryId": "cat_003",
+        "categoryName": "Akidah & Tauhid",
+        "difficulty": "medium",
+        "question": "Beriman kepada Ketetapan, Takdir Baik, dan Takdir Buruk dari Allah merupakan Rukun Iman yang ke...",
+        "options": ["Ke-3", "Ke-4", "Ke-5", "Ke-6"],
+        "answer": 3,
+        "explanation": "Rukun Iman ada 6: (1) Allah, (2) Malaikat, (3) Kitab, (4) Rasul, (5) Hari Kiamat, (6) Qadha dan Qadar (Takdir)."
+      },
+      {
+        "id": "q_004_001",
+        "categoryId": "cat_004",
+        "categoryName": "Hari Besar & Kalender",
+        "difficulty": "medium",
+        "question": "Bulan pertama dalam sistem penanggalan Kalender Hijriah (Kalender Islam) adalah bulan...",
+        "options": ["Ramadan", "Syawal", "Muharram", "Safar"],
+        "answer": 2,
+        "explanation": "Bulan Muharram adalah bulan pertama. Penanggalan Hijriah ini ditetapkan pertama kali pada masa Khalifah Umar bin Khattab."
+      },
+      {
+        "id": "q_004_002",
+        "categoryId": "cat_004",
+        "categoryName": "Hari Besar & Kalender",
+        "difficulty": "easy",
+        "question": "Perayaan Idul Adha jatuh pada setiap tanggal...",
+        "options": ["1 Syawal", "10 Dzulhijjah", "1 Muharram", "12 Rabiul Awal"],
+        "answer": 1,
+        "explanation": "Idul Adha (Hari Raya Kurban) diperingati setiap tanggal 10 Dzulhijjah, bersamaan dengan ibadah Haji di Makkah."
+      },
+      {
+        "id": "q_004_003",
+        "categoryId": "cat_004",
+        "categoryName": "Hari Besar & Kalender",
+        "difficulty": "medium",
+        "question": "Peristiwa penting 'Isra Mi'raj' Nabi Muhammad SAW diperingati oleh umat Islam setiap tanggal...",
+        "options": ["17 Ramadan", "1 Muharram", "27 Rajab", "10 Asyura"],
+        "answer": 2,
+        "explanation": "Isra Mi'raj adalah perjalanan suci malam hari Nabi dari Masjidil Haram ke Masjidil Aqsa lalu naik ke Sidratul Muntaha. Terjadi pada tanggal 27 Rajab."
+      },
+      {
+        "id": "q_005_001",
+        "categoryId": "cat_005",
+        "categoryName": "Al-Qur'an & Tajwid",
+        "difficulty": "easy",
+        "question": "Hukum tajwid yang mengharuskan suara disamarkan (mendengung) apabila Nun Mati/Tanwin bertemu huruf 'Ba' (ب) disebut...",
+        "options": ["Ikhfa", "Iqlab", "Idgham", "Izhar"],
+        "answer": 1,
+        "explanation": "Iqlab secara bahasa berarti 'mengubah'. Suara Nun Mati/Tanwin diubah menjadi suara 'Mim' berdengung ketika bertemu Ba (ب)."
+      },
+      {
+        "id": "q_005_002",
+        "categoryId": "cat_005",
+        "categoryName": "Al-Qur'an & Tajwid",
+        "difficulty": "medium",
+        "question": "Surah terpanjang di dalam Al-Qur'an yang terdiri dari 286 ayat adalah surah...",
+        "options": ["Al-Fatihah", "Al-Maidah", "Al-Baqarah", "Ali Imran"],
+        "answer": 2,
+        "explanation": "Surah Al-Baqarah (Sapi Betina) adalah surah terpanjang. Di dalamnya juga terdapat Ayat Kursi (Ayat 255) yang merupakan ayat teragung."
+      },
+      {
+        "id": "q_005_003",
+        "categoryId": "cat_005",
+        "categoryName": "Al-Qur'an & Tajwid",
+        "difficulty": "easy",
+        "question": "Huruf-huruf Idgham Bighunnah (dengan dengung) tergabung dalam kata...",
+        "options": ["Yarmalun", "Yanmu (ي ن م و)", "Lam Ra (ل ر)", "Baju Ditoko"],
+        "answer": 1,
+        "explanation": "Idgham Bighunnah terjadi jika Nun Mati/Tanwin bertemu huruf Ya, Nun, Mim, atau Waw (ي ن م و)."
+      },
+      {
+        "id": "q_005_004",
+        "categoryId": "cat_005",
+        "categoryName": "Al-Qur'an & Tajwid",
+        "difficulty": "hard",
+        "question": "Surah di dalam Al-Qur'an yang TIDAK diawali dengan kalimat Bismillahir-rahmanir-rahim adalah surah...",
+        "options": ["Surah Al-Anfal", "Surah At-Taubah", "Surah Yunus", "Surah Al-Ahzab"],
+        "answer": 1,
+        "explanation": "Surah At-Taubah (Surah ke-9) adalah satu-satunya surah yang tidak diawali Basmalah karena isi awalnya berisi teguran/kemarahan Allah terhadap kaum musyrikin."
+      }
+    ]
+  }
+}

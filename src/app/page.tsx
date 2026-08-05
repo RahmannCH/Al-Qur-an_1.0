@@ -1,4 +1,4 @@
-import { getChapters } from "@/lib/api";
+﻿import { getChapters } from "@/lib/api";
 import { SurahList } from "@/components/quran/surah-list";
 import { LastReadCard } from "@/components/quran/last-read-card";
 import { DailyAyat } from "@/components/home/daily-ayat";
@@ -10,12 +10,11 @@ import { PrayerWidget } from "@/components/home/prayer-widget";
 
 export default async function Home() {
   const chapters = await getChapters("id");
-  const hour = new Date().getHours();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 min-h-screen">
       {/* Dynamic Theme Banner - Changes based on time of day */}
-      <DynamicThemeBanner hour={hour} />
+      <DynamicThemeBanner />
       
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 mt-6">
         <div>
