@@ -1,0 +1,9 @@
+{
+  "questions": [
+    { "id": 1, "category": "Tafsir", "difficulty": "easy", "question": "Apa arti surah Al-Fatihah?", "options": ["Surah Pembuka", "Surah Penutup", "Surah Perang", "Surah Keluarga"], "answer": 0 },
+    { "id": 2, "category": "Sejarah Nabi", "difficulty": "easy", "question": "Siapa nabi terakhir?", "options": ["Ibrahim", "Musa", "Isa", "Muhammad"], "answer": 3 },
+    { "id": 3, "category": "Fiqih", "difficulty": "easy", "question": "Rukun Islam yang ke-2 adalah...", "options": ["Sholat", "Puasa", "Zakat", "Haji"], "answer": 0 },
+    { "id": 4, "category": "Sejarah Islam", "difficulty": "easy", "question": "Kota tempat Nabi Muhammad hijrah adalah...", "options": ["Makkah", "Madinah", "Taif", "Thaif"], "answer": 1 },
+    { "id": 5, "category": "Tajwid", "difficulty": "easy", "question": "Hukum bacaan pada kata 'بِسْمِ' adalah...", "options": ["Ikhfa", "Idgham", "Izhar", "Iqlab"], "answer": 1 }
+  ]
+}

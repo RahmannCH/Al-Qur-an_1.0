@@ -12,7 +12,7 @@ const actions = [
   { href: "/chat", icon: MessageCircle, label: "AI Chat", color: "from-emerald to-emerald/80" },
   { href: "/search", icon: Search, label: "Cari", color: "from-purple-500 to-indigo-500" },
   { href: "/achievements", icon: Trophy, label: "Badge", color: "from-gold to-gold/80" },
-  { href: "/settings", icon: Settings, label: "Setting", color: "from-muted-foreground to-muted-foreground/80" },
+  { href: "/settings", icon: Settings, label: "Setting", color: "from-slate-500 to-slate-600" },
 ];
 
 const container = {
@@ -41,12 +41,12 @@ export function QuickActions() {
         {actions.map((action) => {
           const Icon = action.icon;
           return (
-            <motion.div key={action.href} variants={item}>
+            <motion.div key={action.href} variants={item} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href={action.href}
-                className="flex flex-col items-center justify-center p-2 rounded-xl transition-all hover:scale-105 hover:shadow-md bg-accent/30 hover:bg-accent"
+                className="flex flex-col items-center justify-center p-2 rounded-xl transition-colors hover:shadow-md bg-accent/30 hover:bg-accent group"
               >
-                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${action.color} mb-2 shadow-sm`}>
+                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${action.color} mb-2 shadow-sm transition-transform group-hover:rotate-6`}>
                   <Icon className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-[10px] font-medium text-center">{action.label}</span>
