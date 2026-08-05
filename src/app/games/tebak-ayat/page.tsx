@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
 import { useGamificationStore } from "@/store/gamification-store";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
 
 // Mock data (in real app, fetch from Quran API based on Juz 30)
 const questions = [
@@ -29,21 +29,31 @@ const questions = [
   }
 ];
 
+function calculateXpWithPenalty(baseXp: number, hintsUsed: number): number {
+  if (hintsUsed === 0) return baseXp;
+  if (hintsUsed === 1) return Math.ceil(baseXp * 0.5);
+  return 3;
+}
+
 export default function TebakAyatGame() {
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [xpEarned, setXpEarned] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [eliminatedOptions, setEliminatedOptions] = useState<number[]>([]);
   const { addXp } = useGamificationStore();
 
   const handleSelect = (idx: number) => {
-    if (isAnswered) return;
+    if (isAnswered || eliminatedOptions.includes(idx)) return;
     setSelected(idx);
     setIsAnswered(true);
 
     if (idx === questions[currentQ].answer) {
       setScore(s => s + 1);
+      setXpEarned(x => x + calculateXpWithPenalty(20, hintsUsed));
       if (navigator.vibrate) navigator.vibrate(50);
     } else {
       if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
@@ -55,11 +65,22 @@ export default function TebakAyatGame() {
       setCurrentQ(c => c + 1);
       setSelected(null);
       setIsAnswered(false);
+      setHintsUsed(0);
+      setEliminatedOptions([]);
     } else {
       setIsGameOver(true);
-      const earnedXp = score * 20;
-      if (earnedXp > 0) addXp(earnedXp, "Tebak Ayat");
+      if (xpEarned > 0) addXp(xpEarned, "Tebak Ayat");
     }
+  };
+
+  const handleHint = () => {
+    if (hintsUsed >= 1 || isAnswered) return;
+    setHintsUsed(1);
+    
+    // Eliminate 2 wrong answers
+    const wrongAnswers = [0, 1, 2, 3].filter(idx => idx !== questions[currentQ].answer);
+    const toEliminate = wrongAnswers.sort(() => Math.random() - 0.5).slice(0, 2);
+    setEliminatedOptions(toEliminate);
   };
 
   const q = questions[currentQ];
@@ -72,7 +93,7 @@ export default function TebakAyatGame() {
           <h2 className="text-3xl font-display font-bold mb-4">Kuis Selesai!</h2>
           <p className="text-6xl mb-6">{score === questions.length ? "🏆" : "🌟"}</p>
           <p className="text-xl mb-2">Skor Kamu: <span className="font-bold text-primary">{score} / {questions.length}</span></p>
-          <p className="text-muted-foreground mb-8">Mendapatkan +{score * 20} XP</p>
+          <p className="text-muted-foreground mb-8">Mendapatkan +{xpEarned} XP</p>
           <Button onClick={() => window.location.reload()} className="w-full h-12 bg-primary">Main Lagi</Button>
         </motion.div>
       </div>
@@ -98,22 +119,26 @@ export default function TebakAyatGame() {
         <p className="text-xl leading-relaxed">{q.translation}</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 mb-6">
         {q.options.map((opt, idx) => {
           let stateClass = "border-border bg-card hover:bg-accent hover:border-primary/30";
+          const isEliminated = eliminatedOptions.includes(idx);
+          
           if (isAnswered) {
             if (idx === q.answer) stateClass = "border-emerald bg-emerald/10 text-emerald";
             else if (idx === selected) stateClass = "border-destructive bg-destructive/10 text-destructive";
             else stateClass = "border-border bg-card opacity-50";
+          } else if (isEliminated) {
+            stateClass = "border-border bg-card opacity-30 cursor-not-allowed";
           }
 
           return (
             <motion.button
               key={idx}
-              whileHover={!isAnswered ? { scale: 1.01 } : {}}
-              whileTap={!isAnswered ? { scale: 0.98 } : {}}
+              whileHover={(!isAnswered && !isEliminated) ? { scale: 1.01 } : {}}
+              whileTap={(!isAnswered && !isEliminated) ? { scale: 0.98 } : {}}
               onClick={() => handleSelect(idx)}
-              disabled={isAnswered}
+              disabled={isAnswered || isEliminated}
               className={`w-full text-right p-5 rounded-xl border-2 transition-all font-arabic text-2xl leading-loose ${stateClass}`}
               dir="rtl"
             >
@@ -126,6 +151,15 @@ export default function TebakAyatGame() {
           );
         })}
       </div>
+
+      {!isAnswered && (
+        <div className="flex gap-3">
+          <Button variant="outline" className="flex-1" onClick={handleHint} disabled={hintsUsed >= 1}>
+            <Lightbulb className="h-4 w-4 mr-2" />
+            50:50 Hint {hintsUsed > 0 && "(-50% XP)"}
+          </Button>
+        </div>
+      )}
 
       <AnimatePresence>
         {isAnswered && (

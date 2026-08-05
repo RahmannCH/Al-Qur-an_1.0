@@ -5,6 +5,7 @@ import { DailyAyat } from "@/components/home/daily-ayat";
 import { QuickActions } from "@/components/home/quick-actions";
 import { ProgressWidget } from "@/components/home/progress-widget";
 import { UserLevelWidget } from "@/components/home/user-level-widget";
+import { ArcadeHero } from "@/components/home/arcade-hero";
 
 export default async function Home() {
   const chapters = await getChapters("id");
