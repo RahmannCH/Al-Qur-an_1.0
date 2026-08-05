@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📖 Al-Qur'an Digital 1.0
 
-## Getting Started
+Aplikasi Al-Qur'an digital modern dengan fitur pembelajaran Islami yang komprehensif. Dibangun untuk kompetisi dengan standar professional.
 
-First, run the development server:
+## ✨ Fitur Utama
+
+- **📖 Baca Al-Qur'an** - Teks Arab Uthmani + terjemahan Indonesia
+- **📅 Jadwal Sholat** - 5 waktu + countdown ke sholat berikutnya
+- **🙏 Tracker Streak** - Checklist 5 sholat per hari dengan streak counter
+- **🤲 Koleksi Doa** - 25+ doa sehari-hari dengan transliterasi
+- **🤖 AI Chat Islami** - Tanya jawab dengan Gemini AI
+- **🔍 Cari Ayat** - Search teks Arab & terjemahan
+- **📌 Bookmark** - Simpan ayat favorit
+- **⚙️ Pengaturan** - Custom font size, tema, qari default
+- **📱 Bottom Navigation** - Mobile-first design
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16.3 (App Router)
+- **Styling:** Tailwind CSS v4 + shadcn/ui
+- **Animations:** Framer Motion v12
+- **State:** Zustand v5
+- **Icons:** Lucide React
+- **APIs:** Quran.com, Aladhan, Google Gemini
+
+## 🚀 Quick Start
 
 ```bash
+# Clone atau navigate ke folder
+cd "C:\Users\LENOVO\OneDrive\Documents\Programming\Al-Qur'an_1.0"
+
+# Install dependencies
+npm install
+
+# Setup environment (untuk AI Chat)
+# Buat file .env.local dengan:
+GEMINI_API_KEY=your_api_key_here
+
+# Jalankan dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Struktur Folder
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/              # Pages & routes
+│   ├── api/          # API routes (Gemini chat)
+│   └── (routes)
+├── components/       # React components
+│   ├── layout/
+│   ├── quran/
+│   ├── prayer/
+│   ├── dua/
+│   ├── home/
+│   └── ui/
+├── lib/              # Utilities & API wrappers
+├── store/            # Zustand stores
+├── types/            # TypeScript types
+└── data/             # JSON data
+```
 
-## Learn More
+## 📖 Dokumentasi Lengkap
 
-To learn more about Next.js, take a look at the following resources:
+Lihat folder `.opencode/plans/` untuk dokumentasi lengkap:
+- `PROJECT_OVERVIEW.md` - Vision & overview
+- `FEATURES.md` - Semua fitur (completed & pending)
+- `ARCHITECTURE.md` - System design & data flow
+- `API_REFERENCE.md` - Semua API used
+- `DEVELOPMENT_GUIDE.md` - How to develop
+- `ROADMAP.md` - Timeline & priorities
+- `AGENTS.md` - AI instructions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Design System
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Primary:** `#1E3A5F` (Deep Blue)
+- **Gold:** `#D4A847`
+- **Teal:** `#2A9D8F`
+- **Arabic Font:** Amiri
+- **Body Font:** Inter
 
-## Deploy on Vercel
+## 🐛 Known Issues
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Prayer API Error** - `Cannot read properties of undefined (reading 'Fajr')`
+- **Chat Bot Error** - Error handling perlu improve
+- **Back Button** - Belum ada di semua halaman
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Lihat `ROADMAP.md` untuk fix plan.
+
+## 📝 Future Features
+
+Lihat `ROADMAP.md`:
+- Audio Player (sticky bottom)
+- Qibla Compass
+- Tafsir Integration
+- Reading Plan & Khatam Tracker
+- Share Ayat as Image
+- PWA Offline Mode
+- Statistics & Achievements
+
+## 🚀 Deployment
+
+### Build Production
+```bash
+npm run build
+```
+
+### Deploy to Vercel (Recommended)
+```bash
+npm i -g vercel
+vercel
+```
+
+## 📱 Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## 📄 License
+
+MIT License
+
+---
+
+**Version:** 1.0.0-beta  
+**Last Updated:** 2026-08-04  
+**Lead:** Kiro AI Assistant

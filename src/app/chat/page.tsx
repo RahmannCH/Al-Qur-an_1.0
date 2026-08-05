@@ -1,0 +1,166 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send, Bot, User, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { BackButton } from "@/components/layout/back-button";
+import { useGamificationStore } from "@/store/gamification-store";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+const initialMessage: Message = {
+  role: "assistant",
+  content: "Wa'alaikumsalam! 😊 Saya siap membantu Anda dengan pertanyaan seputar Islam, Al-Qur'an, doa, atau apapun yang ingin Anda tanyakan. Ada yang bisa saya bantu?"
+};
+
+export default function ChatPage() {
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { addXp, incrementChat } = useGamificationStore();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = { role: "user", content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    incrementChat();
+    addXp(5, "Tanya AI");
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input, history: messages.slice(-5) }),
+      });
+
+      const data = await response.json();
+      const assistantMessage: Message = { 
+        role: "assistant", 
+        content: data.reply || "Maaf, terjadi kesalahan. Silakan coba lagi." 
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: Message = { 
+        role: "assistant", 
+        content: "Maaf, terjadi kesalahan koneksi. Pastikan API key sudah benar di .env.local" 
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const suggestedQuestions = [
+    "Apa arti QS. Al-Fatihah ayat 1?",
+    "Bagaimana tata cara wudhu?",
+    "Doa apa yang dibaca saat sakit?",
+    "Siapa saja para Nabi?",
+    "Apa itu zakat?",
+  ];
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      <BackButton />
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-primary to-teal rounded-xl">
+            <Bot className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-3xl font-display font-bold">AI Chat Islami</h1>
+        </div>
+        <p className="text-muted-foreground">Tanya jawab dengan AI tentang Islam, Al-Qur'an, atau apapun</p>
+      </div>
+
+      <div className="rounded-2xl border bg-card overflow-hidden flex flex-col h-[600px]">
+        <div className="flex-1 overflow-y-auto p-6">
+          <AnimatePresence initial={false}>
+            {messages.map((msg, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`flex gap-3 mb-6 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+              >
+                <div className={`p-2 rounded-lg h-fit ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                  {msg.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                </div>
+                <div className={`flex-1 ${msg.role === "user" ? "text-right" : ""}`}>
+                  <div className={`inline-block max-w-[85%] px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          <div ref={messagesEndRef} />
+        </div>
+
+        {isLoading && (
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="h-4 w-4" />
+              </motion.div>
+              <span className="text-sm">Sedang berpikir...</span>
+            </div>
+          </div>
+        )}
+
+        <div className="border-t p-4">
+          <form onSubmit={handleSubmit} className="flex gap-2 mb-3">
+            <Input
+              placeholder="Tanya tentang Islam, Al-Qur'an, doa..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="flex-1"
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="bg-gradient-to-r from-primary to-teal"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </form>
+
+          <div className="flex flex-wrap gap-2">
+            {suggestedQuestions.map((question, idx) => (
+              <Button
+                key={idx}
+                variant="outline"
+                size="sm"
+                onClick={() => setInput(question)}
+                className="text-xs"
+              >
+                {question}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

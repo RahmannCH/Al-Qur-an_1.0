@@ -1,0 +1,235 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Doa Sehari-hari",
+      "duas": [
+        {
+          "id": 1,
+          "name_id": "Doa Bangun Tidur",
+          "name_ar": "الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور",
+          "arabic_text": "الْحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+          "transliteration": "Alhamdulillahil ladzi ahyana ba'da ma amatanaya wa ilaihin nushur",
+          "translation_id": "Segala puji bagi Allah yang menghidupkan kami setelah mematikan kami dan kepada-Nya kami akan dibangkitkan kembali",
+          "source": "HR. Bukhari no. 6324"
+        },
+        {
+          "id": 2,
+          "name_id": "Doa Sebelum Tidur",
+          "name_ar": "بسمك اللهم أموت وأحيا",
+          "arabic_text": "بِسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+          "transliteration": "Bismika Allahumma amautu wa ahya",
+          "translation_id": "Dengan menyebut nama-Mu ya Allah, aku mati dan aku hidup",
+          "source": "HR. Bukhari no. 6324"
+        },
+        {
+          "id": 3,
+          "name_id": "Doa Masuk WC",
+          "name_ar": "اللهم إني أعوذ بك من الخبث والخبائث",
+          "arabic_text": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+          "transliteration": "Allahumma inni a'udzu bika minal khubuthi wal khoba'its",
+          "translation_id": "Ya Allah, aku berlindung kepada-Mu dari qudrat dan qudrat-qudrat yang jahat",
+          "source": "HR. Bukhari no. 6321"
+        },
+        {
+          "id": 4,
+          "name_id": "Doa Keluar WC",
+          "name_ar": "غفرانك",
+          "arabic_text": "غُفْرَانَكَ",
+          "transliteration": "Ghufraanaka",
+          "translation_id": "Aku memohon ampunan-Mu",
+          "source": "HR. Bukhari no. 6322"
+        },
+        {
+          "id": 5,
+          "name_id": "Doa Sebelum Makan",
+          "name_ar": "بسم الله",
+          "arabic_text": "بِسْمِ اللهِ",
+          "transliteration": "Bismillah",
+          "translation_id": "Dengan menyebut nama Allah",
+          "source": "HR. Abu Daud no. 3766"
+        },
+        {
+          "id": 6,
+          "name_id": "Doa Sesudah Makan",
+          "name_ar": "الحمد لله الذي أطعمني هذا ورزقنيه من غير حول مني ولا قوة",
+          "arabic_text": "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+          "transliteration": "Alhamdulillahil ladzi ath'amani hadza wa razaqnahu min ghairi hawlin minni wa la quwwatin",
+          "translation_id": "Segala puji bagi Allah yang memberi makan ini dan memberi rezeki kepadaku tanpa daya dan kekuatan dariku",
+          "source": "HR. Abu Daud no. 3767"
+        },
+        {
+          "id": 7,
+          "name_id": "Doa Masuk Rumah",
+          "name_ar": "اللهم إني أسألك خير المدخل وخير المخرج",
+          "arabic_text": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمُدْخَلِ وَخَيْرَ الْمُخْرَجِ وَبِكَ أَدْخَلْتُ وَبِكَ أَخْرَجْتُ وَتَوَكَّلْتُ عَلَى اللَّهِ رَبِّ كُلِّ شَيْءٍ",
+          "transliteration": "Allahumma inni as'aluka khairal mudhkal wa khairal mukhraj wa bika adkhaltu wa bika akhrajtu wa tawakkaltu 'ala Allahi Rabbil 'alamin",
+          "translation_id": "Ya Allah, aku mohon kepada-Mu kebaikan saat masuk dan kebaikan saat keluar, dengan-Mu aku masuk dan dengan-Mu aku keluar, dan aku bertawakkal kepada Allah, Rabb segala sesuatu",
+          "source": "HR. Abu Daud no. 5088"
+        },
+        {
+          "id": 8,
+          "name_id": "Doa Keluar Rumah",
+          "name_ar": "بسم الله توكلت على الله ولا حول ولا قوة إلا بالله",
+          "arabic_text": "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+          "transliteration": "Bismillahi tawakkaltu 'ala Allahi wa laa hawla wa laa quwwata illa billah",
+          "translation_id": "Dengan menyebut nama Allah, aku bertawakkal kepada Allah, dan tidak ada daya kekuatan kecuali dengan Allah",
+          "source": "HR. Abu Daud no. 5095"
+        },
+        {
+          "id": 9,
+          "name_id": "Doa Naik Kendaraan",
+          "name_ar": "الحمد لله الذي سخر لنا هذا وما كنا له مقرنين وإنا إلى ربانمقلبون",
+          "arabic_text": "الْحَمْدُ لِلَّهِ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ",
+          "transliteration": "Alhamdulillahil ladzi sakhkhara lana hadza wa ma kunna lahu muqrinin wa inna ila Rabbina lamunqalibun",
+          "translation_id": "Segala puji bagi Allah yang menaklukkan hewan ini untuk kami padahal kami tidak mampu menguasainya, dan sesungguhnya kita akan kembali kepada Rabb kita",
+          "source": "HR. Muslim no. 765"
+        },
+        {
+          "id": 10,
+          "name_id": "Doa Bercermin",
+          "name_ar": "اللهم كما حسنت خلقي فحسن أخلاقى",
+          "arabic_text": "اللَّهُمَّ كَمَا حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي",
+          "transliteration": "Allahumma kama hassanta khalqi fa hassin khuluqi",
+          "translation_id": "Ya Allah, sebagaimana Engkau membaguskan ciptaanku, baguskanlah akhlakku",
+          "source": "HR. Ahmad"
+        },
+        {
+          "id": 11,
+          "name_id": "Doa Berpakaian",
+          "name_ar": "الحمد لله الذي كسى هذا ورزقنيه من غير حول مني ولا قوة",
+          "arabic_text": "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+          "transliteration": "Alhamdulillahil ladzi kasani hadza wa razaqnahu min ghairi hawlin minni wa la quwwatin",
+          "translation_id": "Segala puji bagi Allah yang memberi pakaian ini dan memberi rezeki kepadaku tanpa daya dan kekuatan dariku",
+          "source": "HR. Abu Daud no. 4033"
+        },
+        {
+          "id": 12,
+          "name_id": "Doa Melepas Pakaian",
+          "name_ar": "بسم الله الذي لا إله إلا هو",
+          "arabic_text": "بِسْمِ اللَّهِ الَّذِي لَا إِلَهَ إِلَّا هُوَ",
+          "transliteration": "Bismillahil ladzi laa ilaaha illaa huwa",
+          "translation_id": "Dengan menyebut nama Allah yang tidak ada tuhan selain-Nya",
+          "source": "HR. Abu Daud no. 4034"
+        },
+        {
+          "id": 13,
+          "name_id": "Doa Sebelum Wudhu",
+          "name_ar": "اللهم اجعلني من التوابين واجعلني من المتطهرين",
+          "arabic_text": "اللَّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ وَاجْعَلْنِي مِنَ الْمُتَطَهِّرِينَ",
+          "transliteration": "Allahumma j'alni minat tawwabin wa j'alni minal mutathahhirin",
+          "translation_id": "Ya Allah, jadikanlah aku termasuk orang-orang yang bertaubat dan jadikanlah aku termasuk orang-orang yang suci",
+          "source": "HR. Tirmidzi no. 17"
+        },
+        {
+          "id": 14,
+          "name_id": "Doa Sesudah Wudhu",
+          "name_ar": "أشهد أن لا إله إلا الله وحده لا شريك له وأشهد أن محمدا عبده ورسوله",
+          "arabic_text": "أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
+          "transliteration": "Asyhadu alla ilaha illallahu wahdahu laa syarika lahu wa asyhadu anna Muhammadan 'abduhu wa rasuluh",
+          "translation_id": "Aku bersaksi bahwa tidak ada tuhan selain Allah, Yang Maha Esa dan tidak ada sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya",
+          "source": "HR. Muslim no. 234"
+        },
+        {
+          "id": 15,
+          "name_id": "Doa Masuk Masjid",
+          "name_ar": "اللهم افتح لي أبواب رحمتك",
+          "arabic_text": "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+          "transliteration": "Allahumma iftah li abwaba rahmatika",
+          "translation_id": "Ya Allah, bukakanlah pintu-pintu rahmat-Mu untukku",
+          "source": "HR. Muslim no. 714"
+        },
+        {
+          "id": 16,
+          "name_id": "Doa Keluar Masjid",
+          "name_ar": "اللهم إني أسألك من فضلك",
+          "arabic_text": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+          "transliteration": "Allahumma inni as'aluka min fadlik",
+          "translation_id": "Ya Allah, aku mohon kepada-Mu dari karunia-Mu",
+          "source": "HR. Muslim no. 715"
+        },
+        {
+          "id": 17,
+          "name_id": "Doa Mendengar Adzan",
+          "name_ar": "اللهم رب هذه الدعوة التامة والصلاة القائمة آت محمدا الوسيلة والفضيلة وابعثه مقاما محمودا الذي وعدته",
+          "arabic_text": "اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ",
+          "transliteration": "Allahumma rabba hadzihid da'watit taammah was shalatil qo-imah, ati Muhammadan al wasiilata wal fadhiilata wab'atshu maqaamam mahmuudal ladzi wa'adtahu",
+          "translation_id": "Ya Allah, Rabb yang memiliki panggilan yang sempurna ini dan shalat yang akan dilaksanakan, berikanlah kepada Muhammad wasilah dan keutamaan, danBangkitkanlah ia di tempat yang terpuji yang telah Engkau janjikan kepadanya",
+          "source": "HR. Bukhari no. 614"
+        },
+        {
+          "id": 18,
+          "name_id": "Doa Sesudah Adzan",
+          "name_ar": "اللهم إني أسألك بأن أحبك وحب من يحبك وحب عمل يقربني إلى حبك",
+          "arabic_text": "اللَّهُمَّ رَحْمَتَكَ أَرْجَى مِنْ عَمَلِي وَإِنْ قَلَّ وَإِنْ لَمْ أَكُنْ لَهُ عَامِلًا",
+          "transliteration": "Allahumma rahmataka arjaa min 'amali wa in qalla wa in lam takun lahu 'amilan",
+          "translation_id": "Ya Allah, rahmat-Mu lebih kuinginkan daripada amalku, sekecil apa pun, atau aku memang tidak mampu melakukannya",
+          "source": "HR. Muslim no. 503"
+        },
+        {
+          "id": 19,
+          "name_id": "Doa Ketika Bersin",
+          "name_ar": "الحمد لله الذي عافاني في بدني وRETURN في خلقي",
+          "arabic_text": "الْحَمْدُ لِلَّهِ الَّذِي عَافَانِي فِي بَدَنِي وَرَدَّ عَلَيَّ رُوحِي",
+          "transliteration": "Alhamdulillahil ladzi 'aafani fi badani wa radda 'alayya ruhi",
+          "translation_id": "Segala puji bagi Allah yang memberi kesehatan pada tubuhku dan mengembalikan ruhku kepadaku",
+          "source": "HR. Abu Daud no. 5043"
+        },
+        {
+          "id": 20,
+          "name_id": "Doa Ketika Menguap",
+          "name_ar": "اللهم إني أعوذ بك من الشيطان الرجيم",
+          "arabic_text": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+          "transliteration": "Allahumma inni a'udzu bika minasy syaithaanir rajiim",
+          "translation_id": "Ya Allah, aku berlindung kepada-Mu dari setan yang terlontar",
+          "source": "HR. Bukhari no. 6323"
+        },
+        {
+          "id": 21,
+          "name_id": "Doa Sebelum Belajar",
+          "name_ar": "اللهم افتح لي أبواب فضلك",
+          "arabic_text": "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ فَضْلِكَ",
+          "transliteration": "Allahumma iftah li abwaba fadlik",
+          "translation_id": "Ya Allah, bukakanlah pintu-pintu karunia-Mu untukku",
+          "source": "HR. Abu Daud no. 3662"
+        },
+        {
+          "id": 22,
+          "name_id": "Doa Sesudah Belajar",
+          "name_ar": "اللهم استرني بسترك الذي ست به عبادك الصالحين",
+          "arabic_text": "اللَّهُمَّ اسْتُرْنِي بِسِتْرِكَ الَّذِي سَتَرْتَ بِهِ عِبَادَكَ الصَّالِحِينَ",
+          "transliteration": "Allahumma sturni bi stirikal ladzi starta bihi 'ibadakas solehiin",
+          "translation_id": "Ya Allah, tutuplah (aib)ku dengan tutupan-Mu yang Engkau tutupkan kepada hamba-hamba-Mu yang saleh",
+          "source": "HR. Abu Daud no. 1522"
+        },
+        {
+          "id": 23,
+          "name_id": "Doa Ketika Marah",
+          "name_ar": "أعوذ بالله من الشيطان الرجيم",
+          "arabic_text": "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+          "transliteration": "A'udzubillahi minasy syaithaanir rajiim",
+          "translation_id": "Aku berlindung kepada Allah dari setan yang terlontar",
+          "source": "HR. Bukhari no. 3274"
+        },
+        {
+          "id": 24,
+          "name_id": "Doa Menjenguk Orang Sakit",
+          "name_ar": "لا بأس، طهر إن شاء الله",
+          "arabic_text": "لَا بَأْسَ، طَهُورٌ إِنْ شَاءَ اللَّهُ",
+          "transliteration": "La basa, thahuurun in syaa Allah",
+          "translation_id": "Tidak mengapa (menjadi sakit), semoga ini membersihkan (dosa-dosa)mu, insya Allah",
+          "source": "HR. Bukhari no. 5689"
+        },
+        {
+          "id": 25,
+          "name_id": "Doa Untuk Orang Meninggal",
+          "name_ar": "اللهم اغفر له وارحمه وعافه واعف عنه وأكرمه في قبره ووسع له قبره واغسله بالماء والثلج والبرد ونقه من الخطايا كما ينقى الثوب الأبيض من الدنس",
+          "arabic_text": "اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ وَأَكْرِمْ نُزُلَهُ وَوَسِّعْ مَدْخَلَهُ وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهِ مِنَ الْخَطَايَا كَمَا يُنَقَّى الثَّوْبُ الْأَبْيَضُ مِنَ الْوَسَخِ",
+          "transliteration": "Allahumaghfir lahu warhamhu wa 'aafih wa 'af 'anhu wa akrim nuzulahu wa wassi' madkhalah waughsilhu bil maa'ith thanjil wa albardi wa naqqih minal khataaya kama yunaqqats tsaubul abyadhu minal wassakh",
+          "translation_id": "Ya Allah, ampunilah dosanya, rahmatilah dirinya, berilah kesehatan kepadanya dan maafkanlah dia, berilah kemuliaan kepadanya, luaskanlah kuburnya, dan basuhlah dia dengan air, salju, dan es. Bersihkanlah dia dari segala dosa sebagaimana baju putih dibersihkan dari kotoran",
+          "source": "HR. Muslim no. 964"
+        }
+      ]
+    }
+  ]
+}
