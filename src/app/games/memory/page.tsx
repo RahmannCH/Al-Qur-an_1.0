@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
