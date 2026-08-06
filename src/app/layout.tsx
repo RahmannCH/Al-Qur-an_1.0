@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/footer";
 import { AnimatedBackground } from "@/components/layout/animated-background";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { XpToastContainer } from "@/components/ui/xp-toast";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Footer />
             <BottomNav />
             <XpToastContainer />
+            <Analytics />
           </TooltipProvider>
         </ThemeProvider>
       </body>

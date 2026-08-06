@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.5-flash", // Updated to the latest fast model
+      model: "gemini-3.5-flash", // Stabil untuk deploy
       generationConfig: {
         temperature: 0.9,
         topP: 0.95,

@@ -96,9 +96,9 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
           return (
             <motion.button
               key={prayer}
-              onClick={() => isOpen && handleToggle(prayer)}
-              disabled={!isOpen}
-              whileTap={isOpen ? { scale: 0.98 } : undefined}
+              onClick={() => isOpen && !isChecked && handleToggle(prayer)}
+              disabled={!isOpen || isChecked}
+              whileTap={isOpen && !isChecked ? { scale: 0.98 } : undefined}
               className={`w-full flex items-center justify-between p-4 rounded-lg transition-all ${
                 isChecked
                   ? "bg-gradient-to-r from-emerald/20 to-emerald/10 border-emerald/30"

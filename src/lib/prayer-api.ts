@@ -5,7 +5,7 @@ const API_BASE = "https://api.aladhan.com/v1";
 export async function getPrayerTimes(latitude?: number, longitude?: number) {
   try {
     const currentDate = new Date().toISOString().split("T")[0];
-    let url = `${API_BASE}/timings/${currentDate}?city=Yogyakarta&country=Indonesia`;
+    let url = `${API_BASE}/timings/${currentDate}?city=Banjarbaru&country=Indonesia&method=2`;
 
     // Jika koordinat GPS tersedia dari User, gunakan itu.
     if (latitude && longitude) {
@@ -48,15 +48,15 @@ function getFallbackPrayerTimes(): NonNullable<PrayerTimesResponse["data"]> {
       }
     },
     timings: {
-      Fajr: "04:45",
-      Sunrise: "05:58",
-      Dhuhr: "11:55",
-      Asr: "15:18",
-      Sunset: "17:48",
-      Maghrib: "17:48",
-      Isha: "19:02",
-      Imsak: "04:35",
-      Midnight: "23:55"
+      Fajr: "05:04",
+      Sunrise: "06:21",
+      Dhuhr: "12:28",
+      Asr: "15:47",
+      Sunset: "18:32",
+      Maghrib: "18:32",
+      Isha: "19:42",
+      Imsak: "04:54",
+      Midnight: "00:28"
     }
   };
 }

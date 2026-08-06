@@ -101,13 +101,13 @@ export const usePrayerStore = create<PrayerStore>()(
               async () => {
                 // Denied GPS
                 const fallbackData = await getPrayerTimes();
-                set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "Akses GPS Ditolak - Default (Yogyakarta)", lastFetchedDate: today });
+                set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "Akses GPS Ditolak - Default (Banjarbaru)", lastFetchedDate: today });
               }
             );
           } else {
             // Not supported
             const fallbackData = await getPrayerTimes();
-            set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "GPS Tidak Didukung - Default (Yogyakarta)", lastFetchedDate: today });
+            set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "GPS Tidak Didukung - Default (Banjarbaru)", lastFetchedDate: today });
           }
         } catch (error) {
           console.error("Gagal sinkronisasi waktu sholat", error);
@@ -119,9 +119,8 @@ export const usePrayerStore = create<PrayerStore>()(
         state.checkAndResetDay();
 
         const isChecked = state.todayPrayers.includes(prayer);
-        const newPrayers = isChecked
-          ? state.todayPrayers.filter((p) => p !== prayer)
-          : [...state.todayPrayers, prayer];
+        if (isChecked) return;
+        const newPrayers = [...state.todayPrayers, prayer];
 
         const todayKey = getWitaDate();
         const newHistory = {
