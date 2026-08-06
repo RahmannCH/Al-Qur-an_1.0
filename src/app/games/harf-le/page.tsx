@@ -120,7 +120,7 @@ export default function HarfleGame() {
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <Sparkles className="h-6 w-6 text-gold" />
-          <h1 className="text-2xl font-display font-bold">Harf-le</h1>
+          <h1 className="text-2xl font-display font-bold">Wordle Islami</h1>
         </div>
         <p className="text-muted-foreground">Tebak akar kata 3 huruf dari kanan ke kiri</p>
       </div>

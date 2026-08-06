@@ -59,13 +59,8 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
         </div>
         <div className="flex items-center gap-1">
           <Dialog>
-            <DialogTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent text-muted-foreground hover:text-foreground" onClick={loadTafsir}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <BookOpenText className="h-4 w-4" />
-                </TooltipTrigger>
-                <TooltipContent>Baca Tafsir</TooltipContent>
-              </Tooltip>
+            <DialogTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent text-muted-foreground hover:text-foreground outline-none" onClick={loadTafsir}>
+              <BookOpenText className="h-4 w-4" />
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>

@@ -2,10 +2,17 @@ import type { PrayerTimesResponse } from "@/types/prayer";
 
 const API_BASE = "https://api.aladhan.com/v1";
 
-export async function getPrayerTimes() {
+export async function getPrayerTimes(latitude?: number, longitude?: number) {
   try {
     const currentDate = new Date().toISOString().split("T")[0];
-    const response = await fetch(`${API_BASE}/timings/${currentDate}?city=Yogyakarta&country=Indonesia`, {
+    let url = `${API_BASE}/timings/${currentDate}?city=Yogyakarta&country=Indonesia`;
+
+    // Jika koordinat GPS tersedia dari User, gunakan itu.
+    if (latitude && longitude) {
+       url = `${API_BASE}/timings/${currentDate}?latitude=${latitude}&longitude=${longitude}&method=2`; // method=2 is ISNA, widely accepted
+    }
+
+    const response = await fetch(url, {
       next: { revalidate: 3600 }
     });
     

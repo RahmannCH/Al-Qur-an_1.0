@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
 import { useGamificationStore } from "@/store/gamification-store";
-import { Lightbulb, RefreshCcw, GripVertical, Loader2 } from "lucide-react";
+import { Lightbulb, RefreshCcw, GripVertical } from "lucide-react";
 
 interface Puzzle {
   surah: string;
@@ -14,15 +14,31 @@ interface Puzzle {
   translation: string;
 }
 
+const LOCAL_PUZZLES = [
+  { surah: "Al-Ikhlas: 1", text: "قُلْ هُوَ اللَّهُ أَحَدٌ", translation: "Katakanlah: Dia-lah Allah, Yang Maha Esa" },
+  { surah: "Al-Ikhlas: 2", text: "اللَّهُ الصَّمَدُ", translation: "Allah tempat meminta segala sesuatu" },
+  { surah: "Al-Falaq: 1", text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", translation: "Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh" },
+  { surah: "An-Nas: 1", text: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ", translation: "Katakanlah: Aku berlindung kepada Tuhannya manusia" },
+  { surah: "An-Nas: 2", text: "مَلِكِ النَّاسِ", translation: "Raja manusia" },
+  { surah: "Al-Kafirun: 1", text: "قُلْ يَا أَيُّهَا الْكَافِرُونَ", translation: "Katakanlah: Hai orang-orang kafir" },
+  { surah: "Al-Kafirun: 6", text: "لَكُمْ دِينُكُمْ وَلِيَ دِينِ", translation: "Untukmu agamamu, dan untukku agamaku" },
+  { surah: "Al-Kauthar: 1", text: "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ", translation: "Sesungguhnya Kami telah memberikan kepadamu nikmat yang banyak" },
+  { surah: "Al-Kauthar: 2", text: "فَصَلِّ لِرَبِّكَ وَانْحَرْ", translation: "Maka dirikanlah shalat karena Tuhanmu; dan berkorbanlah" },
+  { surah: "Al-Ma'un: 1", text: "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ", translation: "Tahukah kamu orang yang mendustakan agama?" },
+  { surah: "Al-Fil: 1", text: "أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ", translation: "Tidakkah engkau perhatikan bagaimana Tuhanmu telah bertindak terhadap pasukan bergajah?" },
+  { surah: "Al-Asr: 1", text: "وَالْعَصْرِ", translation: "Demi masa" },
+  { surah: "Al-Asr: 2", text: "إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ", translation: "Sesungguhnya manusia itu benar-benar dalam kerugian" },
+  { surah: "At-Takathur: 1", text: "أَلْهَاكُمُ التَّكَاثُرُ", translation: "Bermegah-megahan telah melalaikan kamu" },
+  { surah: "Al-Qari'ah: 1", text: "الْقَارِعَةُ", translation: "Hari Kiamat" },
+  { surah: "Al-Adiyat: 1", text: "وَالْعَادِيَاتِ ضَبْحًا", translation: "Demi kuda perang yang berlari kencang terengah-engah" },
+  { surah: "Az-Zalzalah: 1", text: "إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا", translation: "Apabila bumi digoncangkan dengan goncangan yang dahsyat" }
+];
+
 function calculateXpWithPenalty(baseXp: number, hintsUsed: number): number {
   if (hintsUsed === 0) return baseXp;
   if (hintsUsed === 1) return Math.ceil(baseXp * 0.5);
   return 3;
 }
-
-const cleanArabicText = (text: string) => {
-  return text.trim();
-};
 
 export default function SambungAyatGame() {
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
@@ -30,52 +46,23 @@ export default function SambungAyatGame() {
   const [isComplete, setIsComplete] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
   const { addXp } = useGamificationStore();
 
-  const fetchRandomAyah = useCallback(async () => {
-    setLoading(true);
-    try {
-      const randomChapter = Math.floor(Math.random() * (114 - 78 + 1)) + 78;
-      const chapterRes = await fetch(`https://api.quran.com/api/v4/chapters/${randomChapter}?language=id`);
-      const chapterData = await chapterRes.json();
-      const chapterName = chapterData.chapter.name_simple;
-      const versesCount = chapterData.chapter.verses_count;
-      const randomVerse = Math.floor(Math.random() * versesCount) + 1;
-
-      const verseRes = await fetch(
-        `https://api.quran.com/api/v4/verses/by_chapter/${randomChapter}?language=id&words=true&translations=33&page=1&per_page=1&verse_number=${randomVerse}`
-      );
-      const verseData = await verseRes.json();
-      const verse = verseData.verses[0];
-
-      let words = verse.words
-        .map((w: any) => cleanArabicText(w.text_uthmani))
-        .filter((w: string) => w !== "" && !w.match(/^[0-9]+$/) && !w.includes("۝"));
-
-      if (words.length > 7) words = words.slice(0, Math.floor(Math.random() * 3) + 4);
-      if (words.length < 2) throw new Error("Verse too short");
-
-      const translation = verse.translations?.[0]?.text?.replace(/<[^>]*>/g, "") || "Terjemahan tidak tersedia";
-
-      setCurrentPuzzle({
-        surah: `${chapterName}: ${randomVerse}`,
-        words: words,
-        shuffled: [...words].sort(() => Math.random() - 0.5),
-        translation: translation
-      });
-
-    } catch (e) {
-      console.error("Failed to fetch ayah, retrying...", e);
-      setTimeout(fetchRandomAyah, 1000);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loadRandomAyah = () => {
+    const randomAyah = LOCAL_PUZZLES[Math.floor(Math.random() * LOCAL_PUZZLES.length)];
+    const wordsArray = randomAyah.text.split(" ");
+    
+    setCurrentPuzzle({
+      surah: randomAyah.surah,
+      words: wordsArray,
+      shuffled: [...wordsArray].sort(() => Math.random() - 0.5),
+      translation: randomAyah.translation
+    });
+  };
 
   useEffect(() => {
-    fetchRandomAyah();
-  }, [fetchRandomAyah]);
+    loadRandomAyah();
+  }, []);
 
   const handleDrop = (word: string) => {
     if (isComplete || userOrder.includes(word) || !currentPuzzle) return;
@@ -108,19 +95,15 @@ export default function SambungAyatGame() {
     setIsComplete(false);
     setIsCorrect(null);
     setHintsUsed(0);
-    fetchRandomAyah();
+    loadRandomAyah();
   };
 
-  if (loading || !currentPuzzle) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-32 flex flex-col items-center justify-center text-center">
-        <BackButton />
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h2 className="text-xl font-display font-bold">Mencari Ayat...</h2>
-        <p className="text-muted-foreground">Menjelajahi lautan Al-Qur'an</p>
-      </div>
-    );
-  }
+  const handleUndo = () => {
+    if (isComplete || userOrder.length === 0) return;
+    setUserOrder(userOrder.slice(0, -1));
+  };
+
+  if (!currentPuzzle) return null;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -141,7 +124,10 @@ export default function SambungAyatGame() {
 
       <div className="mb-8">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-sm font-bold text-muted-foreground">Susunan Ayat (Baca dari Kanan ➡️ Kiri):</p>
+          <p className="text-sm font-bold text-muted-foreground">Susunan Ayat (Baca Kanan ➡️ Kiri):</p>
+          {userOrder.length > 0 && !isComplete && (
+            <button onClick={handleUndo} className="text-xs text-primary font-bold hover:underline">Undo Kata Terakhir</button>
+          )}
         </div>
         <div className="min-h-[100px] rounded-2xl border-2 border-dashed border-primary/30 p-5 flex flex-wrap gap-3 items-center justify-start bg-accent/20" dir="rtl">
           {userOrder.length === 0 ? (
@@ -149,12 +135,7 @@ export default function SambungAyatGame() {
           ) : (
             <AnimatePresence>
               {userOrder.map((word, idx) => (
-                <motion.span
-                  key={idx + word}
-                  initial={{ opacity: 0, scale: 0.5, x: 20 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  className="bg-gradient-to-br from-primary to-teal text-white px-5 py-3 rounded-xl font-arabic text-2xl shadow-md"
-                >
+                <motion.span key={idx + word} initial={{ opacity: 0, scale: 0.5, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} className="bg-gradient-to-br from-primary to-teal text-white px-5 py-3 rounded-xl font-arabic text-2xl shadow-md">
                   {word}
                 </motion.span>
               ))}
@@ -173,9 +154,7 @@ export default function SambungAyatGame() {
               whileTap={!used ? { scale: 0.95 } : {}}
               onClick={() => handleDrop(word)}
               disabled={used || isComplete}
-              className={`px-6 py-4 rounded-xl font-arabic text-2xl transition-all shadow-sm border ${
-                used ? "opacity-20 cursor-not-allowed bg-muted border-transparent" : "bg-card border-border hover:border-primary hover:shadow-md text-foreground"
-              }`}
+              className={`px-6 py-4 rounded-xl font-arabic text-2xl transition-all shadow-sm border ${used ? "opacity-20 cursor-not-allowed bg-muted border-transparent" : "bg-card border-border hover:border-primary hover:shadow-md text-foreground"}`}
             >
               {word}
             </motion.button>
@@ -188,10 +167,6 @@ export default function SambungAyatGame() {
           <Button variant="outline" className="flex-1 border-gold/30 text-gold hover:bg-gold/10 hover:text-gold" onClick={handleHint} disabled={hintsUsed >= 1}>
             <Lightbulb className="h-4 w-4 mr-2" />
             Bantu Kata Selanjutnya {hintsUsed > 0 && "(-50% XP)"}
-          </Button>
-          <Button variant="ghost" className="flex-1" onClick={handleReset}>
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Reset
           </Button>
         </div>
       )}

@@ -40,7 +40,7 @@ export function ShareAyatModal({ verse, chapter, translation }: { verse: Verse; 
 
   return (
     <Dialog>
-      <DialogTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent text-muted-foreground hover:text-foreground">
+      <DialogTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent text-muted-foreground hover:text-foreground outline-none">
         <Share2 className="h-4 w-4" />
       </DialogTrigger>
       <DialogContent className="max-w-md">

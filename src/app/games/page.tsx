@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
-import { Gamepad2, Brain, Puzzle, Type, Lightbulb } from "lucide-react";
+import { Gamepad2, Brain, Puzzle, Type, Lightbulb, Zap } from "lucide-react";
 
 export default function GamesHub() {
   const games = [
@@ -29,8 +29,8 @@ export default function GamesHub() {
       link: "/games/trivia",
     },
     {
-      title: "Harf-le",
-      desc: "Wordle ala akar kata Al-Qur'an",
+      title: "Wordle Islami",
+      desc: "Tebak akar kata Al-Qur'an",
       icon: Type,
       color: "from-orange-500 to-amber-500",
       link: "/games/harf-le",
@@ -41,6 +41,13 @@ export default function GamesHub() {
       icon: Lightbulb,
       color: "from-rose-500 to-pink-500",
       link: "/games/memory",
+    },
+    {
+      title: "Tajwid Ninja",
+      desc: "Latih insting deteksi hukum tajwid",
+      icon: Zap,
+      color: "from-red-500 to-rose-600",
+      link: "/games/tajwid-ninja",
     }
   ];
 

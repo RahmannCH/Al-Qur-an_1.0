@@ -5,6 +5,7 @@ import { ProgressWidget } from "@/components/home/progress-widget";
 import { UserLevelWidget } from "@/components/home/user-level-widget";
 import { DynamicThemeBanner } from "@/components/home/dynamic-theme-banner";
 import { PrayerWidget } from "@/components/home/prayer-widget";
+import { PrayerStreak } from "@/components/prayer/prayer-streak";
 import { LastReadCard } from "@/components/quran/last-read-card";
 import { HeroBentoGrid } from "@/components/home/hero-bento-grid";
 
@@ -35,6 +36,10 @@ export default async function Home() {
           <ProgressWidget />
         </div>
       </div>
+
+      <section className="mb-12">
+        <PrayerStreak className="w-full shadow-lg" />
+      </section>
 
       <div className="mb-6">
         <h2 className="text-2xl font-display font-bold mb-2">Baca Al-Qur'an</h2>

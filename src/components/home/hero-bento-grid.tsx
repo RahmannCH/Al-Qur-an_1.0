@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Clock, Heart, MessageCircle, Search, Trophy, Gamepad2, Activity, MapPin, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Search, Trophy, Gamepad2, Activity, Calculator, Sparkles } from "lucide-react";
 
 export function HeroBentoGrid() {
   const container = {
@@ -67,7 +67,7 @@ export function HeroBentoGrid() {
         <Link href="/chat" className="block h-full w-full bg-card border border-emerald-500/20 hover:border-emerald-500 p-5 shadow-sm transition-transform hover:-translate-y-1">
           <MessageCircle className="h-8 w-8 mb-3 text-emerald-500" />
           <h3 className="font-bold text-base mb-1">AI Chat</h3>
-          <p className="text-[10px] text-muted-foreground leading-tight">Tanya jawab cerdas seputar Islam</p>
+          <p className="text-[10px] text-muted-foreground leading-tight">Tanya Jawab</p>
         </Link>
       </motion.div>
 
@@ -82,15 +82,15 @@ export function HeroBentoGrid() {
 
       {/* Long Bottom Row (Utilities) */}
       <motion.div variants={item} className="col-span-2 md:col-span-4 grid grid-cols-3 gap-4">
-          <Link href="/prayer-times" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all group">
-             <MapPin className="h-6 w-6 text-primary mb-2 group-hover:scale-110 transition-transform" />
-             <span className="text-xs font-bold text-muted-foreground group-hover:text-primary">Kiblat & Waktu</span>
+          <Link href="/calculator" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all group shadow-sm">
+             <Calculator className="h-6 w-6 text-primary mb-2 group-hover:scale-110 transition-transform" />
+             <span className="text-xs font-bold text-muted-foreground group-hover:text-primary">Kalkulator Zakat</span>
           </Link>
-          <Link href="/dzikir" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-teal-500 hover:bg-teal-500/5 transition-all group">
+          <Link href="/dzikir" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-teal-500 hover:bg-teal-500/5 transition-all group shadow-sm">
              <Activity className="h-6 w-6 text-teal-500 mb-2 group-hover:scale-110 transition-transform" />
              <span className="text-xs font-bold text-muted-foreground group-hover:text-teal-500">Tasbih Digital</span>
           </Link>
-          <Link href="/achievements" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-gold hover:bg-gold/5 transition-all group">
+          <Link href="/achievements" className="col-span-1 bg-card border border-transparent rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-gold hover:bg-gold/5 transition-all group shadow-sm">
              <Trophy className="h-6 w-6 text-gold mb-2 group-hover:scale-110 transition-transform" />
              <span className="text-xs font-bold text-muted-foreground group-hover:text-gold">Pencapaian XP</span>
           </Link>
