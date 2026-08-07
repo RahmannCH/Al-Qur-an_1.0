@@ -32,8 +32,10 @@ export default function WarisCalculator() {
   const [motherAlive, setMotherAlive] = useState<boolean>(false);
 
   // Hasil Perhitungan
-  const netEstate = totalAsset - funeralCost - debts - wasiat;
-  const maxWasiat = (totalAsset - funeralCost - debts) / 3;
+  const hartaSetelahUtang = totalAsset - funeralCost - debts;
+  const maxWasiat = hartaSetelahUtang / 3;
+  const validWasiat = Math.min(wasiat, Math.max(0, maxWasiat));
+  const netEstate = hartaSetelahUtang - validWasiat;
   const hasChildren = sons > 0 || daughters > 0;
 
   const calculateFaraid = () => {

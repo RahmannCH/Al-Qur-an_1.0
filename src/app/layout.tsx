@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/footer";
 import { AnimatedBackground } from "@/components/layout/animated-background";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { XpToastContainer } from "@/components/ui/xp-toast";
+import { TimeThemeSync } from "@/components/layout/time-theme-sync";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <TooltipProvider>
+            <TimeThemeSync />
             <AnimatedBackground />
             <Header />
             <main className="flex-1">{children}</main>

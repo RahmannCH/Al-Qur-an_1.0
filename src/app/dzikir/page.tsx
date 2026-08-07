@@ -1,26 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { useGamificationStore } from "@/store/gamification-store";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { sfx } from "@/lib/sfx";
 
 export default function DzikirPage() {
   const [count, setCount] = useState(0);
   const [target, setTarget] = useState(33);
+  const [showCelebrate, setShowCelebrate] = useState(false);
   const { addXp, incrementDzikir } = useGamificationStore();
 
   const handleTap = () => {
     if (navigator.vibrate) navigator.vibrate(50);
+    sfx.playTap();
     const newCount = count + 1;
     setCount(newCount);
     incrementDzikir(1);
 
     if (newCount === target) {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      sfx.playSuccess();
       addXp(10, `Tasbih ${target}x selesai`);
+      setShowCelebrate(true);
+      setTimeout(() => setShowCelebrate(false), 3200);
     }
   };
 
@@ -85,6 +91,18 @@ export default function DzikirPage() {
           </motion.p>
           <p className="text-muted-foreground mt-2 font-medium">/ {target}</p>
         </div>
+
+        {showCelebrate && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.85 }}
+            animate={{ opacity: 1, y: -20, scale: 1 }}
+            exit={{ opacity: 0, y: -40, scale: 0.95 }}
+            className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-2xl border bg-card/95 px-5 py-3 shadow-2xl backdrop-blur-md"
+          >
+            <p className="text-lg font-display font-bold text-primary">MasyaAllah!</p>
+            <p className="text-xs text-muted-foreground font-medium">Target {target}x tercapai. Semoga istiqamah.</p>
+          </motion.div>
+        )}
       </div>
 
       <Button

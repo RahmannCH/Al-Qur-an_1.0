@@ -26,6 +26,16 @@ export interface LevelInfo {
   nextXp: number;
 }
 
+export interface DailyQuest {
+  id: string;
+  type: "read" | "dzikir" | "sholat";
+  title: string;
+  target: number;
+  progress: number;
+  xpReward: number;
+  completed: boolean;
+}
+
 export function getLevelInfo(xp: number): LevelInfo {
   const levels = [
     { level: 1, title: "Mubtadi", minXp: 0, nextXp: 100 },
@@ -57,6 +67,10 @@ interface GamificationStore {
   chatCount: number;
   dzikirCount: number;
   
+  dailyQuests: DailyQuest[];
+  lastQuestDate: string;
+  lootboxAvailable: boolean;
+
   addXp: (amount: number, reason: string) => void;
   clearRecentXpGain: (id: string) => void;
   unlockBadge: (badgeId: string) => void;
@@ -64,6 +78,10 @@ interface GamificationStore {
   incrementChat: () => void;
   incrementDzikir: (amount: number) => void;
   checkMilestones: () => void;
+  
+  checkAndResetQuests: (todayKey: string) => void;
+  updateQuestProgress: (type: "read" | "dzikir" | "sholat", amount: number) => void;
+  claimLootbox: () => void;
 }
 
 export const useGamificationStore = create<GamificationStore>()(
@@ -76,6 +94,68 @@ export const useGamificationStore = create<GamificationStore>()(
       readCount: 0,
       chatCount: 0,
       dzikirCount: 0,
+      dailyQuests: [],
+      lastQuestDate: "",
+      lootboxAvailable: false,
+
+      checkAndResetQuests: (todayKey: string) => {
+        const state = get();
+        if (state.lastQuestDate !== todayKey) {
+          const freshQuests: DailyQuest[] = [
+            { id: "q1", type: "read", title: "Baca 10 Ayat", target: 10, progress: 0, xpReward: 50, completed: false },
+            { id: "q2", type: "dzikir", title: "Tasbih 33x", target: 33, progress: 0, xpReward: 50, completed: false },
+            { id: "q3", type: "sholat", title: "Ceklis 3 Waktu Sholat", target: 3, progress: 0, xpReward: 100, completed: false },
+          ];
+          set({ dailyQuests: freshQuests, lastQuestDate: todayKey, lootboxAvailable: false });
+        }
+      },
+
+      updateQuestProgress: (type, amount) => {
+        let pendingXp = 0;
+        let pendingReason = "";
+
+        set((state) => {
+          let updated = false;
+          
+          const newQuests = state.dailyQuests.map((q) => {
+            if (q.type === type && !q.completed) {
+              const newProgress = Math.min(q.progress + amount, q.target);
+              if (newProgress !== q.progress) updated = true;
+              const completed = newProgress >= q.target;
+              if (completed && !q.completed) {
+                pendingXp += q.xpReward;
+                pendingReason = `Quest Selesai: ${q.title}`;
+              }
+              return { ...q, progress: newProgress, completed };
+            }
+            return q;
+          });
+
+          const finallyAllCompleted = newQuests.length > 0 && newQuests.every(q => q.completed);
+          
+          if (updated) {
+            return { 
+              dailyQuests: newQuests, 
+              lootboxAvailable: finallyAllCompleted && !state.lootboxAvailable && state.dailyQuests.some(q => !q.completed)
+                ? true 
+                : state.lootboxAvailable 
+            };
+          }
+          return state;
+        });
+
+        if (pendingXp > 0) {
+          get().addXp(pendingXp, pendingReason);
+        }
+      },
+
+      claimLootbox: () => {
+        const state = get();
+        if (state.lootboxAvailable) {
+          get().addXp(200, "Membuka Peti Harian!");
+          set({ lootboxAvailable: false });
+        }
+      },
 
       addXp: (amount, reason) => {
         const id = Date.now().toString() + Math.random().toString();
@@ -98,11 +178,17 @@ export const useGamificationStore = create<GamificationStore>()(
           return { unlockedBadges: [...state.unlockedBadges, badgeId] };
         });
       },
+      incrementRead: () => {
+        set((state) => ({ readCount: state.readCount + 1 }));
+        get().updateQuestProgress("read", 1);
+      },
 
-      incrementRead: () => set((state) => ({ readCount: state.readCount + 1 })),
       incrementChat: () => set((state) => ({ chatCount: state.chatCount + 1 })),
-      incrementDzikir: (amount) => set((state) => ({ dzikirCount: state.dzikirCount + amount })),
 
+      incrementDzikir: (amount) => {
+        set((state) => ({ dzikirCount: state.dzikirCount + amount }));
+        get().updateQuestProgress("dzikir", amount);
+      },
       checkMilestones: () => {
         const state = get();
         const hour = new Date().getHours();

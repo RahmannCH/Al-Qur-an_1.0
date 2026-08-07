@@ -3,7 +3,7 @@
 import { useBookmarkStore } from "@/store/bookmark-store";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Bookmark, Copy, BookOpenText } from "lucide-react";
+import { Bookmark, Copy, BookOpenText, Languages } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
@@ -21,6 +21,7 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarkStore();
   const [tafsirLoading, setTafsirLoading] = useState(false);
   const [tafsirText, setTafsirText] = useState("");
+  const [showWordByWord, setShowWordByWord] = useState(false);
   const verseKey = verse.verse_key;
   const bookmarked = isBookmarked(verseKey);
 
@@ -70,6 +71,12 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
               </DialogHeader>
               <div className="space-y-4">
                 <p className="font-arabic text-2xl text-right leading-loose text-primary" dir="rtl">{verse.text_uthmani}</p>
+                {cleanTranslation && (
+                  <div className="p-3 bg-primary/5 rounded-xl border border-primary/10">
+                    <p className="text-[11px] font-bold text-primary mb-1 uppercase tracking-wider">Terjemahan Ayat</p>
+                    <p className="text-sm leading-relaxed text-foreground/90 font-medium">{cleanTranslation}</p>
+                  </div>
+                )}
                 <Separator />
                 {tafsirLoading ? (
                   <div className="animate-pulse space-y-3 pt-4">
@@ -78,7 +85,14 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
                     <div className="h-4 bg-muted rounded w-5/6"></div>
                   </div>
                 ) : (
-                  <div className="prose prose-sm dark:prose-invert max-w-none pt-2 leading-relaxed text-foreground" dangerouslySetInnerHTML={{ __html: tafsirText }} />
+                  <div 
+                    className="prose prose-sm dark:prose-invert max-w-none pt-2 leading-relaxed text-foreground space-y-2" 
+                    dangerouslySetInnerHTML={{ 
+                      __html: tafsirText
+                        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+                        .replace(/style="[^"]*"/gi, "") 
+                    }} 
+                  />
                 )}
               </div>
             </DialogContent>
@@ -110,13 +124,40 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
         </div>
       </div>
 
-      <p
-        className="mb-4 text-right leading-[2.2] font-arabic"
-        dir="rtl"
-        style={{ fontSize: `${fontSize}px` }}
-      >
-        {verse.text_uthmani}
-      </p>
+      <div className="mb-4 flex items-center justify-end gap-2">
+        {verse.words && verse.words.length > 0 && (
+          <button
+            onClick={() => setShowWordByWord(!showWordByWord)}
+            className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+              showWordByWord ? "bg-primary text-primary-foreground border-primary" : "bg-muted hover:bg-accent"
+            }`}
+          >
+            <Languages className="h-3 w-3 inline mr-1" />
+            {showWordByWord ? "Tampilan Biasa" : "Per Kata"}
+          </button>
+        )}
+      </div>
+
+      {showWordByWord && verse.words ? (
+        <div className="mb-4 flex flex-wrap gap-x-4 gap-y-6 justify-end leading-[2.2] font-arabic" dir="rtl" style={{ fontSize: `${fontSize}px` }}>
+          {verse.words.map((word) => (
+            <span key={word.id} className="inline-flex flex-col items-center group cursor-default">
+              <span className="text-primary group-hover:text-gold transition-colors">{word.text_uthmani}</span>
+              <span className="text-[10px] text-muted-foreground font-sans mt-1 text-center max-w-[80px] leading-tight">
+                {word.translation?.text || ""}
+              </span>
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p
+          className="mb-4 text-right leading-[2.2] font-arabic"
+          dir="rtl"
+          style={{ fontSize: `${fontSize}px` }}
+        >
+          {verse.text_uthmani}
+        </p>
+      )}
 
       {showTranslation && cleanTranslation && (
         <>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { sfx } from "@/lib/sfx";
 import { ThemeToggle } from "./theme-toggle";
 import { useSettingsStore } from "@/store/settings-store";
 import {
@@ -25,6 +26,8 @@ import {
   Brain,
   Boxes,
   UserCheck,
+  BookMarked,
+  Lightbulb,
 } from "lucide-react";
 import {
   Sheet,
@@ -50,10 +53,17 @@ export const MENU_SECTIONS = [
     title: "Al-Qur'an & Ibadah",
     items: [
       { href: "/quran", label: "Baca Qur'an", icon: BookOpen, desc: "114 Surah & Terjemahan" },
+      { href: "/memorize", label: "Hafalan & Muraja'ah", icon: BookMarked, desc: "Sistem hafalan interaktif" },
       { href: "/dua", label: "Koleksi Doa", icon: Heart, desc: "Doa harian pilihan" },
       { href: "/dzikir", label: "Dzikir & Tasbih", icon: Sparkles, desc: "Counter tasbih digital" },
       { href: "/search", label: "Cari Ayat", icon: Search, desc: "Pencarian ayat & terjemahan" },
       { href: "/bookmarks", label: "Bookmark", icon: Bookmark, desc: "Ayat tersimpan" },
+    ],
+  },
+  {
+    title: "Ruhiyah & Bimbingan",
+    items: [
+      { href: "/ruhiyah", label: "P3K Jiwa", icon: Lightbulb, desc: "Spiritual First Aid" },
     ],
   },
   {
@@ -87,17 +97,35 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 font-display font-bold text-lg">
+          <Link href="/" onClick={() => sfx.playWoosh()} className="flex items-center gap-2 font-display font-bold text-lg">
             <BookOpen className="h-6 w-6 text-primary" />
             <span className="hidden sm:inline">Al-Qur&apos;an</span>
           </Link>
 
+          <nav className="hidden md:flex items-center gap-1">
+            <Link
+              href="/ibadah"
+              onClick={() => sfx.playWoosh()}
+              className="px-3 py-1.5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
+            >
+              Ibadah
+            </Link>
+            <Link
+              href="/lifestyle"
+              onClick={() => sfx.playWoosh()}
+              className="px-3 py-1.5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
+            >
+              Lifestyle
+            </Link>
+          </nav>
+
           <Link
             href="/games"
+            onClick={() => sfx.playWoosh()}
             className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all"
           >
             <Gamepad2 className="h-4 w-4" />
-            <span>Arcade Games</span>
+            <span className="hidden lg:inline">Arcade Games</span>
           </Link>
         </div>
 
@@ -138,7 +166,10 @@ export function Header() {
                         return (
                           <SheetClose
                             key={item.href}
-                            onClick={() => router.push(item.href)}
+                            onClick={() => {
+                              sfx.playWoosh();
+                              router.push(item.href);
+                            }}
                             className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all ${
                               isActive
                                 ? "bg-primary/10 border-primary text-primary"

@@ -122,6 +122,12 @@ export const usePrayerStore = create<PrayerStore>()(
         if (isChecked) return;
         const newPrayers = [...state.todayPrayers, prayer];
 
+        // Integrasi dengan Daily Quest Gamification (pindah ke async IIFE agar tidak memblokir state)
+        (async () => {
+          const gamificationStore = (await import("./gamification-store")).useGamificationStore.getState();
+          gamificationStore.updateQuestProgress("sholat", 1);
+        })();
+
         const todayKey = getWitaDate();
         const newHistory = {
           ...state.history,

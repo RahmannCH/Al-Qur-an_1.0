@@ -2,22 +2,26 @@
 
 import { useSettingsStore } from "@/store/settings-store";
 import { useGamificationStore } from "@/store/gamification-store";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 import { AyahCard } from "./ayah-card";
 
-export function AyahList({ verses, chapter }: { verses: Verse[]; chapter: Chapter }) {
+export function AyahList({ verses, chapter, highlightedAyah }: { verses: Verse[]; chapter: Chapter; highlightedAyah?: number | null }) {
   const { fontSize, showTranslation } = useSettingsStore();
   const { setLastRead } = useSettingsStore();
   const { addXp, incrementRead } = useGamificationStore();
   const readAyahs = useRef(new Set<number>());
+  const [visibleCount, setVisibleCount] = useState(20);
 
+  // Intersection Observer untuk Infinite Scroll & Gamification
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             const verseNum = Number(entry.target.getAttribute("data-verse"));
+            
+            // Gamification & Last Read tracking
             if (verseNum) {
               setLastRead({
                 verseKey: `${chapter.id}:${verseNum}`,
@@ -27,7 +31,6 @@ export function AyahList({ verses, chapter }: { verses: Verse[]; chapter: Chapte
                 timestamp: Date.now(),
               });
               
-              // Gamification: 1 XP per ayah dibaca (max 1x per visit)
               if (!readAyahs.current.has(verseNum)) {
                 readAyahs.current.add(verseNum);
                 incrementRead();
@@ -36,28 +39,50 @@ export function AyahList({ verses, chapter }: { verses: Verse[]; chapter: Chapte
                 }
               }
             }
+
+            // Infinite Scroll Trigger (Jika mendekati ayat terakhir yg dirender)
+            if (entry.target.id === "infinite-trigger" || verseNum === visibleCount - 2) {
+              setVisibleCount((prev) => Math.min(prev + 20, verses.length));
+            }
           }
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.1, rootMargin: "200px" }
     );
 
-    const elements = document.querySelectorAll("[data-verse]");
+    const elements = document.querySelectorAll("[data-verse], #infinite-trigger");
     elements.forEach((el) => observer.observe(el));
+    
     return () => observer.disconnect();
-  }, [chapter, setLastRead, addXp, incrementRead]);
+  }, [chapter, setLastRead, addXp, incrementRead, visibleCount, verses.length]);
+
+  const visibleVerses = verses.slice(0, visibleCount);
 
   return (
-    <div className="space-y-4">
-      {verses.map((verse) => (
-        <AyahCard
-          key={verse.id}
-          verse={verse}
-          chapter={chapter}
-          fontSize={fontSize}
-          showTranslation={showTranslation}
-        />
-      ))}
+    <div className="space-y-4 pb-32">
+      {visibleVerses.map((verse) => {
+        const isHighlighted = highlightedAyah === verse.verse_number;
+        return (
+          <div 
+            key={verse.id} 
+            className={`transition-all duration-700 rounded-2xl ${
+              isHighlighted ? "ring-2 ring-primary ring-offset-4 ring-offset-background scale-[1.02]" : ""
+            }`}
+          >
+            <AyahCard
+              verse={verse}
+              chapter={chapter}
+              fontSize={fontSize}
+              showTranslation={showTranslation}
+            />
+          </div>
+        );
+      })}
+      {visibleCount < verses.length && (
+        <div id="infinite-trigger" className="h-20 w-full flex items-center justify-center text-muted-foreground animate-pulse">
+          Memuat ayat selanjutnya...
+        </div>
+      )}
     </div>
   );
 }

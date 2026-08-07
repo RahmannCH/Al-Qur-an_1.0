@@ -1,6 +1,8 @@
 import { getChapter, getVerses } from "@/lib/api";
 import { SurahHeader } from "@/components/quran/surah-header";
 import { AyahList } from "@/components/quran/ayah-list";
+import { BackButton } from "@/components/layout/back-button";
+import { SurahPageClient } from "@/components/quran/surah-page-client";
 import type { Verse } from "@/types/quran";
 
 interface SurahPageProps {
@@ -34,8 +36,9 @@ export default async function SurahPage({ params }: SurahPageProps) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
+      <BackButton />
       <SurahHeader chapter={chapter} />
-      <AyahList verses={allVerses} chapter={chapter} />
+      <SurahPageClient verses={allVerses} chapter={chapter} />
     </div>
   );
 }

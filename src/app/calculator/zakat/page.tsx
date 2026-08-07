@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Coins, HelpCircle } from "lucide-react";
+import { Coins, HelpCircle, Activity } from "lucide-react";
 
 type ZakatType = "fitrah" | "penghasilan" | "maal" | "emas";
 
@@ -31,7 +31,18 @@ export default function ZakatCalculator() {
 
   // Emas
   const [goldGrams, setGoldGrams] = useState<number>(0);
-  const [goldPrice, setGoldPrice] = useState<number>(1300000);
+  const [goldPrice, setGoldPrice] = useState<number>(1450000);
+  const [isFetchingPrice, setIsFetchingPrice] = useState(false);
+
+  useEffect(() => {
+    // Simulasi Fetch Live Emas (Karena API publik sering limit, kita pakai estimasi terbaru)
+    // Di aplikasi nyata, gunakan API seperti metals-api.com
+    setIsFetchingPrice(true);
+    setTimeout(() => {
+      setGoldPrice(1450000); // Rp 1.450.000 / gram (Asumsi Harga 2024-2025)
+      setIsFetchingPrice(false);
+    }, 1500);
+  }, []);
 
   const calculateFitrah = () => {
     return fitrahCount * 2.5 * ricePrice; // 2.5kg beras per orang

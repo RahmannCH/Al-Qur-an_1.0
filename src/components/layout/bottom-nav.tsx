@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, BookOpen, Clock, Gamepad2, Menu } from "lucide-react";
+import { Home, BookOpen, Clock, Gamepad2, Menu, Sparkles, Coffee } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetClose } from "@/components/ui/sheet";
 import { MENU_SECTIONS } from "./header";
+import { sfx } from "@/lib/sfx";
 
 const navItems = [
   { href: "/", icon: Home, label: "Home" },
-  { href: "/quran", icon: BookOpen, label: "Quran" },
-  { href: "/prayer-times", icon: Clock, label: "Sholat" },
+  { href: "/ibadah", icon: BookOpen, label: "Ibadah" },
+  { href: "/lifestyle", label: "Lifestyle", icon: Coffee },
   { href: "/games", icon: Gamepad2, label: "Arcade" },
 ];
 
@@ -28,6 +29,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => sfx.playWoosh()}
               className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
@@ -62,7 +64,10 @@ export function BottomNav() {
                       return (
                         <SheetClose
                           key={item.href}
-                          onClick={() => router.push(item.href)}
+                          onClick={() => {
+                            sfx.playWoosh();
+                            router.push(item.href);
+                          }}
                           className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all ${
                             isActive
                               ? "bg-primary/10 border-primary text-primary"

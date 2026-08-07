@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import { Send, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,7 +106,24 @@ export default function ChatPage() {
                 </div>
                 <div className={`flex-1 ${msg.role === "user" ? "text-right" : ""}`}>
                   <div className={`inline-block max-w-[85%] px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
+                    {msg.role === "user" ? (
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
+                    ) : (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                          strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
+                          em: ({ children }) => <em className="italic">{children}</em>,
+                          ul: ({ children }) => <ul className="my-2 ml-5 list-disc space-y-1">{children}</ul>,
+                          ol: ({ children }) => <ol className="my-2 ml-5 list-decimal space-y-1">{children}</ol>,
+                          li: ({ children }) => <li className="pl-1">{children}</li>,
+                          code: ({ children }) => <code className="rounded bg-background/70 px-1 py-0.5 text-xs font-mono">{children}</code>,
+                          blockquote: ({ children }) => <blockquote className="border-l-4 border-primary/40 pl-3 italic text-muted-foreground">{children}</blockquote>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    )}
                   </div>
                 </div>
               </motion.div>

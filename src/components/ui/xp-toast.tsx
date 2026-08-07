@@ -4,9 +4,16 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGamificationStore } from "@/store/gamification-store";
 import { Sparkles } from "lucide-react";
+import { sfx } from "@/lib/sfx";
 
 export function XpToastContainer() {
   const { recentXpGains, clearRecentXpGain } = useGamificationStore();
+
+  useEffect(() => {
+    if (recentXpGains.length > 0) {
+      sfx.playSuccess();
+    }
+  }, [recentXpGains.length]);
 
   return (
     <div className="fixed bottom-24 right-4 z-50 flex flex-col gap-2 pointer-events-none">

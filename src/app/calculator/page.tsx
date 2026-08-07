@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
-import { Calculator, Coins, ScrollText, ArrowRight } from "lucide-react";
+import { Calculator, Coins, ScrollText, ArrowRight, PlaneTakeoff } from "lucide-react";
 import Link from "next/link";
 
 export default function CalculatorHub() {
@@ -22,7 +22,15 @@ export default function CalculatorHub() {
       color: "from-blue-500 to-indigo-600",
       link: "/calculator/waris",
       badge: "Beta"
-    }
+    },
+    {
+      title: "Tabungan Haji & Umroh",
+      desc: "Hitung target tabungan bulanan & estimasi keberangkatan.",
+      icon: PlaneTakeoff,
+      color: "from-amber-500 to-orange-600",
+      link: "/calculator/haji-umroh",
+      badge: "Baru"
+    },
   ];
 
   return (

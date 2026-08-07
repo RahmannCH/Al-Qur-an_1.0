@@ -63,6 +63,12 @@
   --teal: 42 157 143;
   --emerald: 27 122 90;
   --radius: 0.75rem;
+  
+  /* Dynamic Prayer Theme Variables */
+  --prayer-hue: 230;
+  --accent-hue: 260;
+  --prayer-gradient-start: 30 58 95;
+  --prayer-gradient-end: 42 157 143;
 }
 
 .dark {

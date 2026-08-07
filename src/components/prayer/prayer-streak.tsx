@@ -155,33 +155,33 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
                   day.isToday ? "bg-primary/5 border-primary/20" : "bg-muted/10 border-muted/20"
                 }`}
               >
-                <div className="flex items-center gap-2 w-20">
-                  <span className={`text-xs font-bold ${day.isToday ? "text-primary" : "text-muted-foreground"}`}>
+                <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0 w-16 md:w-20">
+                  <span className={`text-[10px] md:text-xs font-bold ${day.isToday ? "text-primary" : "text-muted-foreground"}`}>
                     {day.label}
                   </span>
                   {day.isToday && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold">
+                    <span className="text-[9px] md:text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold hidden sm:inline-block">
                       Hari ini
                     </span>
                   )}
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1 md:gap-1.5 justify-center flex-1">
                   {prayers.map((p) => {
                     const checked = day.prayers.includes(p);
                     return (
                       <span
                         key={p}
-                        className={`h-5 w-5 rounded-full flex items-center justify-center ${
+                        className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center ${
                           checked ? "bg-emerald text-white" : "bg-muted/40"
                         }`}
                       >
-                        {checked && <Check className="h-3 w-3" />}
+                        {checked && <Check className="h-2.5 w-2.5 md:h-3 md:w-3" />}
                       </span>
                     );
                   })}
                 </div>
                 <span
-                  className={`text-xs font-bold w-8 text-right ${
+                  className={`text-[10px] md:text-xs font-bold w-6 md:w-8 text-right flex-shrink-0 ${
                     complete ? "text-emerald" : "text-muted-foreground"
                   }`}
                 >
