@@ -10,6 +10,7 @@ import { XpToastContainer } from "@/components/ui/xp-toast";
 import { TimeThemeSync } from "@/components/layout/time-theme-sync";
 import { ReminderChecker } from "@/components/layout/reminder-checker";
 import { ServiceWorkerRegistry } from "@/components/layout/sw-registry";
+import { FloatingAIChat } from "@/components/layout/floating-ai-chat";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main className="flex-1">{children}</main>
             <Footer />
             <BottomNav />
+            <FloatingAIChat />
             <XpToastContainer />
             <Analytics />
           </TooltipProvider>
