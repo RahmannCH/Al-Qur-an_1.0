@@ -26,6 +26,7 @@ export interface Verse {
   page_number: number;
   juz_number: number;
   text_uthmani: string;
+  text_uthmani_tajweed?: string;
   text_imlaei?: string;
   words?: Word[];
   translations?: Translation[];

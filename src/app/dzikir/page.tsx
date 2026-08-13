@@ -31,6 +31,8 @@ export default function DzikirPage() {
   };
 
   const handleReset = () => {
+    if (navigator.vibrate) navigator.vibrate(20);
+    sfx.playWoosh();
     setCount(0);
   };
 
@@ -45,7 +47,7 @@ export default function DzikirPage() {
       
       <div className="mb-12">
         <h1 className="text-4xl font-display font-bold mb-2">Tasbih Digital</h1>
-        <p className="text-muted-foreground">Ketuk layar untuk berdzikir</p>
+        <p className="text-muted-foreground">Ketuk lingkaran untuk berdzikir</p>
       </div>
 
       <div className="flex gap-2 mb-12">
@@ -53,7 +55,7 @@ export default function DzikirPage() {
           <Button
             key={t}
             variant={target === t ? "default" : "outline"}
-            className={target === t ? "bg-teal hover:bg-teal/90" : ""}
+            className={target === t ? "bg-teal hover:bg-teal/90 rounded-xl" : "rounded-xl"}
             onClick={() => { setTarget(t); setCount(0); }}
           >
             {t}x
@@ -61,8 +63,14 @@ export default function DzikirPage() {
         ))}
       </div>
 
-      <div className="relative cursor-pointer select-none" onClick={handleTap}>
-        <svg className="w-[300px] h-[300px] transform -rotate-90">
+      <motion.div 
+        className="relative cursor-pointer select-none group" 
+        onClick={handleTap}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div className={`absolute inset-4 rounded-full bg-teal/5 blur-3xl transition-opacity duration-500 ${count > 0 ? 'opacity-100' : 'opacity-0'}`} />
+        
+        <svg className="w-[300px] h-[300px] transform -rotate-90 relative z-10 filter drop-shadow-xl">
           <circle
             cx="150" cy="150" r={radius}
             className="stroke-muted/30"
@@ -75,21 +83,22 @@ export default function DzikirPage() {
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
             strokeLinecap="round"
           />
         </svg>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
           <motion.p 
             key={count}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-6xl font-display font-bold text-primary"
+            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+            className="text-7xl font-display font-bold text-primary drop-shadow-md"
           >
             {count}
           </motion.p>
-          <p className="text-muted-foreground mt-2 font-medium">/ {target}</p>
+          <p className="text-muted-foreground mt-1 font-medium bg-background/50 px-3 py-1 rounded-full backdrop-blur-sm">/ {target}</p>
         </div>
 
         {showCelebrate && (
@@ -103,7 +112,7 @@ export default function DzikirPage() {
             <p className="text-xs text-muted-foreground font-medium">Target {target}x tercapai. Semoga istiqamah.</p>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
       <Button
         variant="ghost"

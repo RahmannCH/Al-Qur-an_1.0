@@ -143,39 +143,30 @@ export function Component(props: any) {
 ## 🎯 CURRENT PROJECT STATUS
 
 ### ✅ Completed Features
-1. **Home Dashboard** - Daily Ayat, Progress Widget, Quick Actions
-2. **Surah Reading** - Text, translation, bookmark, last read
-3. **Prayer Times** - 5 times, countdown, tracker, streak
+1. **Home Dashboard** - Daily Ayat (terkurasi, deterministik WITA), Progress, Quick Actions, Daily Quests + Lootbox, Reading Plan, Reminder Widget
+2. **Surah Reading** - Text, translation, bookmark, last read, infinite scroll, word-by-word
+3. **Prayer Times** - 5 waktu, countdown, tracker WITA time-gated, streak, rekap 7 hari, Kompas Kiblat
 4. **Doa Collection** - 25 duas, expand/collapse, bookmark
-5. **AI Chat** - Gemini integration, Islamic knowledge
+5. **AI Chat** - Gemini (`gemini-3.5-flash`), React Markdown
 6. **Search** - Quran search by text
 7. **Bookmarks** - List, delete, copy
-8. **Settings** - Theme, font size, qari selection
-9. **Bottom Nav** - Mobile navigation
-10. **Dark Mode** - Full theme support
+8. **Settings** - Theme, font size, qari selection, Reminders
+9. **Bottom Nav** - 4 tabs (Home, Ibadah, Lifestyle, Arcade) + Sheet menu di header
+10. **Dark Mode + Time Theme** - Warna otomatis mengikuti periode sholat WITA
+11. **Gamification** - XP/level, quests harian, lootbox, sfx Web Audio, Kuis Interaktif (Trivia)
+12. **Murottal Presisi** - Timestamp API + binary search highlight ayat
+13. **Hubs** - /ibadah, /lifestyle (Hijri Widget), /ruhiyah (P3K Jiwa), /memorize (Practice Mode), /kids (8 kisah nabi + gender edu + Parent Dashboard), /learn (9 modul, unlock berbasis XP)
+14. **Kalkulator** - Haji/Umroh (Full feature), Waris (wasiat ≤1/3), Zakat (harga emas tersinkron)
+15. **Onboarding** - Nama + target ayat harian, UserGreeting
+16. **PWA** - manifest + ikon + link + Service Worker Offline Cache
 
-### 🔴 Known Bugs (FIX THESE FIRST)
-1. **Prayer API Error** - `Cannot read properties of undefined (reading 'Fajr')`
-   - File: `src/lib/prayer-api.ts`
-   - Fix: Add null checks in `getNextPrayer()`
-   
-2. **Chat Bot Error** - Error on message send
-   - File: `src/app/api/chat/route.ts`
-   - Fix: Improve error handling, better system prompt
+### 🔴 Known Bugs / Catatan
+1. **Harga emas "live"** masih simulasi statis (Rp 1.450.000); butuh API nyata jika diinginkan.
+2. Lokasi kompas kiblat tergantung hardware perangkat, pastikan HTTPS.
 
-3. **Missing Back Button** - Users can't navigate back easily
-   - Files: All pages except home
-   - Fix: Create `BackButton` component
-
-### ⏳ Pending Features (See ROADMAP.md)
-- Audio Player (P1.1)
-- Qibla Compass (P1.2)
-- Tafsir Integration (P1.3)
-- Reading Plan (P1.4)
-- Share Ayat as Image (P1.5)
-- Dzikir Counter (P2.1)
-- Statistics & Achievements (P2.2)
-- PWA Offline Mode (P3.1)
+### ⏳ Pending Features (Lihat FEATURES.md & ROADMAP.md)
+- Polish accessibility dan screen reader
+- Image lazy loading & bundle optimization
 
 ---
 
@@ -408,6 +399,6 @@ chore: Update dependencies
 
 **This file ensures continuity across AI sessions. Read it at the start of each conversation.**
 
-**Last Updated:** 2026-08-04
-**Version:** 1.0
+**Last Updated:** 2026-08-07
+**Version:** 1.1
 **Maintainer:** Kiro AI Assistant

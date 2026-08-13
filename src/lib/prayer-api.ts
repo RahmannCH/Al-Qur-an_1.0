@@ -5,12 +5,12 @@ const API_BASE = "https://api.aladhan.com/v1";
 export async function getPrayerTimes(latitude?: number, longitude?: number) {
   try {
     const currentDate = new Date().toISOString().split("T")[0];
-    let url = `${API_BASE}/timings/${currentDate}?city=Banjarbaru&country=Indonesia&method=2`;
-
-    // Jika koordinat GPS tersedia dari User, gunakan itu.
-    if (latitude && longitude) {
-       url = `${API_BASE}/timings/${currentDate}?latitude=${latitude}&longitude=${longitude}&method=2`; // method=2 is ISNA, widely accepted
-    }
+    
+    // Default ke koordinat Banjarbaru, Kalimantan Selatan jika GPS tidak ada
+    const lat = latitude ?? -3.4472;
+    const lng = longitude ?? 114.8405;
+    
+    const url = `${API_BASE}/timings/${currentDate}?latitude=${lat}&longitude=${lng}&method=2`;
 
     const response = await fetch(url, {
       next: { revalidate: 3600 }

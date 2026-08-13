@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
+import { Button } from "@/components/ui/button";
 import { 
   Brain, 
   BookMarked, 
@@ -127,6 +128,16 @@ export default function MemorizePage() {
           <p className="text-3xl font-display font-bold text-gold">0 Hari</p>
           <p className="text-xs text-muted-foreground mt-1">Konsistensi review harian</p>
         </div>
+      </div>
+
+      {/* CTA Button */}
+      <div className="flex justify-center mb-12">
+        <Link href="/memorize/practice">
+          <Button className="h-14 px-8 rounded-2xl bg-gradient-to-r from-primary to-teal shadow-xl hover:scale-105 transition-all text-white text-lg font-bold gap-2">
+            <Zap className="h-5 w-5" />
+            Mulai Latihan Sekarang
+          </Button>
+        </Link>
       </div>
 
       {/* Metodologi Menghafal */}

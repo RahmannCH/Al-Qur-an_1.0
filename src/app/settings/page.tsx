@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { BackButton } from "@/components/layout/back-button";
 import { Settings, Sun, Moon, Trash2 } from "lucide-react";
 import { RECITERS } from "@/lib/constants";
+import { ReminderWidget } from "@/components/home/reminder-widget";
 
 export default function SettingsPage() {
   const { fontSize, setFontSize, reciterId, setReciterId, showTranslation, setShowTranslation } = useSettingsStore();
@@ -129,6 +130,14 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <ReminderWidget />
         </motion.div>
 
         <motion.div

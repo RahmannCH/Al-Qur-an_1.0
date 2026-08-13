@@ -32,12 +32,36 @@ const KISAH_NABI = [
     icon: "🔥"
   },
   {
+    id: "musa",
+    name: "Nabi Musa AS",
+    title: "Tongkat Pembelah Lautan",
+    desc: "Kisah mukjizat melawan Firaun dan laut yang terbelah dengan izin Allah.",
+    color: "from-yellow-500 to-amber-600",
+    icon: "🌊"
+  },
+  {
+    id: "sulaiman",
+    name: "Nabi Sulaiman AS",
+    title: "Raja yang Bicara dengan Semut",
+    desc: "Kisah raja yang bisa berbicara dengan hewan dan jin, serta kerajaannya yang megah.",
+    color: "from-green-500 to-emerald-600",
+    icon: "👑"
+  },
+  {
     id: "yunus",
     name: "Nabi Yunus AS",
     title: "Berdzikir di Perut Paus",
     desc: "Kisah menakjubkan bertahan hidup di dalam perut ikan paus yang gelap.",
     color: "from-indigo-500 to-blue-600",
     icon: "🐋"
+  },
+  {
+    id: "isa",
+    name: "Nabi Isa AS",
+    title: "Bayi yang Bisa Berbicara",
+    desc: "Kisah kelahiran tanpa ayah dan mukjizat menyembuhkan orang sakit.",
+    color: "from-cyan-500 to-blue-500",
+    icon: "🕊️"
   },
   {
     id: "muhammad",
@@ -97,7 +121,7 @@ export default function KisahNabiPage() {
         <div className="rounded-3xl border border-dashed border-muted-foreground/30 bg-muted/10 p-6 flex flex-col items-center justify-center text-center">
           <Star className="h-8 w-8 text-muted-foreground/50 mb-3" />
           <p className="font-bold text-muted-foreground">Kisah Nabi Lainnya</p>
-          <p className="text-xs text-muted-foreground/70">Akan segera hadir di pembaruan berikutnya!</p>
+          <p className="text-xs text-muted-foreground/70">Musa, Isa, Sulaiman, dan lainnya segera hadir!</p>
         </div>
       </div>
     </div>

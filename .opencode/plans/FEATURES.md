@@ -124,87 +124,119 @@
 
 ---
 
+### 11. Gamification & Onboarding
+- **XP & Level System:** XP dari membaca/dzikir, level, XP toast
+- **Daily Quests + Lootbox:** Quest harian (sholat, baca, dzikir), klaim lootbox
+- **Daily Ayat Terkurasi:** Bank 16 ayat + quote ulama, deterministik per-hari WITA
+- **Onboarding:** 2 langkah (nama + target ayat harian) via `OnboardingModal` + `UserGreeting`
+- **Sound Effects:** `src/lib/sfx.ts` (Web Audio API) - tap/success/woosh
+
+**Status:** ✅ Complete
+**Files:** `src/store/gamification-store.ts`, `src/components/home/*`, `src/lib/sfx.ts`
+
+---
+
+### 12. Quran Reader Pro (/surah/[id])
+- **Infinite Scroll:** 20 ayat + IntersectionObserver reload
+- **Word-by-Word:** Toggle terjemahan per kata
+- **Tafsir Modal:** Terjemahan ayat + tafsir tersanitasi
+- **Share as Image:** Download/copy/share PNG + watermark
+- **Murottal Presisi:** Timestamp API (`segments=true`) + binary search, fallback rasio
+- **Back Button + Auto-scroll highlight** saat murottal
+
+**Status:** ✅ Complete
+**Files:** `src/components/quran/*`, `src/lib/api.ts`
+
+---
+
+### 13. Hubs & Mini Apps
+- **Ibadah Hub** (`/ibadah`): Baca Qur'an, Hafalan, Tasbih, Doa, Cari, Bookmark
+- **Lifestyle Hub** (`/lifestyle`): P3K Jiwa, AI Chat, Kalkulator, Kiblat
+- **Ruhiyah / P3K Jiwa** (`/ruhiyah`): 6 emosi (sedih, overthinking, dll)
+- **Memorize** (`/memorize`): Metode Tikrar/3T/SRS + stats
+- **Kids Hub** (`/kids`): Kisah Para Nabi (5 lengkap), Adab, Gender Edu (usia)
+- **Learn Roadmap** (`/learn`): 3 level, 9 modul berisi, dynamic route `/learn/[slug]`
+
+**Status:** ✅ Complete
+**Files:** `src/app/{ibadah,lifestyle,ruhiyah,memorize,kids,learn}/**`
+
+---
+
+### 14. Kalkulator & Theme Waktu
+- **Haji & Umroh:** Estimasi biaya, inflasi, tabungan per bulan/hari
+- **Waris Faraid:** Fix batas wasiat maks 1/3, warning
+- **Zakat:** 4 jenis + indikator "harga emas tersinkron" (simulasi Rp 1.450.000/gram)
+- **Time-Theming:** CSS vars `--prayer-hue`/`--accent-hue` berdasarkan periode sholat WITA
+
+**Status:** ✅ Complete
+**Files:** `src/app/calculator/**`, `src/lib/time-theme.ts`, `src/hooks/useTimeTheme.ts`
+
+---
+
+### 15. PWA & Analytics
+- **Manifest PWA:** `public/manifest.json` + ikon 192/512 + `<link rel="manifest">`
+- **Vercel Analytics:** `<Analytics />` di root layout
+- **React Markdown:** Rendering jawaban AI chat
+
+**Status:** 🟡 Mostly Complete (offline/service worker belum)
+**Files:** `public/manifest.json`, `src/app/layout.tsx`
+
+---
+
 ## ⏳ PENDING FEATURES
 
-### Priority 0 (Critical Bugs)
-- [ ] **Fix Prayer API Error:** Handle undefined timings
-- [ ] **Fix Chat Error:** Improve error handling & fleksibility
-- [ ] **Add Back Button:** All pages except home
-
-### Priority 1 (Core Features - Weeks 1-2)
-- [ ] **Audio Player** (45 min)
-  - Sticky bottom player
-  - Play/pause per ayat
-  - Qari selection
-  - Speed control (0.5x, 1x, 1.5x)
-  - Progress slider
-  - Auto-scroll highlight
-  - Keyboard shortcuts
-  
-- [ ] **Qibla Compass** (30 min)
+### Priority 1 (Enhancement)
+- [ ] **Qibla Compass**
   - Real-time compass (DeviceOrientation API)
   - Visual direction indicator
   - Accuracy display
   - Integration ke prayer times page
+  - **Status:** ✅ Selesai di `/prayer-times`
 
-- [ ] **Tafsir Modal** (45 min)
-  - Click ayat → modal tafsir
-  - Multiple tafsir options (Ibn Kathir, Jalalayn, etc)
-  - Beautiful modal design
-  - Bookmark tafsir
-
-- [ ] **Reading Plan** (1 hour)
+- [ ] **Reading Plan**
   - Set khatam target (30/60/90 hari)
   - Daily reading goal
   - Progress visualization
   - Reminder notifications
-
-- [ ] **Share Ayat as Image** (45 min)
-  - Generate beautiful card (html2canvas)
-  - Customizable template
-  - Download/share to social
-
-### Priority 2 (Enhancement - Weeks 2-3)
-- [ ] **Dzikir Counter**
-  - Tap counter (33x, 100x, custom)
-  - Vibration feedback
-  - Progress ring
-  - History tracking
-
-- [ ] **Word-by-Word Translation**
-  - Hover/tap word → meaning
-  - Root analysis
-  - Transliteration per word
-
-- [ ] **Statistics & Achievements**
-  - Total ayat read
-  - Longest streak
-  - Badges system
-  - Leaderboard (local)
+  - **Status:** ✅ Selesai (`ReadingPlanWidget` di Home)
 
 - [ ] **Hijri Calendar Widget**
   - Current Hijri date
   - Islamic events
   - Prayer month highlights
+  - **Status:** ✅ Selesai (`HijriCalendarWidget` di `/lifestyle`)
 
-- [ ] **PWA Offline Mode**
-  - Service worker setup
-  - Offline Quran access
-  - Sync when online
+- [ ] **PWA Offline / Service Worker**
+  - Offline Quran access (cache API)
+  - Install prompt & update flow
+  - **Status:** ✅ Selesai (`sw.js` cache `/`)
 
-### Priority 3 (Polish - Week 3)
-- [ ] **Night Mode Auto-Switch**
-  - Auto dark based on Maghrib-Subuh
-  - Manual override option
+- [ ] **Kisah Nabi Tambahan**
+  - Musa, Isa, Sulaiman, dan lainnya
+  - **Status:** ✅ Selesai (5 + 3 tambahan)
 
-- [ ] **Micro-interactions**
-  - Haptic feedback
-  - Sound effects (optional, mute default)
-  - More smooth animations
+- [ ] **Level 2 & 3 Roadmap** (`/learn`)
+  - Buka kunci berbasis progress/XP
+  - **Status:** ✅ Selesai (Level 2: 500 XP, Level 3: 2000 XP)
 
+- [ ] **Arcade Kuis Islami**
+  - Quiz engine interaktif (skor, timer, lencana)
+  - XP dan hadiah pencapaian
+  - **Status:** ✅ Selesai di `/games/trivia`
+
+- [ ] **Hafalan Real Practice**
+  - Baca, Sembunyi, dan Uji (Test Mode)
+  - Integrasi XP saat hafalan surah selesai
+  - **Status:** ✅ Selesai di `/memorize/practice`
+
+- [ ] **Dashboard Orang Tua**
+  - Pantau aktivitas (baca, dzikir, kuis)
+  - Lencana (Badge)
+  - **Status:** ✅ Selesai di `/kids/parent`
+
+### Priority 2 (Polish)
 - [ ] **Accessibility**
   - High contrast mode
-  - Font size presets
   - Screen reader support
   - Keyboard navigation
 
@@ -222,4 +254,4 @@
 - ⏳ Planned
 - 🔴 Critical
 
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-07

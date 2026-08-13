@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Headphones } from "lucide-react";
 import type { Verse, Chapter } from "@/types/quran";
 import { sfx } from "@/lib/sfx";
+import { getAudioUrl } from "@/lib/api";
+
+import { TajweedLegendButton } from "@/components/quran/tajweed-legend";
 
 interface SurahPageClientProps {
   verses: Verse[];
@@ -17,7 +20,7 @@ export function SurahPageClient({ verses, chapter }: SurahPageClientProps) {
   const [showPlayer, setShowPlayer] = useState(false);
   const [highlightedAyah, setHighlightedAyah] = useState<number | null>(null);
 
-  const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${chapter.id}.mp3`;
+  const audioUrl = getAudioUrl(128, chapter.id);
 
   const handleAyahChange = useCallback((ayahNumber: number) => {
     setHighlightedAyah(ayahNumber);
@@ -41,6 +44,10 @@ export function SurahPageClient({ verses, chapter }: SurahPageClientProps) {
             <Headphones className="h-6 w-6 text-white" />
           </Button>
         )}
+      </div>
+
+      <div className="fixed bottom-28 left-4 z-40 md:bottom-6">
+        <TajweedLegendButton />
       </div>
 
       <AyahList verses={verses} chapter={chapter} highlightedAyah={highlightedAyah} />

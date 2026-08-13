@@ -38,7 +38,7 @@ export async function getVerses(
     language,
     words: "true",
     translations: "33",
-    fields: "text_uthmani",
+    fields: "text_uthmani,text_uthmani_tajweed",
     word_fields: "text_uthmani",
     translation_fields: "resource_name,text",
     page: String(page),
@@ -55,8 +55,28 @@ export async function getReciters(language = "en"): Promise<Reciter[]> {
   return data.reciters;
 }
 
+export interface AyahTimestamp {
+  verse_key: string;
+  timestamp_from: number;
+  timestamp_to: number;
+  duration: number;
+}
+
+export const ALAFASY_MURATTAL_RECITER_ID = 7;
+
 export function getAudioUrl(reciterId: number, chapterId: number): string {
-  return `${BASE_URL}/chapter_recitations/${reciterId}/${chapterId}`;
+  return `https://cdn.islamic.network/quran/audio-surah/${reciterId}/ar.alafasy/${chapterId}.mp3`;
+}
+
+export async function getChapterTimestamps(
+  chapterId: number,
+  reciterId = ALAFASY_MURATTAL_RECITER_ID
+): Promise<AyahTimestamp[]> {
+  const data = await fetcher<{ audio_file?: { timestamps?: AyahTimestamp[] } }>(
+    `/chapter_recitations/${reciterId}/${chapterId}`,
+    { segments: "true" }
+  );
+  return data.audio_file?.timestamps ?? [];
 }
 
 export function getVerseAudioUrl(reciterId: number, verseKey: string): string {

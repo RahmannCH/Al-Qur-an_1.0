@@ -8,6 +8,8 @@ import { AnimatedBackground } from "@/components/layout/animated-background";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { XpToastContainer } from "@/components/ui/xp-toast";
 import { TimeThemeSync } from "@/components/layout/time-theme-sync";
+import { ReminderChecker } from "@/components/layout/reminder-checker";
+import { ServiceWorkerRegistry } from "@/components/layout/sw-registry";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -42,9 +44,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${amiri.variable} ${plusJakarta.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#10b981" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Al-Qur'an Digital" />
+      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <TooltipProvider>
+            <ServiceWorkerRegistry />
+            <ReminderChecker />
             <TimeThemeSync />
             <AnimatedBackground />
             <Header />

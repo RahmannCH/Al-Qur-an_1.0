@@ -210,11 +210,17 @@ function saveIndex(index: number) {
 }
 
 export function DailyAyat() {
-  const [index, setIndex] = useState<number>(() => loadIndex());
+  const [index, setIndex] = useState<number>(0);
+  const [mounted, setMounted] = useState(false);
   const [arabic, setArabic] = useState<string>("");
   const [translation, setTranslation] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [isRotating, setIsRotating] = useState(false);
+
+  useEffect(() => {
+    setIndex(loadIndex());
+    setMounted(true);
+  }, []);
 
   const ayah = CURATED_AYAT[index];
 

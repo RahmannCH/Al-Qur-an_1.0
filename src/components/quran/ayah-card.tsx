@@ -9,6 +9,7 @@ import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 
 import { ShareAyatModal } from "@/components/quran/share-ayat-modal";
+import { TajweedText } from "@/components/quran/tajweed-text";
 
 interface AyahCardProps {
   verse: Verse;
@@ -148,6 +149,10 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
               </span>
             </span>
           ))}
+        </div>
+      ) : verse.text_uthmani_tajweed ? (
+        <div className="mb-4 text-right" dir="rtl" style={{ fontSize: `${fontSize}px` }}>
+          <TajweedText html={verse.text_uthmani_tajweed} />
         </div>
       ) : (
         <p

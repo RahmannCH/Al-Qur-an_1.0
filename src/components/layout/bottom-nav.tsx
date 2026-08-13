@@ -51,7 +51,7 @@ export function BottomNav() {
               <SheetTitle className="font-display text-2xl font-bold">Menu Lengkap</SheetTitle>
               <SheetDescription>Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
             </SheetHeader>
-            <div className="overflow-y-auto p-4 space-y-6 flex-1">
+            <div className="overflow-y-auto overscroll-contain touch-pan-y p-4 pb-12 space-y-6 flex-1">
               {MENU_SECTIONS.map((section) => (
                 <div key={section.title} className="space-y-3">
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">

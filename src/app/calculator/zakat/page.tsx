@@ -163,6 +163,13 @@ export default function ZakatCalculator() {
           {activeTab === "maal" && (
             <div>
                <h3 className="font-bold mb-4 flex items-center gap-2"><HelpCircle className="h-4 w-4" /> Harta Simpanan (Telah Haul 1 Tahun)</h3>
+               <div className="mb-4 flex items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2 text-sm">
+                 <Activity className={`h-4 w-4 ${isFetchingPrice ? "animate-pulse text-amber-500" : "text-emerald-500"}`} />
+                 <span className="text-muted-foreground">
+                   {isFetchingPrice ? "Menyinkronkan harga emas..." : "Harga emas tersinkron:"} 
+                 </span>
+                 <span className="ml-auto font-semibold">{formatRp(goldPrice)}/gram</span>
+               </div>
                <InputField label="Uang Tunai / Tabungan" value={savings} onChange={setSavings} />
                <InputField label="Saham / Investasi / Surat Berharga" value={investments} onChange={setInvestments} />
                <InputField label="Hutang Jatuh Tempo Tahun Ini" value={debts} onChange={setDebts} />
@@ -214,6 +221,13 @@ export default function ZakatCalculator() {
           {activeTab === "emas" && (
             <div>
                <h3 className="font-bold mb-4 flex items-center gap-2"><HelpCircle className="h-4 w-4" /> Kepemilikan Emas Murni</h3>
+               <div className="mb-4 flex items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2 text-sm">
+                 <Activity className={`h-4 w-4 ${isFetchingPrice ? "animate-pulse text-amber-500" : "text-emerald-500"}`} />
+                 <span className="text-muted-foreground">
+                   {isFetchingPrice ? "Menyinkronkan harga emas..." : "Harga emas tersinkron:"} 
+                 </span>
+                 <span className="ml-auto font-semibold">{formatRp(goldPrice)}/gram</span>
+               </div>
                <div className="mb-4">
                  <label className="block text-sm font-medium text-muted-foreground mb-1">Total Emas Dimiliki (Gram)</label>
                  <div className="relative">

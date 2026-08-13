@@ -1,205 +1,143 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
+import { useQuizStore, QuizQuestion } from "@/store/quiz-store";
+import { QUIZ_CATEGORIES, getQuestionsByCategory, getRandomQuestions } from "@/data/quiz-questions";
+import { Sparkles, Trophy, Award, RotateCcw, CheckCircle2, XCircle, Clock, ArrowRight, Lightbulb } from "lucide-react";
+import { sfx } from "@/lib/sfx";
 import { useGamificationStore } from "@/store/gamification-store";
-import { Timer, Zap, Loader2, Play, BookOpen, Lightbulb } from "lucide-react";
 
-interface TriviaQuestion {
-  id: string | number;
-  categoryId: string;
-  categoryName: string;
-  difficulty: string;
-  question: string;
-  options: string[];
-  answer: number;
-  explanation?: string;
-}
-
-interface Category {
-  categoryId: string;
-  categoryName: string;
-  description: string;
-  icon: string;
-  color: string;
-}
-
-export default function TriviaGame() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [allQuestions, setAllQuestions] = useState<TriviaQuestion[]>([]);
+export default function QuizPage() {
+  const { currentSession, startQuiz, answerQuestion, nextQuestion, completeQuiz, resetQuiz, addResult } = useQuizStore();
+  const { addXp } = useGamificationStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
-  const [questions, setQuestions] = useState<TriviaQuestion[]>([]);
-  const [currentQ, setCurrentQ] = useState(0);
-  const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [gameState, setGameState] = useState<"menu" | "playing" | "explanation" | "gameover">("menu");
-  const [loading, setLoading] = useState(true);
-  
-  const { addXp } = useGamificationStore();
+  // State untuk mengontrol fase kuis per soal
+  // "question": user sedang membaca dan memilih jawaban
+  // "feedback": user baru klik, menunjukkan animasi benar/salah singkat
+  // "explanation": layer penjelasan penuh muncul setelah feedback
+  const [phase, setPhase] = useState<"question" | "feedback" | "explanation">("question");
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
-  useEffect(() => {
-    import("@/data/trivia-mega-bank.json").then((data) => {
-      setCategories(data.database.categories);
-      setAllQuestions(data.database.questions);
-      setLoading(false);
-    }).catch((err) => {
-      console.error("Gagal memuat bank soal", err);
-      setLoading(false);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (gameState !== "playing" || timeLeft <= 0) return;
-    const timer = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          setGameState("gameover");
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [gameState, timeLeft]);
-
-  const startGame = (catId: string) => {
-    let filteredQs = allQuestions;
-    if (catId !== "all") {
-      filteredQs = allQuestions.filter(q => q.categoryId === catId);
+  const handleStart = (categoryId: string) => {
+    let questions: QuizQuestion[];
+    if (categoryId === "random") {
+      questions = getRandomQuestions(5);
+    } else {
+      questions = getQuestionsByCategory(categoryId);
     }
-    
-    if (filteredQs.length === 0) filteredQs = allQuestions;
-    
-    // Anti-duplicate logic: get played questions from local storage
-    const playedRaw = localStorage.getItem("trivia_played");
-    const playedQIds: string[] = playedRaw ? JSON.parse(playedRaw) : [];
 
-    // Filter out played questions
-    let availableQs = filteredQs.filter(q => !playedQIds.includes(String(q.id)));
+    if (questions.length === 0) return;
 
-    // If all questions in this category have been played, reset the history for this category
-    if (availableQs.length < 5) {
-       const remainingPlayedIds = playedQIds.filter(id => !filteredQs.some(fq => String(fq.id) === id));
-       localStorage.setItem("trivia_played", JSON.stringify(remainingPlayedIds));
-       availableQs = filteredQs; // Reset
-    }
-    
-    const shuffled = [...availableQs].sort(() => Math.random() - 0.5).slice(0, 5);
-    
-    // Mark these as played
-    const newPlayedIds = [...playedQIds, ...shuffled.map(q => String(q.id))];
-    localStorage.setItem("trivia_played", JSON.stringify(newPlayedIds));
-
-    setQuestions(shuffled);
-    setSelectedCategory(catId);
-    setCurrentQ(0);
-    setScore(0);
-    setStreak(0);
-    setTimeLeft(60);
-    setSelectedOpt(null);
-    setIsAnswered(false);
-    setGameState("playing");
+    setSelectedCategory(categoryId);
+    setSelectedAnswer(null);
+    setPhase("question");
+    startQuiz(questions);
+    sfx.playSuccess();
   };
 
-  const handleSelect = (idx: number) => {
-    if (isAnswered || gameState !== "playing") return;
-    setSelectedOpt(idx);
-    setIsAnswered(true);
-
-    const q = questions[currentQ];
-    const isCorrect = idx === q.answer;
+  const handleAnswer = (index: number) => {
+    if (phase !== "question") return;
     
+    setSelectedAnswer(index);
+    setPhase("feedback"); // Langsung ubah ke fase feedback (locking UI)
+
+    const isCorrect = index === currentSession?.questions[currentSession.currentIndex].correctIndex;
+    
+    // Mainkan sound effect sesuai jawaban
     if (isCorrect) {
-      const newStreak = streak + 1;
-      setStreak(newStreak);
-      const bonus = newStreak >= 3 ? 2 : 1;
-      setScore((s) => s + 10 * bonus);
-      if (navigator.vibrate) navigator.vibrate(50);
-    } else {
-      setStreak(0);
+      sfx.playSuccess();
       if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+    } else {
+      sfx.playTap();
+      if (navigator.vibrate) navigator.vibrate([100]);
     }
 
-    // Pindah ke layar penjelasan setelah 1 detik
+    // Catat skor di store
+    answerQuestion(index);
+
+    // Beri jeda 800ms untuk efek feedback memudar, lalu ganti ke layar Penjelasan (Explanation)
     setTimeout(() => {
-      setGameState("explanation");
-    }, 1000);
+      setPhase("explanation");
+    }, 800);
   };
 
   const handleNext = () => {
-    if (currentQ < questions.length - 1) {
-      setCurrentQ((c) => c + 1);
-      setSelectedOpt(null);
-      setIsAnswered(false);
-      setGameState("playing");
+    if (!currentSession) return;
+
+    if (currentSession.currentIndex < currentSession.questions.length - 1) {
+      nextQuestion();
+      setSelectedAnswer(null);
+      setPhase("question");
+      sfx.playWoosh();
     } else {
-      setGameState("gameover");
+      // Quiz Selesai!
+      completeQuiz();
+      
+      // Tambah XP berdasarkan skor (10 XP per jawaban benar)
+      const xpGained = currentSession.score * 10;
+      addXp(xpGained, `Kuis Islami (Skor: ${currentSession.score}/${currentSession.questions.length})`);
+      
+      // Simpan hasil
+      addResult({
+        quizId: currentSession.quizId,
+        category: selectedCategory || "Umum",
+        score: currentSession.score,
+        totalQuestions: currentSession.questions.length,
+        percentage: Math.round((currentSession.score / currentSession.questions.length) * 100),
+        completedAt: new Date().toISOString(),
+        badge: currentSession.score === currentSession.questions.length ? "Sempurna!" : "Lulus",
+      });
+
+      sfx.playSuccess();
     }
   };
 
-  useEffect(() => {
-    if (gameState === "gameover" && score > 0) {
-      addXp(score, "Trivia Islam");
-    }
-  }, [gameState, score, addXp]);
-
-  if (loading) {
+  // 1. Tampilan Pilih Kategori (Belum Mulai Kuis)
+  if (!currentSession) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-32 flex flex-col items-center justify-center text-center">
+      <div className="mx-auto max-w-4xl px-4 py-8 pb-32">
         <BackButton />
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h2 className="text-xl font-display font-bold">Menyiapkan Kuis...</h2>
-      </div>
-    );
-  }
 
-  // State 1: LAYAR MENU (Pemilihan Topik)
-  if (gameState === "menu") {
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <BackButton />
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-display font-bold mb-3">Pilih Kategori Kuis</h1>
-          <p className="text-muted-foreground">Pilih bidang ilmu Islam yang ingin kamu asah. Waktumu cuma 60 detik!</p>
+          <div className="inline-flex p-4 bg-amber-500/10 rounded-3xl mb-4">
+            <Trophy className="h-10 w-10 text-amber-500" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">Kuis Islami Interaktif</h1>
+          <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
+            Uji wawasan keislamanmu! Dapatkan XP dan lencana keberhasilan untuk setiap kuis yang kamu selesaikan.
+          </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => startGame("all")}
-            className="col-span-full mb-4 p-6 rounded-2xl bg-gradient-to-r from-primary to-teal text-white cursor-pointer shadow-lg hover:shadow-xl transition-all"
+        <div className="mb-6 flex justify-center">
+          <Button
+            onClick={() => handleStart("random")}
+            className="h-14 px-8 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:scale-105 transition-transform text-white font-bold text-lg shadow-xl gap-2"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold font-display mb-1">Campuran (All Topics)</h2>
-                <p className="text-white/80">Uji kemampuanmu secara acak di semua bidang</p>
-              </div>
-              <Play className="h-10 w-10 opacity-80" />
-            </div>
-          </motion.div>
+            <Sparkles className="h-5 w-5" /> Kuis Acak (5 Soal)
+          </Button>
+        </div>
 
-          {categories.map((cat, i) => (
+        <h2 className="font-display font-bold text-xl mb-4 text-center mt-12">Atau Pilih Kategori Khusus:</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {QUIZ_CATEGORIES.map((cat) => (
             <motion.div
-              key={cat.categoryId}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -5, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)" }}
-              onClick={() => startGame(cat.categoryId)}
-              className={`p-6 rounded-2xl cursor-pointer text-white bg-gradient-to-br ${cat.color} transition-all shadow-md`}
+              key={cat.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleStart(cat.id)}
+              className="p-6 rounded-3xl border bg-card hover:shadow-xl transition-all cursor-pointer flex flex-col items-center text-center group"
             >
-              <div className="text-4xl mb-4 bg-white/20 w-16 h-16 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <div className={`p-4 rounded-2xl ${cat.bg} text-3xl mb-4 group-hover:scale-110 transition-transform`}>
                 {cat.icon}
               </div>
-              <h3 className="text-xl font-bold font-display mb-2">{cat.categoryName}</h3>
-              <p className="text-sm text-white/80 leading-relaxed">{cat.description}</p>
+              <h3 className="font-display font-bold text-lg mb-1">{cat.name}</h3>
+              <p className="text-xs text-muted-foreground mb-4">Uji khusus materi ini</p>
+              <Button size="sm" className="w-full rounded-xl">Mulai Kuis</Button>
             </motion.div>
           ))}
         </div>
@@ -207,143 +145,196 @@ export default function TriviaGame() {
     );
   }
 
-  const q = questions[currentQ] || { question: "Loading...", options: ["..."], answer: 0, categoryName: "", explanation: "" };
-  
-  // State 2: LAYAR KUIS
-  if (gameState === "playing") {
+  // 2. Tampilan Hasil Kuis (Selesai)
+  if (currentSession.completed) {
+    const percentage = Math.round((currentSession.score / currentSession.questions.length) * 100);
+
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mx-auto max-w-2xl px-4 py-12 text-center pb-32">
         <BackButton />
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-display font-bold">Trivia Islam</h1>
-            <p className="text-muted-foreground font-medium bg-muted inline-block px-3 py-1 rounded-full mt-1">
-              Topik: {q.categoryName}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className={`px-4 py-2 rounded-xl flex items-center shadow-sm ${timeLeft <= 10 ? "bg-destructive text-white animate-pulse" : "bg-card border"}`}>
-              <Timer className="h-4 w-4 mr-2" />
-              <span className="font-bold text-lg">{timeLeft}s</span>
-            </div>
-            <div className="bg-gradient-to-r from-gold to-yellow-500 text-white px-4 py-2 rounded-xl shadow-sm">
-              <span className="font-bold text-lg">{score} XP</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-card border rounded-3xl p-8 mb-6 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-muted">
-            <motion.div 
-              className="h-full bg-primary"
-              initial={{ width: `${(currentQ / questions.length) * 100}%` }}
-              animate={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
-            />
-          </div>
-          <p className="text-sm font-bold text-primary mb-4 uppercase tracking-wider">Soal {currentQ + 1} dari {questions.length}</p>
-          <p className="text-2xl font-medium leading-relaxed">{q.question}</p>
-          
-          <AnimatePresence>
-            {streak >= 2 && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }} 
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="mt-4 inline-flex items-center gap-2 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-1.5 rounded-full text-sm font-bold"
-              >
-                <Zap className="h-4 w-4 fill-current" />
-                Streak {streak}x! (XP x{streak >= 3 ? 2 : 1})
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {q.options.map((opt: string, idx: number) => {
-            let stateClass = "bg-card hover:bg-accent border-2 border-transparent shadow-sm";
-            if (isAnswered) {
-              if (idx === q.answer) stateClass = "bg-emerald text-white border-emerald shadow-emerald/20";
-              else if (idx === selectedOpt) stateClass = "bg-destructive text-white border-destructive shadow-destructive/20";
-              else stateClass = "bg-card opacity-50 border-transparent grayscale";
-            }
-            return (
-              <motion.button
-                key={idx}
-                whileHover={!isAnswered ? { scale: 1.02, translateY: -2 } : {}}
-                whileTap={!isAnswered ? { scale: 0.98 } : {}}
-                onClick={() => handleSelect(idx)}
-                disabled={isAnswered}
-                className={`p-5 rounded-2xl text-left font-medium transition-all ${stateClass}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isAnswered && (idx === q.answer || idx === selectedOpt) ? 'bg-white/20' : 'bg-muted text-muted-foreground'}`}>
-                    {String.fromCharCode(65 + idx)}
-                  </span>
-                  <span className="text-lg">{opt}</span>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // State 3: LAYAR PENJELASAN
-  if (gameState === "explanation") {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-card border rounded-3xl shadow-lg relative overflow-hidden"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="p-8 rounded-3xl bg-card border shadow-xl relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 p-4 opacity-5">
-            <BookOpen className="w-32 h-32" />
+          <div className="inline-flex p-5 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full mb-6">
+            <Award className="h-16 w-16 text-amber-500" />
           </div>
-          <div className="mb-6 relative z-10">
-            <p className={`text-xl font-bold mb-2 ${selectedOpt === q.answer ? "text-emerald" : "text-destructive"}`}>
-               {selectedOpt === q.answer ? "Masya Allah, Tepat Sekali! 🎉" : "Kurang Tepat 😢"}
-            </p>
-            <p className="text-lg font-medium">Jawaban Benar: <span className="text-primary font-bold">{q.options[q.answer]}</span></p>
-          </div>
-          <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2 relative z-10">
-            <Lightbulb className="h-5 w-5 text-gold" />
-            Tahukah Kamu?
-          </h3>
-          <p className="text-muted-foreground leading-relaxed mb-8 relative z-10 text-lg">
-            {q.explanation || "Terus semangat belajar dan kumpulkan XP yang banyak!"}
+
+          <h2 className="text-3xl font-display font-bold mb-2">Kuis Selesai!</h2>
+          <p className="text-muted-foreground mb-6">
+            {percentage >= 80 ? "MasyaAllah! Luar biasa pengetahuanmu!" : "Bagus! Terus tingkatkan belajar Islammu!"}
           </p>
-          <Button onClick={handleNext} className="w-full h-14 text-lg bg-primary hover:scale-[1.02] transition-transform relative z-10">
-            {currentQ < questions.length - 1 ? "Lanjut Soal Berikutnya" : "Lihat Hasil Akhir"}
-          </Button>
+
+          <div className="p-6 bg-muted/30 rounded-2xl border mb-6 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Skor Kamu</p>
+              <p className="text-3xl font-bold text-primary">{currentSession.score} / {currentSession.questions.length}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">XP Diperoleh</p>
+              <p className="text-3xl font-bold text-emerald-600">+{currentSession.score * 10} XP</p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={resetQuiz}>
+              Pilih Kategori Lain
+            </Button>
+            <Button className="flex-1 h-12 rounded-xl gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90" onClick={() => handleStart(selectedCategory || "random")}>
+              <RotateCcw className="h-4 w-4" /> Coba Lagi
+            </Button>
+          </div>
         </motion.div>
       </div>
     );
   }
 
-  // State 4: GAMEOVER
+  // 3. Tampilan Halaman Soal & Penjelasan (Sedang Berlangsung)
+  const currentQ = currentSession.questions[currentSession.currentIndex];
+  const isCorrect = selectedAnswer === currentQ.correctIndex;
+
   return (
-    <div className="mx-auto max-w-lg px-4 py-20">
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-10 rounded-3xl bg-card border shadow-2xl text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -ml-20 -mb-20" />
-        
-        <p className="text-7xl mb-6 relative z-10">{score >= 40 ? "🏆" : score >= 20 ? "🌟" : "👏"}</p>
-        <h2 className="text-3xl font-display font-bold mb-2 relative z-10">{timeLeft <= 0 ? "Waktu Habis!" : "Kuis Selesai!"}</h2>
-        <p className="text-muted-foreground mb-8 text-lg relative z-10">
-          Kamu mendapatkan <span className="font-bold text-gold text-2xl mx-1">{score}</span> XP
-        </p>
-        
-        <div className="flex flex-col gap-3 relative z-10">
-          <Button onClick={() => startGame(selectedCategory || "all")} className="w-full h-14 text-lg bg-primary">
-            Ulangi Topik Ini
-          </Button>
-          <Button variant="outline" onClick={() => setGameState("menu")} className="w-full h-14 text-lg">
-            Pilih Topik Lain
-          </Button>
+    <div className="mx-auto max-w-3xl px-4 py-8 pb-32">
+      <BackButton />
+
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <span className="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full">
+            Soal {currentSession.currentIndex + 1} dari {currentSession.questions.length}
+          </span>
         </div>
-      </motion.div>
+        <div className="flex items-center gap-1 text-sm font-bold text-muted-foreground">
+          <Clock className="h-4 w-4" /> Skor: {currentSession.score}
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-8">
+        <motion.div
+          className="h-full bg-primary"
+          initial={{ width: 0 }}
+          animate={{ width: `${((currentSession.currentIndex + 1) / currentSession.questions.length) * 100}%` }}
+        />
+      </div>
+
+      {/* Layer Utama: Menjawab Soal */}
+      <AnimatePresence mode="wait">
+        {phase !== "explanation" ? (
+          <motion.div
+            key={`q-${currentSession.currentIndex}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
+            transition={{ duration: 0.3 }}
+            className="p-6 md:p-8 rounded-3xl bg-card border shadow-lg"
+          >
+            <h3 className="text-xl md:text-2xl font-display font-bold leading-relaxed mb-8">
+              {currentQ.question}
+            </h3>
+
+            <div className="space-y-4">
+              {currentQ.options.map((opt, idx) => {
+                let btnStyle = "bg-muted/50 border-transparent hover:border-primary/50 hover:bg-accent hover:shadow-sm";
+                let scaleAnim = 1;
+                let isPulse = false;
+
+                // Gaya saat fase feedback
+                if (phase === "feedback") {
+                  if (idx === selectedAnswer) {
+                    if (isCorrect) {
+                      btnStyle = "bg-emerald-500 text-white border-emerald-600 shadow-lg shadow-emerald-500/20";
+                      scaleAnim = 1.02;
+                    } else {
+                      btnStyle = "bg-rose-500 text-white border-rose-600 shadow-lg shadow-rose-500/20";
+                      scaleAnim = 0.98;
+                      isPulse = true;
+                    }
+                  } else if (idx === currentQ.correctIndex && !isCorrect) {
+                    // Highlight jawaban benar dengan hijau terang jika user salah jawab
+                    btnStyle = "bg-emerald-100 border-emerald-500 text-emerald-800 ring-2 ring-emerald-500";
+                  } else {
+                    btnStyle = "bg-muted/30 border-transparent opacity-40";
+                  }
+                }
+
+                return (
+                  <motion.button
+                    key={idx}
+                    disabled={phase !== "question"}
+                    onClick={() => handleAnswer(idx)}
+                    animate={{ scale: scaleAnim, x: isPulse ? [-5, 5, -5, 5, 0] : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`w-full p-4 md:p-5 rounded-2xl text-left transition-all flex items-center justify-between gap-4 font-medium ${btnStyle}`}
+                  >
+                    <span className="text-base">{opt}</span>
+                    {phase === "feedback" && idx === selectedAnswer && (
+                      isCorrect ? <CheckCircle2 className="h-6 w-6 text-white shrink-0 drop-shadow-md" /> : <XCircle className="h-6 w-6 text-white shrink-0 drop-shadow-md" />
+                    )}
+                    {phase === "feedback" && !isCorrect && idx === currentQ.correctIndex && (
+                      <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        ) : (
+          /* Layer Penjelasan: Muncul Menggantikan Soal */
+          <motion.div
+            key={`exp-${currentSession.currentIndex}`}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className={`p-6 md:p-8 rounded-3xl border-2 shadow-2xl relative overflow-hidden ${
+              isCorrect 
+                ? "bg-emerald-50/90 dark:bg-emerald-950/20 border-emerald-500/30" 
+                : "bg-rose-50/90 dark:bg-rose-950/20 border-rose-500/30"
+            }`}
+          >
+            {/* Dekorasi Background */}
+            <div className={`absolute -top-12 -right-12 h-40 w-40 rounded-full blur-3xl opacity-30 ${isCorrect ? "bg-emerald-500" : "bg-rose-500"}`} />
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className={`p-3 rounded-full ${isCorrect ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"} shadow-lg`}>
+                  {isCorrect ? <CheckCircle2 className="h-8 w-8" /> : <XCircle className="h-8 w-8" />}
+                </div>
+                <div>
+                  <h2 className={`text-2xl font-display font-bold ${isCorrect ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
+                    {isCorrect ? "Jawabanmu Tepat!" : "Sayang Sekali, Salah"}
+                  </h2>
+                  <p className="text-sm font-medium opacity-80">
+                    {isCorrect ? "Kamu berhasil mendapatkan +10 XP" : "Tidak apa-apa, mari belajar dari kesalahan ini."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-8 p-5 md:p-6 bg-card rounded-2xl border shadow-sm">
+                <div className="flex items-start gap-3 mb-3">
+                  <Lightbulb className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <h3 className="font-bold text-foreground">Kenapa begitu?</h3>
+                </div>
+                <p className="text-base text-muted-foreground leading-relaxed">
+                  {currentQ.explanation}
+                </p>
+              </div>
+
+              <Button 
+                onClick={handleNext} 
+                className={`w-full h-14 rounded-2xl text-lg font-bold shadow-lg transition-transform hover:scale-[1.02] gap-2 ${
+                  isCorrect 
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
+                    : "bg-primary hover:bg-primary/90 text-white"
+                }`}
+              >
+                {currentSession.currentIndex < currentSession.questions.length - 1 ? "Lanjut ke Soal Berikutnya" : "Lihat Hasil Akhir"}
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
