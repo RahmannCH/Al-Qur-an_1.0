@@ -1,32 +1,26 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, X, SkipBack, SkipForward, ChevronDown, ChevronUp, Activity } from "lucide-react";
+import { Play, Pause, X, SkipBack, SkipForward, ChevronDown, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sfx } from "@/lib/sfx";
-import { getChapterTimestamps, type AyahTimestamp } from "@/lib/api";
+import { getVerseAudioUrl } from "@/lib/api";
 
 interface SurahAudioPlayerProps {
   surahId: number;
   surahName: string;
   totalVerses: number;
-  audioUrl: string;
+  initialAyah?: number;
   onAyahChange?: (ayahNumber: number) => void;
   onClose?: () => void;
-}
-
-interface TimestampBound {
-  ayah: number;
-  from: number;
-  to: number;
 }
 
 export function SurahAudioPlayer({
   surahId,
   surahName,
   totalVerses,
-  audioUrl,
+  initialAyah = 1,
   onAyahChange,
   onClose,
 }: SurahAudioPlayerProps) {
@@ -35,64 +29,51 @@ export function SurahAudioPlayer({
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [currentAyah, setCurrentAyah] = useState(1);
+  const [currentAyah, setCurrentAyah] = useState(initialAyah);
   const [isVisible, setIsVisible] = useState(true);
-  const [bounds, setBounds] = useState<TimestampBound[]>([]);
+  const [isMinimized, setIsMinimized] = useState(false);
 
+  // Dapatkan MP3 link untuk ayat aktif
+  const audioUrl = getVerseAudioUrl(surahId, currentAyah);
+
+  // Sync state ketika initialAyah berubah secara eksternal (misal user klik tombol play di card lain)
   useEffect(() => {
-    let cancelled = false;
-    getChapterTimestamps(surahId)
-      .then((timestamps: AyahTimestamp[]) => {
-        if (cancelled || !timestamps.length) return;
-        setBounds(
-          timestamps.map((t) => {
-            const [surahNum, ayahNum] = t.verse_key.split(":").map(Number);
-            return { ayah: ayahNum || surahNum, from: t.timestamp_from, to: t.timestamp_to };
-          })
-        );
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [surahId]);
+    setCurrentAyah(initialAyah);
+    // Auto-play jika dirubah eksternal
+    const audio = audioRef.current;
+    if (audio) {
+      audio.load();
+      audio.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {});
+    }
+  }, [initialAyah]);
 
-  const findAyahAt = useCallback(
-    (timeMs: number): number => {
-      if (bounds.length) {
-        let low = 0;
-        let high = bounds.length - 1;
-        let result = 0;
-        while (low <= high) {
-          const mid = Math.floor((low + high) / 2);
-          if (bounds[mid].from <= timeMs) {
-            result = mid;
-            low = mid + 1;
-          } else {
-            high = mid - 1;
-          }
+  // Efek memutar audio saat track dirubah secara internal
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const playAudio = async () => {
+      try {
+        audio.load();
+        if (isPlaying) {
+          await audio.play();
         }
-        return bounds[result].ayah;
+      } catch (err) {
+        console.error("Playback error:", err);
       }
-      return Math.ceil((timeMs / 1000 / (duration || 1)) * totalVerses) || 1;
-    },
-    [bounds, duration, totalVerses]
-  );
+    };
+    playAudio();
+  }, [currentAyah]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      const timeMs = audio.currentTime * 1000;
       setCurrentTime(audio.currentTime);
       setProgress((audio.currentTime / audio.duration) * 100 || 0);
-
-      const ayah = findAyahAt(timeMs);
-      if (ayah !== currentAyah && ayah >= 1 && ayah <= totalVerses) {
-        setCurrentAyah(ayah);
-        onAyahChange?.(ayah);
-      }
     };
 
     const handleLoadedMetadata = () => {
@@ -100,8 +81,15 @@ export function SurahAudioPlayer({
     };
 
     const handleEnded = () => {
-      setIsPlaying(false);
-      sfx.playSuccess();
+      // Pindah ke ayat selanjutnya secara sekuensial
+      if (currentAyah < totalVerses) {
+        const nextAyah = currentAyah + 1;
+        setCurrentAyah(nextAyah);
+        onAyahChange?.(nextAyah);
+      } else {
+        setIsPlaying(false);
+        sfx.playSuccess();
+      }
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -113,7 +101,7 @@ export function SurahAudioPlayer({
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [totalVerses, currentAyah, onAyahChange, findAyahAt]);
+  }, [currentAyah, totalVerses, onAyahChange]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -121,11 +109,31 @@ export function SurahAudioPlayer({
 
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
-      audio.play();
-      sfx.playTap();
+      audio.play().then(() => {
+        setIsPlaying(true);
+        sfx.playTap();
+      }).catch(() => {});
     }
-    setIsPlaying(!isPlaying);
+  };
+
+  const handleNext = () => {
+    if (currentAyah < totalVerses) {
+      const nextAyah = currentAyah + 1;
+      setCurrentAyah(nextAyah);
+      onAyahChange?.(nextAyah);
+      sfx.playWoosh();
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentAyah > 1) {
+      const prevAyah = currentAyah - 1;
+      setCurrentAyah(prevAyah);
+      onAyahChange?.(prevAyah);
+      sfx.playWoosh();
+    }
   };
 
   const formatTime = (time: number) => {
@@ -138,14 +146,11 @@ export function SurahAudioPlayer({
     const audio = audioRef.current;
     if (audio) {
       audio.pause();
-      audio.currentTime = 0;
     }
     setIsPlaying(false);
     setIsVisible(false);
     onClose?.();
   };
-
-  const [isMinimized, setIsMinimized] = useState(false);
 
   if (!isVisible) return null;
 
@@ -194,6 +199,9 @@ export function SurahAudioPlayer({
                   <p className="text-sm font-medium">{surahName} &middot; <span className="text-muted-foreground">Ayat {currentAyah}/{totalVerses}</span></p>
                 </div>
                 <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 animate-pulse text-amber-500 hover:text-amber-600 bg-amber-500/10 rounded-full mr-2 pointer-events-none text-[10px] font-bold px-2.5 h-6 w-auto">
+                    LIVE
+                  </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsMinimized(true)}>
                     <ChevronDown className="h-5 w-5 text-muted-foreground" />
                   </Button>
@@ -222,10 +230,8 @@ export function SurahAudioPlayer({
                   variant="outline"
                   size="icon"
                   className="h-12 w-12 rounded-full border-muted-foreground/20 hover:bg-accent"
-                  onClick={() => {
-                    if (audioRef.current) audioRef.current.currentTime = Math.max(0, currentTime - 10);
-                    sfx.playTap();
-                  }}
+                  disabled={currentAyah <= 1}
+                  onClick={handlePrev}
                 >
                   <SkipBack className="h-5 w-5" />
                 </Button>
@@ -249,10 +255,8 @@ export function SurahAudioPlayer({
                   variant="outline"
                   size="icon"
                   className="h-12 w-12 rounded-full border-muted-foreground/20 hover:bg-accent"
-                  onClick={() => {
-                    if (audioRef.current) audioRef.current.currentTime = Math.min(duration, currentTime + 10);
-                    sfx.playTap();
-                  }}
+                  disabled={currentAyah >= totalVerses}
+                  onClick={handleNext}
                 >
                   <SkipForward className="h-5 w-5" />
                 </Button>

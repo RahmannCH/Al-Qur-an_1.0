@@ -79,8 +79,9 @@ export async function getChapterTimestamps(
   return data.audio_file?.timestamps ?? [];
 }
 
-export function getVerseAudioUrl(reciterId: number, verseKey: string): string {
-  return `https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${verseKey}`;
+export function getVerseAudioUrl(surahId: number, verseNumber: number): string {
+  const pad = (n: number) => String(n).padStart(3, "0");
+  return `https://verses.quran.com/Alafasy/mp3/${pad(surahId)}${pad(verseNumber)}.mp3`;
 }
 
 export async function searchQuran(query: string, language = "id", page = 1) {

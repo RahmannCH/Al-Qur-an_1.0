@@ -2,16 +2,31 @@
 
 import { useSettingsStore } from "@/store/settings-store";
 import { useGamificationStore } from "@/store/gamification-store";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 import { AyahCard } from "./ayah-card";
 
-export function AyahList({ verses, chapter, highlightedAyah }: { verses: Verse[]; chapter: Chapter; highlightedAyah?: number | null }) {
+interface AyahListProps {
+  verses: Verse[];
+  chapter: Chapter;
+  highlightedAyah?: number | null;
+  visibleCount: number;
+  setVisibleCount: React.Dispatch<React.SetStateAction<number>>;
+  onPlayAyah?: (ayahNumber: number) => void;
+}
+
+export function AyahList({
+  verses,
+  chapter,
+  highlightedAyah,
+  visibleCount,
+  setVisibleCount,
+  onPlayAyah,
+}: AyahListProps) {
   const { fontSize, showTranslation } = useSettingsStore();
   const { setLastRead } = useSettingsStore();
   const { addXp, incrementRead } = useGamificationStore();
   const readAyahs = useRef(new Set<number>());
-  const [visibleCount, setVisibleCount] = useState(20);
 
   // Intersection Observer untuk Infinite Scroll & Gamification
   useEffect(() => {
@@ -54,7 +69,7 @@ export function AyahList({ verses, chapter, highlightedAyah }: { verses: Verse[]
     elements.forEach((el) => observer.observe(el));
     
     return () => observer.disconnect();
-  }, [chapter, setLastRead, addXp, incrementRead, visibleCount, verses.length]);
+  }, [chapter, setLastRead, addXp, incrementRead, visibleCount, verses.length, setVisibleCount]);
 
   const visibleVerses = verses.slice(0, visibleCount);
 
@@ -74,6 +89,8 @@ export function AyahList({ verses, chapter, highlightedAyah }: { verses: Verse[]
               chapter={chapter}
               fontSize={fontSize}
               showTranslation={showTranslation}
+              isPlayable={true}
+              onPlay={() => onPlayAyah?.(verse.verse_number)}
             />
           </div>
         );

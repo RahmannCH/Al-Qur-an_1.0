@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, MessageCircle, Send, X, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import ReactMarkdown from "react-markdown";
 import { sfx } from "@/lib/sfx";
 
 interface Message {
@@ -135,8 +134,8 @@ export function FloatingAIChat() {
                     }`}
                   >
                     {m.role === "assistant" ? (
-                      <div className="prose dark:prose-invert prose-xs max-w-none">
-                        <ReactMarkdown>{m.content}</ReactMarkdown>
+                      <div className="text-xs leading-relaxed whitespace-pre-wrap">
+                        {m.content}
                       </div>
                     ) : (
                       m.content

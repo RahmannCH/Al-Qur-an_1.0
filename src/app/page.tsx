@@ -12,7 +12,9 @@ import { HeroBentoGrid } from "@/components/home/hero-bento-grid";
 import { DailyQuestsWidget } from "@/components/home/daily-quests-widget";
 import { OnboardingModal } from "@/components/home/onboarding-modal";
 import { UserGreeting } from "@/components/home/user-greeting";
-import { ReadingPlanWidget } from "@/components/home/reading-plan-widget";
+import { HijriCalendarWidget } from "@/components/home/hijri-calendar-widget";
+import { AsmaulHusnaWidget } from "@/components/home/asmaul-husna-widget";
+import { MiniMurottalWidget } from "@/components/home/mini-murottal-widget";
 import { Loader2 } from "lucide-react";
 
 // Pisahkan fetching ke komponen khusus agar bisa di-Suspense
@@ -34,19 +36,33 @@ export default function Home() {
 
       <HeroBentoGrid />
 
+      {/* Baris Utama: Waktu & Gamifikasi (3 Kolom Seimbang di Desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
+        <div className="md:col-span-6 lg:col-span-4 flex flex-col gap-6">
+          <PrayerWidget />
+        </div>
+        <div className="md:col-span-6 lg:col-span-4 flex flex-col gap-6">
+          <HijriCalendarWidget />
+        </div>
+        <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+          <DailyQuestsWidget />
+        </div>
+      </div>
+
+      {/* Baris Kedua: Aktivitas & Media */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
         <div className="md:col-span-12 lg:col-span-8 flex flex-col gap-6">
           <LastReadCard />
           <DailyAyat />
         </div>
         <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
-          <PrayerWidget />
-          <DailyQuestsWidget />
-          <ReadingPlanWidget />
           <ProgressWidget />
+          <MiniMurottalWidget />
+          <AsmaulHusnaWidget />
         </div>
       </div>
 
+      {/* Tracker Sholat Full Width (Membentang dari Kiri ke Kanan) */}
       <section className="mb-12">
         <PrayerStreak className="w-full shadow-lg" />
       </section>

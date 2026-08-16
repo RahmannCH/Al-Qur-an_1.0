@@ -86,7 +86,7 @@ export function HeroBentoGrid() {
               transition={{ delay: idx * 0.08, type: "spring", stiffness: 260, damping: 24 }}
               className="group overflow-hidden rounded-3xl border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
             >
-              <Link href={category.href} onClick={() => sfx.playWoosh()} className="block">
+              <div className="block">
                 <div className={`relative overflow-hidden bg-gradient-to-br ${category.gradient} p-6 text-white`}>
                   <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/20 blur-3xl transition-transform duration-700 group-hover:scale-150" />
                   <div className="relative z-10 flex items-start justify-between gap-4">
@@ -102,7 +102,7 @@ export function HeroBentoGrid() {
                     <p className="mt-2 text-sm font-medium text-white/90">{category.desc}</p>
                   </div>
                 </div>
-              </Link>
+              </div>
 
               <div className="space-y-2 p-4">
                 {category.items.map((item) => (

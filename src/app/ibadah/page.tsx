@@ -5,6 +5,7 @@ import { BackButton } from "@/components/layout/back-button";
 import { BookOpen, Heart, Sparkles, BookMarked, Search, Bookmark, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { sfx } from "@/lib/sfx";
+import { ReadingPlanWidget } from "@/components/home/reading-plan-widget";
 
 const IBADAH_FEATURES = [
   { href: "/quran", label: "Baca Al-Qur'an", icon: BookOpen, desc: "114 Surah, Terjemahan & Tafsir", color: "text-primary", bg: "bg-primary/10" },
@@ -29,8 +30,9 @@ export default function IbadahHub() {
         <p className="text-muted-foreground text-lg">Eksplorasi Al-Qur'an dan rutinitas ibadah harianmu.</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {IBADAH_FEATURES.map((feat, idx) => {
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {IBADAH_FEATURES.map((feat, idx) => {
           const Icon = feat.icon;
           return (
             <Link key={feat.href} href={feat.href} onClick={() => sfx.playWoosh()}>
@@ -51,7 +53,11 @@ export default function IbadahHub() {
               </motion.div>
             </Link>
           );
-        })}
+          })}
+        </div>
+        <div className="lg:col-span-4">
+          <ReadingPlanWidget />
+        </div>
       </div>
     </div>
   );

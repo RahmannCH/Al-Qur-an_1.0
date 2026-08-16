@@ -3,7 +3,7 @@
 import { useBookmarkStore } from "@/store/bookmark-store";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Bookmark, Copy, BookOpenText, Languages } from "lucide-react";
+import { Bookmark, Copy, BookOpenText, Languages, Play } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
@@ -16,9 +16,11 @@ interface AyahCardProps {
   chapter: Chapter;
   fontSize: number;
   showTranslation: boolean;
+  isPlayable?: boolean;
+  onPlay?: () => void;
 }
 
-export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCardProps) {
+export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable = false, onPlay }: AyahCardProps) {
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarkStore();
   const [tafsirLoading, setTafsirLoading] = useState(false);
   const [tafsirText, setTafsirText] = useState("");
@@ -56,8 +58,21 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation }: AyahCard
       className="rounded-xl border bg-card p-5 transition-all hover:shadow-md hover:shadow-primary/5"
     >
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-xs font-bold text-primary-foreground shadow-sm">
-          {verse.verse_number}
+        <div className="flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-xs font-bold text-primary-foreground shadow-sm">
+            {verse.verse_number}
+          </div>
+          {isPlayable && (
+            <Tooltip>
+              <TooltipTrigger
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+                onClick={onPlay}
+              >
+                <Play className="h-3.5 w-3.5 fill-current" />
+              </TooltipTrigger>
+              <TooltipContent>Putar ayat ini</TooltipContent>
+            </Tooltip>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <Dialog>

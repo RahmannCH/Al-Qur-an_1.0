@@ -3,6 +3,13 @@ export interface LearnSection {
   points: string[];
 }
 
+export interface LearnQuiz {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
 export interface LearnModule {
   slug: string;
   level: number;
@@ -10,8 +17,10 @@ export interface LearnModule {
   type: string;
   emoji: string;
   desc: string;
+  youtubeId: string;
   sections: LearnSection[];
   practice: string;
+  quiz: LearnQuiz[];
 }
 
 export const LEARN_MODULES: LearnModule[] = [
@@ -22,6 +31,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "article",
     emoji: "🕌",
     desc: "Dua pondasi utama seorang Muslim: apa yang kita percaya (iman) dan apa yang kita amalkan (islam).",
+    youtubeId: "W7oR-Zg2R3s", // Yufid Kids - Rukun Iman dan Rukun Islam
     sections: [
       {
         title: "Rukun Iman (6)",
@@ -46,6 +56,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Hafalkan dan ucapkan syahadat setiap hari dengan penuh kesadaran maknanya.",
+    quiz: [
+      {
+        question: "Manakah yang merupakan Rukun Islam yang pertama?",
+        options: ["Puasa", "Zakat", "Syahadat", "Sholat"],
+        correctIndex: 2,
+        explanation: "Syahadat (persaksian) adalah pintu gerbang dan rukun Islam yang pertama."
+      },
+      {
+        question: "Berapa jumlah Rukun Iman?",
+        options: ["4", "5", "6", "7"],
+        correctIndex: 2,
+        explanation: "Rukun iman terdiri dari 6 perkara."
+      },
+      {
+        question: "Iman kepada Qada dan Qadar berarti kita percaya kepada...",
+        options: ["Hari Kiamat", "Takdir baik dan buruk dari Allah", "Kitab-kitab suci", "Nabi dan Rasul"],
+        correctIndex: 1,
+        explanation: "Qada dan Qadar adalah ketentuan dan takdir dari Allah SWT."
+      }
+    ]
   },
   {
     slug: "tata-cara-bersuci",
@@ -54,6 +84,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "video",
     emoji: "💧",
     desc: "Kebersihan adalah sebagian dari iman. Belajar bersuci dengan benar adalah kunci sahnya ibadah.",
+    youtubeId: "7L_811e2pXQ", // Yufid Kids - Tata Cara Wudhu
     sections: [
       {
         title: "Wudhu",
@@ -83,6 +114,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Praktikkan wudhu yang benar sebelum setiap sholat selama satu pekan.",
+    quiz: [
+      {
+        question: "Apa yang harus dibasuh setelah membasuh wajah saat wudhu?",
+        options: ["Kaki", "Kepala", "Tangan sampai siku", "Telinga"],
+        correctIndex: 2,
+        explanation: "Urutan wudhu setelah wajah adalah membasuh kedua tangan sampai siku."
+      },
+      {
+        question: "Berapa kali sunnah membasuh anggota tubuh dalam wudhu?",
+        options: ["1 kali", "2 kali", "3 kali", "7 kali"],
+        correctIndex: 2,
+        explanation: "Sangat disunnahkan untuk membasuh anggota wudhu sebanyak 3 kali."
+      },
+      {
+        question: "Tayamum menggunakan media apa sebagai pengganti air?",
+        options: ["Daun kering", "Debu/tanah yang suci", "Batu karang", "Kain bersih"],
+        correctIndex: 1,
+        explanation: "Tayamum dilakukan menggunakan debu atau tanah permukaan bumi yang suci."
+      }
+    ]
   },
   {
     slug: "panduan-sholat",
@@ -91,6 +142,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "interactive",
     emoji: "🧎",
     desc: "Belajar gerakan dan bacaan sholat dari takbiratul ihram hingga salam, lengkap dengan maknanya.",
+    youtubeId: "bO14Xm1zHw8", // Panduan Sholat Lengkap
     sections: [
       {
         title: "Rukun Sholat",
@@ -112,6 +164,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Perbaiki satu gerakan yang sering terburu-buru dalam sholatmu hari ini.",
+    quiz: [
+      {
+        question: "Apa rukun bacaan yang WAJIB dibaca di setiap rakaat sholat?",
+        options: ["Surah Al-Ikhlas", "Doa Iftitah", "Surah Al-Fatihah", "Ayat Kursi"],
+        correctIndex: 2,
+        explanation: "Membaca Al-Fatihah adalah rukun sholat. Tanpanya, rakaat tersebut tidak sah."
+      },
+      {
+        question: "Berapa kali kita melakukan sujud dalam satu rakaat?",
+        options: ["1 kali", "2 kali", "3 kali", "Tergantung niat"],
+        correctIndex: 1,
+        explanation: "Dalam setiap satu rakaat, wajib melakukan sujud sebanyak 2 kali."
+      },
+      {
+        question: "Sikap tenang sejenak dalam setiap gerakan sholat disebut...",
+        options: ["Khusyuk", "Tuma'ninah", "Ikhlas", "Ihsan"],
+        correctIndex: 1,
+        explanation: "Tuma'ninah adalah diam sejenak setelah anggota badan mapan pada suatu gerakan rukun."
+      }
+    ]
   },
   {
     slug: "huruf-hijaiyah",
@@ -120,6 +192,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "interactive",
     emoji: "🔤",
     desc: "28 huruf hijaiyah adalah pintu masuk untuk membaca Al-Qur'an dengan benar.",
+    youtubeId: "vB0v21y9l1o", // Belajar Hijaiyah
     sections: [
       {
         title: "Huruf Dasar",
@@ -140,6 +213,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Latih 5 huruf hijaiyah hari ini beserta makhraj dan contoh pengucapannya.",
+    quiz: [
+      {
+        question: "Berapa jumlah total huruf hijaiyah (tanpa huruf gabungan)?",
+        options: ["26", "28", "30", "32"],
+        correctIndex: 1,
+        explanation: "Secara umum, jumlah huruf hijaiyah dasar adalah 28 atau 29 huruf."
+      },
+      {
+        question: "Huruf apakah yang bentuknya seperti perahu dengan satu titik di bawah?",
+        options: ["Ta", "Tsa", "Ba", "Nun"],
+        correctIndex: 2,
+        explanation: "Huruf Ba (ب) berbentuk seperti wadah/perahu dengan satu titik di bawahnya."
+      },
+      {
+        question: "Tempat keluarnya huruf saat kita melafalkannya disebut...",
+        options: ["Tajwid", "Makhraj", "Harokat", "Ghunnah"],
+        correctIndex: 1,
+        explanation: "Makharijul Huruf (makhraj) adalah tempat-tempat keluarnya huruf hijaiyah."
+      }
+    ]
   },
   {
     slug: "tajwid-dasar",
@@ -148,6 +241,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "quiz",
     emoji: "📐",
     desc: "Tajwid membuat bacaan Al-Qur'an menjadi indah dan benar sesuai aturannya.",
+    youtubeId: "W9nKkVQZt-0", // Belajar Tajwid
     sections: [
       {
         title: "Nun Sukun & Tanwin",
@@ -168,6 +262,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Cari 3 contoh hukum tajwid di surat Al-Fatihah dan tandai jenisnya.",
+    quiz: [
+      {
+        question: "Jika Nun Mati bertemu huruf Ba (ب), hukum tajwidnya adalah...",
+        options: ["Izhar", "Iqlab", "Ikhfa", "Idgham"],
+        correctIndex: 1,
+        explanation: "Iqlab adalah mengubah bunyi nun mati/tanwin menjadi bunyi mim ketika bertemu huruf Ba."
+      },
+      {
+        question: "Membaca dengan jelas tanpa dengung disebut...",
+        options: ["Izhar", "Ikhfa", "Idgham Bighunnah", "Iqlab"],
+        correctIndex: 0,
+        explanation: "Izhar berarti jelas atau terang, dibaca tanpa dengung."
+      },
+      {
+        question: "Mim mati bertemu huruf selain Mim dan Ba, hukumnya adalah...",
+        options: ["Ikhfa Syafawi", "Idgham Mimi", "Izhar Syafawi", "Idgham Mutamatsilain"],
+        correctIndex: 2,
+        explanation: "Izhar Syafawi: bunyi mim dibaca jelas saat bertemu selain huruf Mim dan Ba."
+      }
+    ]
   },
   {
     slug: "adab-doa-harian",
@@ -176,6 +290,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "article",
     emoji: "🌿",
     desc: "Islam adalah agama adab. Doa-doa harian menyambungkan kita dengan Allah di setiap momen.",
+    youtubeId: "V5-Z9B7-X1w", // Doa Harian
     sections: [
       {
         title: "Adab Sehari-hari",
@@ -196,6 +311,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Baca doa keluar rumah setiap kali keluar hari ini, dengan maknanya.",
+    quiz: [
+      {
+        question: "Bagaimana adab saat makan menurut sunnah?",
+        options: ["Makan sambil berdiri", "Makan dengan tangan kiri", "Makan dengan tangan kanan dan membaca Bismillah", "Menyisakan makanan di piring"],
+        correctIndex: 2,
+        explanation: "Sunnah makan adalah menggunakan tangan kanan, membaca Bismillah, dan disarankan duduk."
+      },
+      {
+        question: "Doa \"Bismillahi tawakkaltu 'alallah...\" dibaca ketika...",
+        options: ["Masuk rumah", "Keluar rumah", "Naik kendaraan", "Mandi"],
+        correctIndex: 1,
+        explanation: "Doa tersebut dibaca saat melangkah keluar rumah agar dilindungi oleh Allah."
+      },
+      {
+        question: "Apa arti dari kalimat Alhamdulillah?",
+        options: ["Maha Suci Allah", "Segala puji bagi Allah", "Allah Maha Besar", "Dengan nama Allah"],
+        correctIndex: 1,
+        explanation: "Alhamdulillah adalah ungkapan rasa syukur yang artinya 'Segala puji bagi Allah'."
+      }
+    ]
   },
   {
     slug: "sirah-nabi",
@@ -204,6 +339,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "article",
     emoji: "🌙",
     desc: "Mengenal perjalanan hidup Rasulullah ﷺ dari kelahiran hingga wafat sebagai teladan umat.",
+    youtubeId: "XQ8m_P1FzLw", // Kisah Nabi Muhammad
     sections: [
       {
         title: "Periode Mekkah",
@@ -223,6 +359,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Baca kisah lengkap Nabi Muhammad ﷺ di menu Kisah Para Nabi.",
+    quiz: [
+      {
+        question: "Gelar Al-Amin yang disematkan kepada Nabi Muhammad sejak kecil memiliki arti...",
+        options: ["Yang sangat cerdas", "Yang paling kuat", "Yang dapat dipercaya", "Yang paling sabar"],
+        correctIndex: 2,
+        explanation: "Al-Amin artinya 'Orang yang dapat dipercaya' karena kejujuran beliau."
+      },
+      {
+        question: "Wahyu pertama diturunkan kepada Nabi Muhammad saat beliau berkhalwat di...",
+        options: ["Gua Tsur", "Gua Hira", "Bukit Safa", "Padang Arafah"],
+        correctIndex: 1,
+        explanation: "Wahyu pertama (Surah Al-'Alaq 1-5) turun melalui Malaikat Jibril di Gua Hira."
+      },
+      {
+        question: "Peristiwa perpindahan kaum muslimin dari Mekkah ke Madinah disebut...",
+        options: ["Isra' Mi'raj", "Fathu Makkah", "Hijrah", "Haji Wada'"],
+        correctIndex: 2,
+        explanation: "Hijrah adalah momentum sangat penting hingga dijadikan awal kalender Islam."
+      }
+    ]
   },
   {
     slug: "tafsir-ayat-populer",
@@ -231,6 +387,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "article",
     emoji: "📖",
     desc: "Memahami makna ayat-ayat yang sering dibaca agar iman semakin kokoh.",
+    youtubeId: "5jX9V3pQjF8", // Tafsir Al Fatihah
     sections: [
       {
         title: "Ayat Pilihan",
@@ -243,6 +400,26 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Baca dan renungkan arti Ayat Kursi hari ini sebelum tidur.",
+    quiz: [
+      {
+        question: "Surah apa yang disebut sebagai sepertiga Al-Qur'an karena menjelaskan ketauhidan murni?",
+        options: ["Surah Al-Fatihah", "Surah Yasin", "Surah Al-Ikhlas", "Surah Al-Mulk"],
+        correctIndex: 2,
+        explanation: "Surah Al-Ikhlas menjelaskan keesaan Allah tanpa sekutu, sehingga dinilai setara sepertiga Al-Qur'an."
+      },
+      {
+        question: "Ayat Kursi terdapat di dalam surah...",
+        options: ["Ali 'Imran", "Al-Baqarah", "An-Nisa", "Al-Kahfi"],
+        correctIndex: 1,
+        explanation: "Ayat Kursi adalah ayat ke-255 di dalam Surah Al-Baqarah."
+      },
+      {
+        question: "Dalam Surah Al-'Asr, demi masa, manusia berada dalam kerugian KECUALI mereka yang...",
+        options: ["Kaya raya", "Beriman, beramal sholeh, menasihati kebenaran & kesabaran", "Rajin bekerja siang malam", "Menghafal banyak surah"],
+        correctIndex: 1,
+        explanation: "Kunci selamat dari kerugian waktu adalah iman, amal saleh, serta saling menasihati."
+      }
+    ]
   },
   {
     slug: "fikih-muamalah",
@@ -251,6 +428,7 @@ export const LEARN_MODULES: LearnModule[] = [
     type: "video",
     emoji: "⚖️",
     desc: "Aturan Islam dalam transaksi agar harta yang diperoleh halal dan berkah.",
+    youtubeId: "9o4v0o7Q6yQ", // Fikih Muamalah Dasar
     sections: [
       {
         title: "Prinsip Jual Beli",
@@ -271,5 +449,25 @@ export const LEARN_MODULES: LearnModule[] = [
       },
     ],
     practice: "Terapkan satu prinsip kejujuran dalam transaksi kecilmu hari ini.",
+    quiz: [
+      {
+        question: "Transaksi yang mengandung unsur ketidakjelasan atau spekulasi disebut...",
+        options: ["Riba", "Gharar", "Maysir", "Mudharabah"],
+        correctIndex: 1,
+        explanation: "Gharar adalah jual beli yang tidak jelas wujud barang atau harganya, yang dilarang dalam Islam."
+      },
+      {
+        question: "Syarat utama sahnya jual beli adalah...",
+        options: ["Harus di pasar", "Saling ridha (rela) antar kedua pihak", "Harus tunai tanpa hutang", "Harus ada diskon"],
+        correctIndex: 1,
+        explanation: "Asas jual beli dalam Al-Qur'an (An-Nisa: 29) adalah perdagangan yang didasari kerelaan (an-taradhin)."
+      },
+      {
+        question: "Menyembunyikan cacat barang yang dijual agar laku mahal hukumnya adalah...",
+        options: ["Boleh jika pembeli tidak tanya", "Haram karena termasuk penipuan", "Makruh", "Mubah"],
+        correctIndex: 1,
+        explanation: "Islam mewajibkan kejujuran; menyembunyikan cacat barang (tadlis) diharamkan."
+      }
+    ]
   },
 ];
