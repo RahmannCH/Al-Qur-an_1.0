@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Moon, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Moon, Star, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerTimes } from "@/lib/prayer-api";
 import { sfx } from "@/lib/sfx";
@@ -35,6 +35,12 @@ const HIJRI_MONTHS = [
   "Dzulhijjah"
 ];
 
+// Perkiraan jumlah hari per bulan Hijriah (rata-rata 29.53 hari)
+function getHijriDayOfYear(month: number, day: number): number {
+  const monthDays = [0, 30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325];
+  return (monthDays[month - 1] || 0) + day;
+}
+
 export function HijriCalendarWidget() {
   const [prayerData, setPrayerData] = useState<any>(null);
   const [eventIndex, setEventIndex] = useState<number | null>(null);
@@ -64,6 +70,7 @@ export function HijriCalendarWidget() {
   const hijri = prayerData.date.hijri;
   const gregorian = prayerData.date.gregorian;
   const monthNum = typeof hijri.month.number === 'number' ? hijri.month.number : parseInt(hijri.month.number as string);
+  const dayNum = parseInt(hijri.day);
 
   // Ejaan Indonesia untuk bulan aktif di kalender
   const hijriMonthName = HIJRI_MONTHS[monthNum - 1] || hijri.month.en;
@@ -71,6 +78,25 @@ export function HijriCalendarWidget() {
   // Event yang sedang aktif di slider navigasi
   const activeEvent = ISLAMIC_EVENTS[eventIndex];
   const eventMonthName = HIJRI_MONTHS[activeEvent.month - 1];
+
+  // Hitung selisih hari antara tanggal hari ini dengan event
+  const currentDayOfYear = getHijriDayOfYear(monthNum, dayNum);
+  const eventDayOfYear = getHijriDayOfYear(activeEvent.month, activeEvent.day);
+  const diffDays = eventDayOfYear - currentDayOfYear;
+
+  let relativeTimeLabel = "";
+  let badgeColor = "bg-amber-500/20 text-amber-700 dark:text-amber-300";
+
+  if (diffDays === 0) {
+    relativeTimeLabel = "Hari ini";
+    badgeColor = "bg-emerald-500 text-white animate-pulse";
+  } else if (diffDays > 0) {
+    relativeTimeLabel = `${diffDays} hari lagi`;
+    badgeColor = "bg-primary/10 text-primary font-bold";
+  } else {
+    relativeTimeLabel = `${Math.abs(diffDays)} hari yang lalu`;
+    badgeColor = "bg-muted text-muted-foreground";
+  }
 
   const handleNextEvent = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -120,11 +146,11 @@ export function HijriCalendarWidget() {
           </div>
         </div>
 
-        {/* Upcoming Event Box with Navigation */}
-        <div className="mt-5 p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 flex flex-col gap-2">
+        {/* Upcoming Event Box with Navigation & Relative Countdown */}
+        <div className="mt-5 p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-500 shrink-0 animate-pulse" />
+              <Star className="h-4 w-4 text-amber-500 shrink-0" />
               <p className="text-[9px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-widest">Hari Besar Tahun Ini</p>
             </div>
             
@@ -134,6 +160,7 @@ export function HijriCalendarWidget() {
                 onClick={handlePrevEvent}
                 disabled={eventIndex === 0}
                 className="p-1 rounded bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-30 disabled:hover:bg-amber-500/10 transition-colors text-amber-700 dark:text-amber-500"
+                title="Event Sebelumnya"
               >
                 <ChevronLeft className="h-3 w-3" />
               </button>
@@ -141,17 +168,25 @@ export function HijriCalendarWidget() {
                 onClick={handleNextEvent}
                 disabled={eventIndex === ISLAMIC_EVENTS.length - 1}
                 className="p-1 rounded bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-30 disabled:hover:bg-amber-500/10 transition-colors text-amber-700 dark:text-amber-500"
+                title="Event Selanjutnya"
               >
                 <ChevronRight className="h-3 w-3" />
               </button>
             </div>
           </div>
 
-          <div className="overflow-hidden min-h-[44px]">
-            <p className="font-bold text-sm text-foreground truncate">{activeEvent.name}</p>
-            <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">
-              Tanggal {activeEvent.day} {eventMonthName}
-            </p>
+          <div className="overflow-hidden">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-bold text-sm text-foreground leading-tight">{activeEvent.name}</p>
+                <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">
+                  Tanggal {activeEvent.day} {eventMonthName}
+                </p>
+              </div>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 mt-0.5 ${badgeColor}`}>
+                {relativeTimeLabel}
+              </span>
+            </div>
           </div>
         </div>
       </div>

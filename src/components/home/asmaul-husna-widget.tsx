@@ -14,6 +14,13 @@ export function AsmaulHusnaWidget() {
 
   useEffect(() => {
     setMounted(true);
+    // Trigger voice loading in Chrome
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
   }, []);
 
   // Update input text when current changes
@@ -58,8 +65,27 @@ export function AsmaulHusnaWidget() {
     e.stopPropagation();
     sfx.playTap();
     if ("speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(current.latin);
-      utterance.lang = "id-ID";
+      // Force resume on Chrome
+      window.speechSynthesis.resume();
+      window.speechSynthesis.cancel();
+      
+      const voices = window.speechSynthesis.getVoices();
+      const arabicVoice = voices.find((v) => v.lang.startsWith("ar"));
+      
+      let utterance: SpeechSynthesisUtterance;
+      if (arabicVoice) {
+        // Logat Arab native
+        utterance = new SpeechSynthesisUtterance(current.arabic);
+        utterance.voice = arabicVoice;
+        utterance.lang = "ar-SA";
+        utterance.rate = 0.85;
+      } else {
+        // Fallback ejaan Latin jika voice pack Arab tidak tersedia di OS user
+        utterance = new SpeechSynthesisUtterance(current.latin);
+        utterance.lang = "id-ID";
+        utterance.rate = 0.9;
+      }
+      
       window.speechSynthesis.speak(utterance);
     }
   };

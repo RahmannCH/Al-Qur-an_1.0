@@ -46,15 +46,15 @@ export function BottomNav() {
             <Menu className="h-5 w-5" />
             <span className="text-[10px] font-medium">More</span>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0 flex flex-col">
-            <SheetHeader className="p-6 text-left border-b bg-muted/30">
-              <SheetTitle className="font-display text-2xl font-bold">Menu Lengkap</SheetTitle>
-              <SheetDescription>Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0 flex flex-col gap-0 text-left">
+            <SheetHeader className="p-6 text-left border-b bg-muted/30 m-0">
+              <SheetTitle className="font-display text-2xl font-bold text-left m-0">Menu Lengkap</SheetTitle>
+              <SheetDescription className="text-left m-0">Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
             </SheetHeader>
-            <div className="overflow-y-auto overscroll-contain touch-pan-y p-4 pb-12 space-y-6 flex-1">
+            <div className="overflow-y-auto overscroll-contain touch-pan-y p-5 pb-12 space-y-6 flex-1 text-left">
               {MENU_SECTIONS.map((section) => (
-                <div key={section.title} className="space-y-3">
-                  <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
+                <div key={section.title} className="space-y-2.5 text-left">
+                  <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider text-left px-0 m-0">
                     {section.title}
                   </h3>
                   <div className="grid gap-2">
@@ -68,7 +68,7 @@ export function BottomNav() {
                             sfx.playWoosh();
                             router.push(item.href);
                           }}
-                          className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all ${
+                          className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all text-left w-full ${
                             isActive
                               ? "bg-primary/10 border-primary text-primary"
                               : "bg-card hover:bg-accent border-transparent hover:border-border"
@@ -77,9 +77,9 @@ export function BottomNav() {
                           <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0">
                             <Icon className="h-5 w-5" />
                           </div>
-                          <div className="overflow-hidden">
-                            <p className="font-semibold text-sm leading-tight">{item.label}</p>
-                            <p className="text-xs text-muted-foreground truncate">{item.desc}</p>
+                          <div className="overflow-hidden text-left">
+                            <p className="font-semibold text-sm leading-tight text-left">{item.label}</p>
+                            <p className="text-xs text-muted-foreground truncate text-left">{item.desc}</p>
                           </div>
                         </SheetClose>
                       );

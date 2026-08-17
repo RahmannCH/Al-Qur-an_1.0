@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { sfx } from "@/lib/sfx";
 import { ThemeToggle } from "./theme-toggle";
 import { useSettingsStore } from "@/store/settings-store";
+import { ZadifyLogo } from "./logo";
 import {
   BookOpen,
   Gamepad2,
@@ -97,23 +98,52 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <Link href="/" onClick={() => sfx.playWoosh()} className="flex items-center gap-2 font-display font-bold text-lg">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="hidden sm:inline">Al-Qur&apos;an</span>
+          <Link href="/" onClick={() => sfx.playWoosh()} className="flex items-center">
+            <ZadifyLogo size="md" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
             <Link
+              href="/quran"
+              onClick={() => sfx.playWoosh()}
+              className={`px-3 py-1.5 text-sm font-bold rounded-full transition-colors ${
+                pathname.startsWith("/quran") || pathname.startsWith("/surah")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Qur'an
+            </Link>
+            <Link
+              href="/learn"
+              onClick={() => sfx.playWoosh()}
+              className={`px-3 py-1.5 text-sm font-bold rounded-full transition-colors ${
+                pathname.startsWith("/learn")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            >
+              Roadmap
+            </Link>
+            <Link
               href="/ibadah"
               onClick={() => sfx.playWoosh()}
-              className="px-3 py-1.5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
+              className={`px-3 py-1.5 text-sm font-bold rounded-full transition-colors ${
+                pathname.startsWith("/ibadah")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
             >
               Ibadah
             </Link>
             <Link
               href="/lifestyle"
               onClick={() => sfx.playWoosh()}
-              className="px-3 py-1.5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
+              className={`px-3 py-1.5 text-sm font-bold rounded-full transition-colors ${
+                pathname.startsWith("/lifestyle") || pathname.startsWith("/calculator") || pathname.startsWith("/ruhiyah")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
             >
               Lifestyle
             </Link>
@@ -147,16 +177,16 @@ export function Header() {
               <Menu className="h-4 w-4" />
               More
             </SheetTrigger>
-            <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 flex flex-col">
-              <SheetHeader className="p-6 text-left border-b bg-muted/30">
-                <SheetTitle className="font-display text-2xl font-bold">Menu Lengkap</SheetTitle>
-                <SheetDescription>Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
+            <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 flex flex-col gap-0 text-left">
+              <SheetHeader className="p-6 text-left border-b bg-muted/30 m-0">
+                <SheetTitle className="font-display text-2xl font-bold text-left m-0">Menu Lengkap</SheetTitle>
+                <SheetDescription className="text-left m-0">Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
               </SheetHeader>
 
-              <div className="overflow-y-auto overscroll-contain touch-pan-y p-6 pb-12 space-y-6 flex-1">
+              <div className="overflow-y-auto overscroll-contain touch-pan-y p-6 pb-12 space-y-6 flex-1 text-left">
                 {MENU_SECTIONS.map((section) => (
-                  <div key={section.title} className="space-y-3">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
+                  <div key={section.title} className="space-y-2.5 text-left">
+                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider text-left px-0 m-0">
                       {section.title}
                     </h3>
                     <div className="grid gap-2">
@@ -170,7 +200,7 @@ export function Header() {
                               sfx.playWoosh();
                               router.push(item.href);
                             }}
-                            className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all ${
+                            className={`flex items-center gap-3.5 p-3 rounded-xl border transition-all text-left w-full ${
                               isActive
                                 ? "bg-primary/10 border-primary text-primary"
                                 : "bg-card hover:bg-accent border-transparent hover:border-border"
@@ -179,9 +209,9 @@ export function Header() {
                             <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0">
                               <Icon className="h-5 w-5" />
                             </div>
-                            <div className="overflow-hidden">
-                              <p className="font-semibold text-sm leading-tight">{item.label}</p>
-                              <p className="text-xs text-muted-foreground truncate">{item.desc}</p>
+                            <div className="overflow-hidden text-left">
+                              <p className="font-semibold text-sm leading-tight text-left">{item.label}</p>
+                              <p className="text-xs text-muted-foreground truncate text-left">{item.desc}</p>
                             </div>
                           </SheetClose>
                         );

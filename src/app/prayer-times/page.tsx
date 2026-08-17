@@ -5,6 +5,8 @@ import { PrayerHero } from "@/components/prayer/prayer-hero";
 import { PrayerList } from "@/components/prayer/prayer-list";
 import { PrayerStreak } from "@/components/prayer/prayer-streak";
 import { QiblaCompass } from "@/components/prayer/qibla-compass";
+import { SunnahTracker } from "@/components/prayer/sunnah-tracker";
+import { LocationModal } from "@/components/prayer/location-modal";
 import { BackButton } from "@/components/layout/back-button";
 import { Loader2, MapPin } from "lucide-react";
 import { usePrayerStore } from "@/store/prayer-store";
@@ -13,7 +15,6 @@ export default function PrayerTimesPage() {
   const { prayerSchedule, locationName, fetchAndSyncLocation } = usePrayerStore();
 
   useEffect(() => {
-    // If we haven't synced location today, do it now
     fetchAndSyncLocation();
   }, [fetchAndSyncLocation]);
 
@@ -30,29 +31,63 @@ export default function PrayerTimesPage() {
 
   // Adapter untuk komponen child yang menggunakan tipe data lama
   const adapterPrayerTimes: any = {
-    date: { readable: new Date().toLocaleDateString("id-ID") },
+    date: { 
+      readable: new Date().toLocaleDateString("id-ID"),
+      hijri: {
+        day: "15",
+        month: { en: "Sha'ban", number: 8 },
+        year: "1448"
+      },
+      gregorian: {
+        weekday: { en: new Date().toLocaleDateString("en-US", { weekday: 'long' }) }
+      }
+    },
     timings: prayerSchedule
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 pb-32 min-h-screen">
       <BackButton />
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold mb-2">Jadwal Sholat</h1>
-        <p className="text-muted-foreground flex items-center gap-1 font-medium">
-           <MapPin className="h-4 w-4 text-primary" /> {locationName}
-        </p>
-      </div>
-
-      <PrayerHero prayerTimes={adapterPrayerTimes} />
       
-      <div className="grid gap-6 md:grid-cols-2 mb-8">
-        <PrayerList prayerTimes={adapterPrayerTimes} />
-        <div className="space-y-6">
-          <QiblaCompass />
-          <PrayerStreak />
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">Jadwal Sholat & Kiblat</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-muted-foreground flex items-center gap-1.5 font-medium bg-primary/5 w-fit px-3 py-1.5 rounded-lg border border-primary/10 text-xs md:text-sm">
+             <MapPin className="h-4 w-4 text-primary" /> {locationName}
+          </p>
+          <LocationModal />
         </div>
       </div>
+
+      <div className="max-w-4xl mx-auto mb-8">
+        <PrayerHero prayerTimes={adapterPrayerTimes} />
+      </div>
+      
+      {/* Grid Layout 3 Kolom Utama di Desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 items-start">
+        {/* Kolom 1: Daftar Waktu Sholat */}
+        <div className="md:col-span-6 lg:col-span-4 h-full">
+          <PrayerList prayerTimes={adapterPrayerTimes} />
+        </div>
+        
+        {/* Kolom 2: Tracker Sunnah & Puasa */}
+        <div className="md:col-span-6 lg:col-span-4 h-full">
+          <SunnahTracker 
+            hijriDate={adapterPrayerTimes.date.hijri} 
+            gregorianDate={adapterPrayerTimes.date.gregorian} 
+          />
+        </div>
+
+        {/* Kolom 3: Kompas Kiblat */}
+        <div className="md:col-span-12 lg:col-span-4 h-full">
+          <QiblaCompass />
+        </div>
+      </div>
+
+      {/* Full Width Tracker Bawah */}
+      <section className="mt-12">
+        <PrayerStreak className="w-full shadow-lg" />
+      </section>
     </div>
   );
 }

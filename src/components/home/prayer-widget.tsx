@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Clock, MapPin, Loader2 } from "lucide-react";
+import { Clock, MapPin, Loader2, Compass, ArrowRight } from "lucide-react";
 import { formatTime } from "@/lib/prayer-api";
 import { usePrayerStore } from "@/store/prayer-store";
+import { sfx } from "@/lib/sfx";
 
 export function PrayerWidget() {
   const { prayerSchedule, locationName, fetchAndSyncLocation } = usePrayerStore();
@@ -91,11 +92,21 @@ export function PrayerWidget() {
         ) : (
           <div className="mt-2">
             <p className="text-4xl font-display font-bold text-primary mb-2 tracking-tight">{next.name}</p>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <p className="text-muted-foreground font-bold text-lg">{next.time}</p>
               <p className="text-sm bg-gradient-to-r from-primary to-teal text-white px-3 py-1.5 rounded-full font-bold shadow-md">
                 -{formatTime(next.secondsLeft)}
               </p>
+            </div>
+
+            {/* Slot Kecil: Navigasi Ringkas ke Kompas Kiblat */}
+            <div className="pt-3 border-t flex items-center justify-between text-xs font-semibold text-muted-foreground group-hover:text-primary transition-colors">
+              <span className="flex items-center gap-1.5">
+                <Compass className="h-4 w-4 text-emerald-500" /> Bingung arah kiblat?
+              </span>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-primary">
+                Cek Kompas <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+              </span>
             </div>
           </div>
         )}

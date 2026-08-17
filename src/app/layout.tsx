@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   description: "Aplikasi Al-Qur'an digital dengan terjemahan, audio murottal, dan fitur pembelajaran.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="id"

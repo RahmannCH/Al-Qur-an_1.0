@@ -54,12 +54,16 @@ interface PrayerStore {
   lastCheckDate: string;
   history: Record<string, string[]>;
   locationName: string;
+  latitude: number | null;
+  longitude: number | null;
   prayerSchedule: PrayerSchedule | null;
   lastFetchedDate: string | null;
 
   togglePrayer: (prayer: string) => void;
   checkAndResetDay: () => void;
   fetchAndSyncLocation: () => Promise<void>;
+  forceSyncLocation: () => Promise<boolean>;
+  setManualLocation: (cityName: string, lat: number, lng: number) => Promise<void>;
 }
 
 export const usePrayerStore = create<PrayerStore>()(
@@ -70,8 +74,73 @@ export const usePrayerStore = create<PrayerStore>()(
       lastCheckDate: getWitaDate(),
       history: {},
       locationName: "Mendeteksi Lokasi...",
+      latitude: null,
+      longitude: null,
       prayerSchedule: null,
       lastFetchedDate: null,
+
+      setManualLocation: async (cityName: string, lat: number, lng: number) => {
+        const today = getWitaDate();
+        try {
+          const data = await getPrayerTimes(lat, lng);
+          set({
+            prayerSchedule: data.timings as PrayerSchedule,
+            locationName: cityName,
+            latitude: lat,
+            longitude: lng,
+            lastFetchedDate: today,
+          });
+        } catch (err) {
+          console.error("Gagal set manual location", err);
+        }
+      },
+
+      forceSyncLocation: async (): Promise<boolean> => {
+        const today = getWitaDate();
+        return new Promise((resolve) => {
+          if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+              async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                try {
+                  const data = await getPrayerTimes(lat, lng);
+                  let locName = "Lokasi Ditemukan";
+                  try {
+                    const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`);
+                    const geoData = await geoRes.json();
+                    locName = `${geoData.city || geoData.locality || "Lokasi Anda"}, ${geoData.countryName}`;
+                  } catch {}
+
+                  set({
+                    prayerSchedule: data.timings as PrayerSchedule,
+                    locationName: locName,
+                    latitude: lat,
+                    longitude: lng,
+                    lastFetchedDate: today,
+                  });
+                  resolve(true);
+                } catch {
+                  resolve(false);
+                }
+              },
+              async () => {
+                // Denied GPS
+                const fallbackData = await getPrayerTimes();
+                set({
+                  prayerSchedule: fallbackData.timings as PrayerSchedule,
+                  locationName: "Akses GPS Ditolak - Default (Banjarbaru)",
+                  lastFetchedDate: today,
+                });
+                resolve(false);
+              },
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+          } else {
+            resolve(false);
+          }
+        });
+      },
 
       fetchAndSyncLocation: async () => {
         const today = getWitaDate();
@@ -79,6 +148,17 @@ export const usePrayerStore = create<PrayerStore>()(
         // Return if already fetched today to prevent spamming API
         if (get().lastFetchedDate === today && get().prayerSchedule) {
           return;
+        }
+
+        const stateLat = get().latitude;
+        const stateLng = get().longitude;
+
+        if (stateLat && stateLng) {
+          try {
+            const data = await getPrayerTimes(stateLat, stateLng);
+            set({ prayerSchedule: data.timings as PrayerSchedule, lastFetchedDate: today });
+            return;
+          } catch {}
         }
 
         try {
@@ -93,9 +173,9 @@ export const usePrayerStore = create<PrayerStore>()(
                   const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`);
                   const geoData = await geoRes.json();
                   const locName = `${geoData.city || geoData.locality || "Lokasi Anda"}, ${geoData.countryName}`;
-                  set({ prayerSchedule: data.timings as PrayerSchedule, locationName: locName, lastFetchedDate: today });
+                  set({ prayerSchedule: data.timings as PrayerSchedule, locationName: locName, latitude: lat, longitude: lng, lastFetchedDate: today });
                 } catch {
-                  set({ prayerSchedule: data.timings as PrayerSchedule, locationName: "Lokasi Ditemukan", lastFetchedDate: today });
+                  set({ prayerSchedule: data.timings as PrayerSchedule, locationName: "Lokasi Ditemukan", latitude: lat, longitude: lng, lastFetchedDate: today });
                 }
               },
               async () => {

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, MessageCircle, Send, X, Sparkles, Loader2 } from "lucide-react";
+import { Bot, Send, X, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sfx } from "@/lib/sfx";
@@ -10,6 +10,68 @@ import { sfx } from "@/lib/sfx";
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+// Helper untuk memformat markdown AI (bold, bullets, line breaks) tanpa library luar yang melempar error className
+function FormattedMessage({ content }: { content: string }) {
+  const lines = content.split("\n");
+
+  return (
+    <div className="space-y-1.5 text-xs leading-relaxed">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1" />;
+        }
+
+        // List item bullet (* atau -)
+        if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
+          const text = trimmed.slice(2);
+          return (
+            <div key={idx} className="flex items-start gap-1.5 pl-1.5 my-0.5">
+              <span className="text-emerald-500 font-bold text-sm leading-none mt-0.5">&bull;</span>
+              <span>{formatInlineMarkdown(text)}</span>
+            </div>
+          );
+        }
+
+        // Heading (### atau ##)
+        if (trimmed.startsWith("### ")) {
+          return (
+            <p key={idx} className="font-bold text-foreground text-xs mt-2 mb-0.5">
+              {formatInlineMarkdown(trimmed.slice(4))}
+            </p>
+          );
+        }
+        if (trimmed.startsWith("## ")) {
+          return (
+            <p key={idx} className="font-bold text-primary text-sm mt-2 mb-1">
+              {formatInlineMarkdown(trimmed.slice(3))}
+            </p>
+          );
+        }
+
+        return <p key={idx}>{formatInlineMarkdown(line)}</p>;
+      })}
+    </div>
+  );
+}
+
+// Format bold (**teks**) dan italic (*teks*) di dalam kalimat
+function formatInlineMarkdown(text: string): React.ReactNode[] {
+  // Split berdasarkan **bold**
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-bold text-foreground">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
 }
 
 export function FloatingAIChat() {
@@ -134,9 +196,7 @@ export function FloatingAIChat() {
                     }`}
                   >
                     {m.role === "assistant" ? (
-                      <div className="text-xs leading-relaxed whitespace-pre-wrap">
-                        {m.content}
-                      </div>
+                      <FormattedMessage content={m.content} />
                     ) : (
                       m.content
                     )}
