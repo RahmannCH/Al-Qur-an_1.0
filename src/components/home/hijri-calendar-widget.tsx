@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Moon, Star, ChevronLeft, ChevronRight, Sparkles, BookOpen, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getPrayerTimes } from "@/lib/prayer-api";
+import { getPrayerTimes, gregorianToHijri } from "@/lib/prayer-api";
 import { sfx } from "@/lib/sfx";
 
 export interface IslamicEvent {
@@ -167,7 +167,14 @@ function getHijriDayOfYear(month: number, day: number): number {
 
 export function HijriCalendarWidget() {
   const [prayerData, setPrayerData] = useState<any>(null);
-  const [eventIndex, setEventIndex] = useState<number | null>(null);
+  const [eventIndex, setEventIndex] = useState<number>(() => {
+    const todayHijri = gregorianToHijri(new Date());
+    let idx = ISLAMIC_EVENTS.findIndex(e => e.month === todayHijri.month && e.day >= todayHijri.day);
+    if (idx === -1) {
+      idx = ISLAMIC_EVENTS.findIndex(e => e.month > todayHijri.month);
+    }
+    return idx !== -1 ? idx : 0;
+  });
   const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {

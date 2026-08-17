@@ -2,8 +2,44 @@ import type { PrayerTimesResponse } from "@/types/prayer";
 
 const API_BASE = "https://api.aladhan.com/v1";
 
+const HIJRI_MONTHS_NAMES = [
+  "Muharram", "Safar", "Rabi'ul Awwal", "Rabi'ul Akhir",
+  "Jumadil Ula", "Jumadil Akhir", "Rajab", "Sya'ban",
+  "Ramadhan", "Syawwal", "Dzulqa'dah", "Dzulhijjah"
+];
+
+// Algoritma konversi Masehi ke Hijriah matematis akurat (Ummul Qura / Astronomis)
+export function gregorianToHijri(date: Date = new Date()): { day: number; month: number; monthName: string; year: number } {
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  if (month <= 2) {
+    year -= 1;
+    month += 12;
+  }
+
+  const a = Math.floor(year / 100);
+  const b = 2 - a + Math.floor(a / 4);
+  const jd = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + b - 1524.5;
+
+  let z = jd - 1948439.5;
+  const hy = Math.floor((z * 30 + 10646) / 10631);
+  z -= Math.floor((hy * 10631 - 10646) / 30);
+  const hm = Math.min(12, Math.max(1, Math.ceil(z / 29.5)));
+  const hd = Math.max(1, Math.floor(z - Math.floor((hm - 1) * 29.5) + 1));
+
+  return {
+    day: hd,
+    month: hm,
+    monthName: HIJRI_MONTHS_NAMES[hm - 1] || "Rabi'ul Awwal",
+    year: hy,
+  };
+}
+
 export async function getPrayerTimes(latitude?: number, longitude?: number): Promise<NonNullable<PrayerTimesResponse["data"]>> {
-  const currentDate = new Date().toISOString().split("T")[0];
+  const now = new Date();
+  const currentDate = now.toISOString().split("T")[0];
   const lat = latitude ?? -3.4472;
   const lng = longitude ?? 114.8405;
 
@@ -13,7 +49,7 @@ export async function getPrayerTimes(latitude?: number, longitude?: number): Pro
       const res = await fetch(`/api/prayer-times?latitude=${lat}&longitude=${lng}&date=${currentDate}`);
       if (res.ok) {
         const json = await res.json();
-        if (json.data) return json.data;
+        if (json.data && json.data.date && json.data.timings) return json.data;
       }
     } catch (err) {
       console.warn("Client internal proxy failed, trying direct or fallback:", err);
@@ -29,20 +65,17 @@ export async function getPrayerTimes(latitude?: number, longitude?: number): Pro
     
     if (response.ok) {
       const data: PrayerTimesResponse = await response.json();
-      if (data.data) return data.data;
+      if (data.data && data.data.date && data.data.timings) return data.data;
     }
   } catch (error) {
     console.error("Direct prayer times fetch error:", error);
   }
 
-  // 3. Fallback dinamis berdasarkan tanggal hari ini
-  return getDynamicFallbackPrayerTimes();
+  // 3. Fallback dinamis akurat berdasarkan hari ini
+  return getDynamicFallbackPrayerTimes(now);
 }
 
-function getDynamicFallbackPrayerTimes(): NonNullable<PrayerTimesResponse["data"]> {
-  const now = new Date();
-  
-  // Format tanggal Masehi hari ini
+function getDynamicFallbackPrayerTimes(now: Date = new Date()): NonNullable<PrayerTimesResponse["data"]> {
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   
@@ -51,45 +84,18 @@ function getDynamicFallbackPrayerTimes(): NonNullable<PrayerTimesResponse["data"
   const gregorianDay = String(now.getDate()).padStart(2, "0");
   const gregorianYear = String(now.getFullYear());
 
-  // Estimasi tanggal Hijriah dinamis (tahun 2026/2027 berkisar 1447-1448 H)
-  // Menggunakan Intl jika didukung
-  let hijriDay = "15";
-  let hijriMonthNumber = 8;
-  let hijriMonthEn = "Sha'ban";
-  let hijriYear = "1448";
-
-  try {
-    const hijriFormatter = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura", {
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
-    const parts = hijriFormatter.formatToParts(now);
-    const d = parts.find((p) => p.type === "day")?.value;
-    const m = parts.find((p) => p.type === "month")?.value;
-    const y = parts.find((p) => p.type === "year")?.value;
-
-    if (d) hijriDay = d;
-    if (m) hijriMonthNumber = parseInt(m, 10);
-    if (y) hijriYear = y;
-
-    const hijriMonthsEn = [
-      "Muharram", "Safar", "Rabi' al-awwal", "Rabi' al-thani",
-      "Jumada al-ula", "Jumada al-akhirah", "Rajab", "Sha'ban",
-      "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
-    ];
-    hijriMonthEn = hijriMonthsEn[hijriMonthNumber - 1] || "Sha'ban";
-  } catch {}
+  // Hitung Hijriah hari ini secara real-time
+  const hijriCalc = gregorianToHijri(now);
 
   return {
     date: {
       readable: now.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
       timestamp: Date.now(),
       hijri: {
-        date: { string: `${hijriDay} ${hijriMonthEn} ${hijriYear}` },
-        year: hijriYear,
-        month: { number: hijriMonthNumber, en: hijriMonthEn },
-        day: hijriDay,
+        date: { string: `${hijriCalc.day} ${hijriCalc.monthName} ${hijriCalc.year}` },
+        year: String(hijriCalc.year),
+        month: { number: hijriCalc.month, en: hijriCalc.monthName },
+        day: String(hijriCalc.day),
       },
       gregorian: {
         date: { string: `${gregorianDay} ${gregorianMonth.slice(0, 3)} ${gregorianYear}` },

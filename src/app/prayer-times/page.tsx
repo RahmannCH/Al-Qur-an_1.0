@@ -10,6 +10,7 @@ import { LocationModal } from "@/components/prayer/location-modal";
 import { BackButton } from "@/components/layout/back-button";
 import { Loader2, MapPin } from "lucide-react";
 import { usePrayerStore } from "@/store/prayer-store";
+import { gregorianToHijri } from "@/lib/prayer-api";
 
 export default function PrayerTimesPage() {
   const { prayerSchedule, locationName, fetchAndSyncLocation } = usePrayerStore();
@@ -29,17 +30,20 @@ export default function PrayerTimesPage() {
     );
   }
 
-  // Adapter untuk komponen child yang menggunakan tipe data lama
+  const now = new Date();
+  const hijriNow = gregorianToHijri(now);
+
+  // Adapter dinamis untuk komponen child yang menggunakan tipe data lama
   const adapterPrayerTimes: any = {
     date: { 
-      readable: new Date().toLocaleDateString("id-ID"),
+      readable: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
       hijri: {
-        day: "15",
-        month: { en: "Sha'ban", number: 8 },
-        year: "1448"
+        day: String(hijriNow.day),
+        month: { en: hijriNow.monthName, number: hijriNow.month },
+        year: String(hijriNow.year)
       },
       gregorian: {
-        weekday: { en: new Date().toLocaleDateString("en-US", { weekday: 'long' }) }
+        weekday: { en: now.toLocaleDateString("en-US", { weekday: 'long' }) }
       }
     },
     timings: prayerSchedule
