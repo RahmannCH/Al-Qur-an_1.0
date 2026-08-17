@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { sfx } from "@/lib/sfx";
 import { ThemeToggle } from "./theme-toggle";
-import { useSettingsStore } from "@/store/settings-store";
 import { ZadifyLogo } from "./logo";
+import { useSettingsStore } from "@/store/settings-store";
 import {
   BookOpen,
   Gamepad2,
@@ -29,6 +29,13 @@ import {
   UserCheck,
   BookMarked,
   Lightbulb,
+  Compass,
+  PlaneTakeoff,
+  GraduationCap,
+  Shield,
+  Coins,
+  Smile,
+  ShieldCheck
 } from "lucide-react";
 import {
   Sheet,
@@ -42,49 +49,54 @@ import {
 
 export const MENU_SECTIONS = [
   {
-    title: "Menu Utama",
+    title: "Al-Qur'an & Ibadah Harian",
     items: [
-      { href: "/", label: "Home", icon: Home, desc: "Halaman depan & ringkasan" },
-      { href: "/prayer-times", label: "Jadwal Sholat", icon: Clock, desc: "Waktu sholat & kiblat" },
-      { href: "/calculator", label: "Kalkulator Islami", icon: Calculator, desc: "Hitung Zakat & Waris" },
-      { href: "/chat", label: "AI Chat Islami", icon: MessageCircle, desc: "Tanya jawab seputar Islam" },
+      { href: "/quran", label: "Baca Al-Qur'an", icon: BookOpen, desc: "114 Surah, Tajwid warna & Murottal" },
+      { href: "/memorize", label: "Hafalan & Muraja'ah", icon: BookMarked, desc: "Metode Tikrar & Uji Hafalan" },
+      { href: "/prayer-times", label: "Jadwal Sholat & Kiblat", icon: Clock, desc: "Waktu sholat, Syuruq & Kompas 3D" },
+      { href: "/dzikir", label: "Tasbih & Dzikir", icon: Sparkles, desc: "Counter haptic & list bacaan dzikir" },
+      { href: "/dua", label: "Koleksi Doa Harian", icon: Heart, desc: "Doa mustajab, transliterasi & makna" },
+      { href: "/ruhiyah", label: "P3K Jiwa (Ruhiyah)", icon: Lightbulb, desc: "Bimbingan kalbu & spiritual first aid" },
     ],
   },
   {
-    title: "Al-Qur'an & Ibadah",
+    title: "Edukasi, Roadmap & Keluarga",
     items: [
-      { href: "/quran", label: "Baca Qur'an", icon: BookOpen, desc: "114 Surah & Terjemahan" },
-      { href: "/memorize", label: "Hafalan & Muraja'ah", icon: BookMarked, desc: "Sistem hafalan interaktif" },
-      { href: "/dua", label: "Koleksi Doa", icon: Heart, desc: "Doa harian pilihan" },
-      { href: "/dzikir", label: "Dzikir & Tasbih", icon: Sparkles, desc: "Counter tasbih digital" },
-      { href: "/search", label: "Cari Ayat", icon: Search, desc: "Pencarian ayat & terjemahan" },
-      { href: "/bookmarks", label: "Bookmark", icon: Bookmark, desc: "Ayat tersimpan" },
+      { href: "/learn", label: "Roadmap Belajar Islam", icon: GraduationCap, desc: "Akademi mualaf bertahap & kuis kelulusan" },
+      { href: "/kids/kisah-nabi", label: "Kisah 25 Nabi & Rasul", icon: Smile, desc: "Storytelling moral & doa nabi" },
+      { href: "/kids/gender-edu", label: "Edukasi Fitrah & Tumbuh Kembang", icon: Shield, desc: "Panduan parenting & benteng syariat" },
+      { href: "/kids/parent", label: "Dashboard Orang Tua", icon: ShieldCheck, desc: "Pantau progres ibadah & ZP anak" },
+      { href: "/chat", label: "Zad Mentor AI", icon: MessageCircle, desc: "Asisten tanya jawab fikih & syariat" },
     ],
   },
   {
-    title: "Ruhiyah & Bimbingan",
+    title: "Kalkulator & Perencanaan Syariat",
     items: [
-      { href: "/ruhiyah", label: "P3K Jiwa", icon: Lightbulb, desc: "Spiritual First Aid" },
+      { href: "/calculator/zakat", label: "Kalkulator Zakat", icon: Coins, desc: "Zakat Fitrah, Maal, Emas & Profesi" },
+      { href: "/calculator/haji-umroh", label: "Tabungan Haji & Umroh", icon: PlaneTakeoff, desc: "Target inflasi, roadmap & tracking" },
+      { href: "/calculator/waris", label: "Waris Faraid", icon: Calculator, desc: "Pembagian waris syariat Islam" },
     ],
   },
   {
-    title: "Arcade & Kuis",
+    title: "Arcade Games & Gamifikasi",
     items: [
-      { href: "/games", label: "Arcade Hub", icon: Gamepad2, desc: "Pusat game edukasi" },
-      { href: "/games/tebak-ayat", label: "Tebak Ayat", icon: HelpCircle, desc: "Kuis tebak surah" },
-      { href: "/games/sambung-ayat", label: "Sambung Ayat", icon: Layers, desc: "Lengkapi potongan ayat" },
-      { href: "/games/harf-le", label: "Harf-le (Wordle)", icon: Grid, desc: "Tebak kata Islami" },
-      { href: "/games/tajwid-ninja", label: "Tajwid Ninja", icon: Zap, desc: "Latihan tajwid interaktif" },
-      { href: "/games/trivia", label: "Trivia Islami", icon: Brain, desc: "Kuis wawasan Islam" },
-      { href: "/games/memory", label: "Memory Match", icon: Boxes, desc: "Asah ingatan kartu" },
+      { href: "/games", label: "Arcade Hub", icon: Gamepad2, desc: "Pusat game edukasi Islami" },
+      { href: "/games/trivia", label: "Trivia Islami", icon: Brain, desc: "Kuis Duolingo-style berhadiah ZP" },
+      { href: "/games/tebak-ayat", label: "Tebak Ayat", icon: HelpCircle, desc: "Tebak potongan ayat yang hilang" },
+      { href: "/games/sambung-ayat", label: "Sambung Ayat", icon: Layers, desc: "Susun kata acak menjadi ayat" },
+      { href: "/games/harf-le", label: "Harf-le (Wordle Arab)", icon: Grid, desc: "Tebak akar kata Al-Qur'an" },
+      { href: "/games/tajwid-ninja", label: "Tajwid Ninja", icon: Zap, desc: "Latihan refleks deteksi tajwid" },
+      { href: "/games/memory", label: "Memory Match", icon: Boxes, desc: "Cocokkan kosakata Arab & artinya" },
+      { href: "/achievements", label: "Zad Points & Lencana", icon: Trophy, desc: "Level bekal & koleksi badge" },
     ],
   },
   {
-    title: "Pengaturan & Developer",
+    title: "Utilitas & Pengaturan",
     items: [
-      { href: "/achievements", label: "Pencapaian", icon: Trophy, desc: "XP, Level & Badge" },
-      { href: "/settings", label: "Pengaturan", icon: Settings, desc: "Pengaturan tampilan" },
-      { href: "/creator", label: "Business Inquiry & Dev", icon: UserCheck, desc: "Profil Rahman CH & Kontak" },
+      { href: "/search", label: "Pencarian Ayat", icon: Search, desc: "Cari ayat, kata kunci & arti" },
+      { href: "/bookmarks", label: "Ayat Tersimpan", icon: Bookmark, desc: "Daftar ayat & doa favorit" },
+      { href: "/settings", label: "Pengaturan & Alarm", icon: Settings, desc: "Font, Qari & Pengingat Harian" },
+      { href: "/creator", label: "Profil Developer", icon: UserCheck, desc: "Profil Rahman CH & Inquiry" },
     ],
   },
 ];

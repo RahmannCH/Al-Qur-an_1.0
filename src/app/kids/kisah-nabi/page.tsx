@@ -48,6 +48,22 @@ const KISAH_NABI = [
     icon: "👑"
   },
   {
+    id: "yusuf",
+    name: "Nabi Yusuf AS",
+    title: "Pemaaf yang Berakhlak Mulia",
+    desc: "Kisah mimpi bintang, sumur padang pasir, hingga menjadi menteri Mesir yang pemaaf.",
+    color: "from-amber-400 to-yellow-600",
+    icon: "🌟"
+  },
+  {
+    id: "ayyub",
+    name: "Nabi Ayyub AS",
+    title: "Kesabaran Tanpa Batas",
+    desc: "Kisah teladan kesabaran menghadapi ujian penyakit dan kehilangan tanpa pernah mengeluh.",
+    color: "from-emerald-500 to-teal-600",
+    icon: "🌿"
+  },
+  {
     id: "yunus",
     name: "Nabi Yunus AS",
     title: "Berdzikir di Perut Paus",
