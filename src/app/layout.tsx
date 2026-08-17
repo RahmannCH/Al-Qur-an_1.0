@@ -34,8 +34,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Al-Qur'an Digital",
-  description: "Aplikasi Al-Qur'an digital dengan terjemahan, audio murottal, dan fitur pembelajaran.",
+  title: "Zadify • Modern Islamic Productivity Super-App & Digital Quran",
+  description: "Zadify adalah ekosistem produktivitas Islami all-in-one: Al-Qur'an tajwid interaktif, live murottal per-ayat, kalkulator zakat & haji, gamifikasi bekal harian (Zad Points), dan AI Zad Mentor.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10b981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="Al-Qur'an Digital" />
+        <meta name="apple-mobile-web-app-title" content="Zadify" />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>

@@ -60,7 +60,7 @@ export default function GamesHub() {
           <Gamepad2 className="h-8 w-8 text-primary" />
           <h1 className="text-3xl font-display font-bold">Arcade Islami</h1>
         </div>
-        <p className="text-muted-foreground">Main sambil belajar, kumpulkan XP, naikkan levelmu!</p>
+        <p className="text-muted-foreground">Main sambil belajar, kumpulkan Zad Points (ZP), dan naikkan levelmu!</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

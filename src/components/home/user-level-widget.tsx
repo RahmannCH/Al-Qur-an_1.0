@@ -21,7 +21,7 @@ export function UserLevelWidget() {
         </div>
         <div>
           <p className="text-xs font-semibold text-muted-foreground">Lvl {lvl.level} &middot; {lvl.title}</p>
-          <p className="text-sm font-bold text-primary">{xp} XP</p>
+          <p className="text-sm font-bold text-primary">{xp} ZP</p>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground ml-1" />
       </motion.div>

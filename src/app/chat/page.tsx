@@ -16,7 +16,7 @@ interface Message {
 
 const initialMessage: Message = {
   role: "assistant",
-  content: "Wa'alaikumsalam! 😊 Saya siap membantu Anda dengan pertanyaan seputar Islam, Al-Qur'an, doa, atau apapun yang ingin Anda tanyakan. Ada yang bisa saya bantu?"
+  content: "Assalamu'alaikum! Saya Zad Mentor. Siap mendampingi Anda mendalami Al-Qur'an, fikih, dan bekal ibadah harian. Ada yang ingin didiskusikan hari ini?"
 };
 
 export default function ChatPage() {
@@ -85,9 +85,9 @@ export default function ChatPage() {
           <div className="p-2 bg-gradient-to-br from-primary to-teal rounded-xl">
             <Bot className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-3xl font-display font-bold">AI Chat Islami</h1>
+          <h1 className="text-3xl font-display font-bold">Zad Mentor AI</h1>
         </div>
-        <p className="text-muted-foreground">Tanya jawab dengan AI tentang Islam, Al-Qur'an, atau apapun</p>
+        <p className="text-muted-foreground">Tanya jawab seputar Al-Qur'an, fikih, doa, dan bekal ibadah harian</p>
       </div>
 
       <div className="rounded-2xl border bg-card overflow-hidden flex flex-col h-[600px]">

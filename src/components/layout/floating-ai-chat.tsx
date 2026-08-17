@@ -12,7 +12,39 @@ interface Message {
   content: string;
 }
 
-// Helper untuk memformat markdown AI (bold, bullets, line breaks) tanpa library luar yang melempar error className
+// Tokenizer & Parser Markdown Inline yang sangat handal
+function formatInlineMarkdown(text: string): React.ReactNode[] {
+  // Regex untuk bold (**...**), italic (*...* atau _..._), dan inline code (`...`)
+  const regex = /(\*\*[^\*]+?\*\*|\*[^\*]+?\*|`[^`]+?`)/g;
+  const parts = text.split(regex);
+
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return (
+        <strong key={i} className="font-bold text-foreground">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2 && !part.startsWith("**")) {
+      return (
+        <em key={i} className="italic text-muted-foreground">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+      return (
+        <code key={i} className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-primary">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
+// Helper untuk memformat pesan AI menjadi layout yang rapi
 function FormattedMessage({ content }: { content: string }) {
   const lines = content.split("\n");
 
@@ -21,57 +53,55 @@ function FormattedMessage({ content }: { content: string }) {
       {lines.map((line, idx) => {
         const trimmed = line.trim();
         if (!trimmed) {
-          return <div key={idx} className="h-1" />;
+          return <div key={idx} className="h-1.5" />;
         }
 
-        // List item bullet (* atau -)
-        if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
-          const text = trimmed.slice(2);
+        // List item bullet (*, -, +, 1.) dengan toleransi berbagai spasi
+        const bulletMatch = trimmed.match(/^([\*\-\+\•]|\d+\.)\s+(.+)$/);
+        if (bulletMatch) {
+          const bulletSymbol = bulletMatch[1];
+          const text = bulletMatch[2];
           return (
-            <div key={idx} className="flex items-start gap-1.5 pl-1.5 my-0.5">
-              <span className="text-emerald-500 font-bold text-sm leading-none mt-0.5">&bull;</span>
-              <span>{formatInlineMarkdown(text)}</span>
+            <div key={idx} className="flex items-start gap-2 pl-1.5 my-1">
+              <span className="text-emerald-500 font-bold text-xs shrink-0 mt-0.5">
+                {bulletSymbol.endsWith(".") ? bulletSymbol : "•"}
+              </span>
+              <span className="flex-1 leading-normal">{formatInlineMarkdown(text)}</span>
             </div>
           );
         }
 
-        // Heading (### atau ##)
+        // Heading (###, ##, #)
         if (trimmed.startsWith("### ")) {
           return (
-            <p key={idx} className="font-bold text-foreground text-xs mt-2 mb-0.5">
+            <p key={idx} className="font-bold text-foreground text-xs mt-2.5 mb-1 border-b border-border/40 pb-0.5">
               {formatInlineMarkdown(trimmed.slice(4))}
             </p>
           );
         }
         if (trimmed.startsWith("## ")) {
           return (
-            <p key={idx} className="font-bold text-primary text-sm mt-2 mb-1">
+            <p key={idx} className="font-bold text-primary text-sm mt-3 mb-1.5">
               {formatInlineMarkdown(trimmed.slice(3))}
             </p>
           );
         }
+        if (trimmed.startsWith("# ")) {
+          return (
+            <p key={idx} className="font-display font-bold text-primary text-base mt-3 mb-1.5">
+              {formatInlineMarkdown(trimmed.slice(2))}
+            </p>
+          );
+        }
 
-        return <p key={idx}>{formatInlineMarkdown(line)}</p>;
+        return (
+          <p key={idx} className="leading-relaxed">
+            {formatInlineMarkdown(line)}
+          </p>
+        );
       })}
     </div>
   );
-}
-
-// Format bold (**teks**) dan italic (*teks*) di dalam kalimat
-function formatInlineMarkdown(text: string): React.ReactNode[] {
-  // Split berdasarkan **bold**
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return (
-        <strong key={i} className="font-bold text-foreground">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    return part;
-  });
 }
 
 export function FloatingAIChat() {
@@ -79,7 +109,7 @@ export function FloatingAIChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Assalamu'alaikum! Ada yang ingin ditanyakan seputar Al-Qur'an atau hukum Islam?",
+      content: "Assalamu'alaikum! I'm Zad Mentor. Ready to level up bekal ibadahmu hari ini? Ada yang ingin ditanyakan seputar Al-Qur'an atau ibadah?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -142,7 +172,7 @@ export function FloatingAIChat() {
             setIsOpen(!isOpen);
           }}
           className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-2xl hover:shadow-emerald-500/25"
-          aria-label="Tanya AI Assistant"
+          aria-label="Tanya Zad Mentor AI"
         >
           <span className="absolute -inset-1 animate-ping rounded-full bg-emerald-500/30" />
           <Bot className="relative h-7 w-7 text-white" />
@@ -163,9 +193,9 @@ export function FloatingAIChat() {
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-display text-sm font-bold">AI Chat Companion</h3>
+                  <h3 className="font-display text-sm font-bold">Zad Mentor</h3>
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Sparkles className="h-3 w-3 text-gold" /> Asisten Islami Pintar
+                    <Sparkles className="h-3 w-3 text-gold" /> AI Companion : Zadify
                   </p>
                 </div>
               </div>
@@ -189,7 +219,7 @@ export function FloatingAIChat() {
                   className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl p-3 leading-relaxed ${
+                    className={`max-w-[85%] rounded-2xl p-3.5 leading-relaxed ${
                       m.role === "user"
                         ? "bg-primary text-primary-foreground font-medium"
                         : "bg-muted/60 text-foreground border"
@@ -207,7 +237,7 @@ export function FloatingAIChat() {
                 <div className="flex justify-start">
                   <div className="flex items-center gap-2 rounded-2xl bg-muted/60 p-3 text-muted-foreground border">
                     <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
-                    <span>AI sedang merangkum jawaban...</span>
+                    <span>Zad Mentor sedang merangkum bekal...</span>
                   </div>
                 </div>
               )}

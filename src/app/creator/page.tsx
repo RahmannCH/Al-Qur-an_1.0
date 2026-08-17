@@ -44,7 +44,7 @@ export default function CreatorPage() {
                 <Terminal className="w-3.5 h-3.5" /> Fullstack Developer
               </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-2">Rahman CH</h1>
-              <p className="text-xl text-muted-foreground mb-6">Creator of Al-Qur'an Digital 1.0</p>
+              <p className="text-xl text-muted-foreground mb-6">Creator of Zadify</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-3">
                 <a href="mailto:Rahmannch19@gmail.com">
@@ -73,7 +73,7 @@ export default function CreatorPage() {
                 <h2 className="text-2xl font-display font-bold">Tentang Project</h2>
              </div>
              <p className="text-muted-foreground leading-relaxed mb-6">
-               Al-Qur'an Digital 1.0 dikembangkan sebagai aplikasi pembelajaran Islami interaktif yang memadukan teknologi modern dengan *user experience* gamifikasi. Dibangun untuk memberikan pengalaman membaca Al-Qur'an yang imersif, menyenangkan, dan tidak monoton.
+               Zadify dikembangkan sebagai ekosistem produktivitas Islami all-in-one yang memadukan Al-Qur'an digital berstandar tajwid, pembelajaran bertahap, dan gamifikasi bekal harian (Zad Points).
              </p>
              <a href="https://github.com/RahmannCH/Al-Qur-an_1.0/blob/master/README.md" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary" className="w-full justify-between group">

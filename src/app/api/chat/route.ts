@@ -3,23 +3,19 @@ import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-const systemPrompt = `Kamu adalah Mentor Islam Digital yang sangat pintar, ramah, interaktif, dan gaul. 
-Nama kamu adalah "Al-Qur'an Digital AI".
+const systemPrompt = `You are "Zad Mentor", a smart, articulate, and friendly Islamic AI companion inside Zadify (an all-in-one digital Islamic productivity app).
 
-PENTING:
-- Bertindaklah seperti sahabat ngobrol, gunakan sapaan santai, tapi tetap sangat beradab.
-- Gunakan emoji untuk menghidupkan suasana.
-- Jika pengguna ingin di-test/kuis, JANGAN beri soal yang terlalu mudah. Berikan pertanyaan tajam dan berbobot. Evaluasi jawaban mereka dan beri nilai/XP imaginer.
-- Format jawabanmu dengan Markdown yang rapi (Gunakan bold, italic, bullet points, atau tabel jika perlu).
-- Selalu sertakan kutipan dalil (Al-Qur'an/Hadits) yang valid jika membahas syariat atau akidah.
-- Jika ditanya tentang doa, sertakan Teks Arab, Transliterasi, dan Artinya.
-- Jangan ragu untuk melempar pertanyaan balik (engaging loop) agar user terus berinteraksi denganmu!
+MISSION:
+Help users collect their daily "Zad" (زَاد: spiritual provisions & good deeds for the hereafter) through deep Quranic insights, authentic Islamic knowledge, and practical daily guidance.
 
-Contoh Respons:
-User: "Test hafalan juz 30 ku dong!"
-Kamu: "Wahh masyaAllah, semangat banget nih! 🔥 Ayo kita mulai. Coba tebak, surah apa yang ayat pertamanya berbunyi 'عَمَّ يَتَسَاءَلُونَ' (Amma yatasaa-aluun)? Dan apa terjemahannya? Ditunggu jawabannya ya! 😉"
-
-Jika user menanyakan hal di luar konteks Islam atau moral yang baik, arahkan kembali secara halus ke topik pengembangan diri atau nilai Islami.`;
+CORE RULES & PERSONA:
+- Introduce yourself as "Zad Mentor" when asked or greeting new users.
+- Tone: Friendly, respectful, intelligent, tech-savvy, and warm. Blend natural Indonesian with clean English terms where appropriate (e.g., "Level up bekal ibadahmu", "Spiritual insights", "Daily quest").
+- Never use em dashes (— or –) in formatting. Use clean colons, bullets, or standard hyphens.
+- Format responses cleanly with Markdown (bold, bullet points, clean Arabic text with transliteration & translation when providing verses/duas).
+- Always provide authentic references (Al-Qur'an or Hadits) for religious inquiries.
+- When quizzing or testing knowledge, provide smart questions with constructive feedback and imaginary Zad Points (ZP) rewards.
+- Always encourage continuous learning and istiqamah in collecting daily provisions for the hereafter.`;
 
 export async function POST(req: Request) {
   try {
@@ -33,16 +29,16 @@ export async function POST(req: Request) {
     if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "") {
       return NextResponse.json(
         {
-          reply: "⚠️ **API Key Gemini Belum Valid!**\n\nWah, sepertinya kunci API Gemini kamu belum disetting dengan benar di file `.env.local` nih. Pastikan kamu sudah memasukkan `GEMINI_API_KEY=KODE_KAMU_DISINI` tanpa tanda kutip ya! Hubungi developer kalau masih bingung. 🛠️"
+          reply: "⚠️ **API Key Gemini Belum Dikonfigurasi!**\n\nPastikan Anda telah memasukkan `GEMINI_API_KEY=kunci_anda` di dalam file `.env.local` untuk mengaktifkan Zad Mentor AI. 🛠️"
         },
         { status: 200 }
       );
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.5-flash", // Stabil untuk deploy
+      model: "gemini-3.5-flash",
       generationConfig: {
-        temperature: 0.9,
+        temperature: 0.85,
         topP: 0.95,
         maxOutputTokens: 2048,
       }
@@ -51,7 +47,7 @@ export async function POST(req: Request) {
     const chat = model.startChat({
       history: [
         { role: "user", parts: [{ text: systemPrompt }] },
-        { role: "model", parts: [{ text: "Siap laksanakan! Saya akan menjadi sahabat ngobrol Islami yang interaktif dan berwawasan luas. Mari kita mulai! ✨" }] },
+        { role: "model", parts: [{ text: "Assalamu'alaikum! I am Zad Mentor. Ready to assist you in collecting your daily spiritual provisions and mastering Islamic knowledge. How can I help you today? ✨" }] },
         ...(Array.isArray(history) ? history.slice(-8) : []).flatMap((msg: { role: string; content: string }) => {
           if (!msg.role || !msg.content) return [];
           return [{
@@ -66,24 +62,22 @@ export async function POST(req: Request) {
     const response = result.response;
     let text = response.text();
 
-    if (!text) text = "Wah, aku nge-blank nih. Boleh ulangi pertanyaannya? 🤔";
+    if (!text) text = "Mohon maaf, bolehkah mengulangi pertanyaannya? Zad Mentor siap membantu. 🤔";
 
     return NextResponse.json({ reply: text });
   } catch (error: any) {
-    console.error("Gemini API error:", error);
+    console.error("Zad Mentor Gemini API error:", error);
 
-    let userMessage = "⚠️ **Terjadi Kesalahan Jaringan!**\n\n";
+    let userMessage = "⚠️ **Kendala Jaringan / Layanan**\n\n";
 
     if (error.message?.includes("API_KEY_INVALID")) {
-      userMessage += "Kunci API Gemini kamu salah atau sudah kedaluwarsa. Tolong dicek lagi file `.env.local`-nya ya.";
+      userMessage += "Kunci API Gemini tidak valid atau kedaluwarsa. Mohon periksa kembali konfigurasi API Key.";
     } else if (error.message?.includes("RATE_LIMIT")) {
-      userMessage += "Waduh, terlalu banyak yang nanya nih. Servernya lagi sibuk (Rate Limit). Kita jeda 1 menit dulu ya! ⏱️";
+      userMessage += "Server sedang melayani banyak permintaan (Rate Limit). Silakan coba kembali dalam 1 menit.";
     } else if (error.message?.includes("SAFETY")) {
-      userMessage += "Maaf, aku nggak bisa ngejawab itu karena terfilter oleh sistem keamanan Google (Safety Block). Coba pakai kata-kata lain. 🛡️";
-    } else if (error.message?.includes("model is not supported")) {
-      userMessage += "Model Gemini yang diminta sepertinya tidak didukung oleh paket langganan API-mu. Hubungi developer ya.";
+      userMessage += "Pertanyaan tidak dapat diproses karena terfilter oleh kebijakan keamanan Google.";
     } else {
-      userMessage += `Ada error misterius nih: \`${error.message}\`. Hubungi tim developer biar bisa dibenerin! 💻`;
+      userMessage += `Terjadi kendala: \`${error.message}\`. Silakan coba beberapa saat lagi.`;
     }
 
     return NextResponse.json({ reply: userMessage }, { status: 200 });

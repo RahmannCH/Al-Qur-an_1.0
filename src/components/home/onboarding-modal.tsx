@@ -57,7 +57,7 @@ export function OnboardingModal() {
               </div>
               <h2 className="text-2xl font-display font-bold text-center mb-2">Ahlan wa Sahlan!</h2>
               <p className="text-muted-foreground text-center mb-8 text-sm">
-                Selamat datang di Al-Qur'an Digital. Siapa nama panggilamu?
+                Selamat datang di Zadify. Yuk, mulai petualangan mengumpulkan bekal pertamamu!
               </p>
               <Input
                 value={name}
@@ -89,7 +89,7 @@ export function OnboardingModal() {
               </div>
               <h2 className="text-2xl font-display font-bold text-center mb-2">Salam Kenal, {name}!</h2>
               <p className="text-muted-foreground text-center mb-8 text-sm">
-                Berapa ayat target bacaan Al-Qur'an harianmu?
+                Berapa target bacaan Al-Qur'an harianmu untuk mengumpulkan Zad Points?
               </p>
               
               <div className="flex items-center justify-center gap-4 mb-8">
@@ -105,7 +105,7 @@ export function OnboardingModal() {
                 onClick={handleNext}
                 className="w-full h-14 rounded-xl text-lg font-bold bg-gradient-to-r from-primary to-teal hover:from-primary/90 hover:to-teal/90"
               >
-                <Sparkles className="mr-2 h-5 w-5" /> Mulai Perjalanan
+                <Sparkles className="mr-2 h-5 w-5" /> Mulai Zadify Harimu
               </Button>
             </motion.div>
           )}

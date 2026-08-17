@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: SurahPageProps) {
   const { id } = await params;
   const chapter = await getChapter(Number(id));
   return {
-    title: `${chapter.name_simple} - Al-Qur'an Digital`,
-    description: `Baca Surah ${chapter.name_simple} (${chapter.translated_name.name}) - ${chapter.verses_count} ayat`,
+    title: `${chapter.name_simple} | Zadify`,
+    description: `Baca Surah ${chapter.name_simple} (${chapter.translated_name.name}) | ${chapter.verses_count} ayat`,
   };
 }
 

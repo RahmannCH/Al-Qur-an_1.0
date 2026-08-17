@@ -1,23 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Moon, Star, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Moon, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerTimes } from "@/lib/prayer-api";
 import { sfx } from "@/lib/sfx";
 
-// Peristiwa penting Hijriyah
+// 18 Peristiwa & Hari Besar Penting Islam Sepanjang Tahun
 const ISLAMIC_EVENTS = [
-  { month: 1, day: 1, name: "Tahun Baru Hijriyah" },
-  { month: 1, day: 10, name: "Hari Asyura" },
-  { month: 3, day: 12, name: "Maulid Nabi Muhammad ﷺ" },
-  { month: 7, day: 27, name: "Isra' Mi'raj" },
-  { month: 8, day: 15, name: "Nisfu Sya'ban" },
-  { month: 9, day: 1, name: "Awal Ramadhan" },
-  { month: 9, day: 17, name: "Nuzulul Qur'an" },
-  { month: 10, day: 1, name: "Idul Fitri" },
-  { month: 12, day: 9, name: "Hari Arafah" },
-  { month: 12, day: 10, name: "Idul Adha" },
+  { month: 1, day: 1, name: "Tahun Baru Hijriyah (1 Muharram)" },
+  { month: 1, day: 9, name: "Puasa Tasu'a (9 Muharram)" },
+  { month: 1, day: 10, name: "Hari Asyura (10 Muharram)" },
+  { month: 3, day: 12, name: "Maulid Nabi Muhammad ﷺ (12 Rabi'ul Awwal)" },
+  { month: 7, day: 27, name: "Isra' Mi'raj (27 Rajab)" },
+  { month: 8, day: 1, name: "Awal Bulan Sya'ban (1 Sya'ban)" },
+  { month: 8, day: 15, name: "Malam Nisfu Sya'ban (15 Sya'ban)" },
+  { month: 9, day: 1, name: "Awal Puasa Ramadhan (1 Ramadhan)" },
+  { month: 9, day: 17, name: "Nuzulul Qur'an (17 Ramadhan)" },
+  { month: 9, day: 21, name: "10 Malam Terakhir / Lailatul Qadar" },
+  { month: 10, day: 1, name: "Hari Raya Idul Fitri (1 Syawwal)" },
+  { month: 10, day: 2, name: "Puasa Sunnah 6 Hari Syawwal" },
+  { month: 11, day: 1, name: "Awal Bulan Haram Dzulqa'dah" },
+  { month: 12, day: 1, name: "10 Hari Awal Dzulhijjah (Amal Terbaik)" },
+  { month: 12, day: 8, name: "Hari Tarwiyah (8 Dzulhijjah)" },
+  { month: 12, day: 9, name: "Hari Arafah & Puasa Arafah (9 Dzulhijjah)" },
+  { month: 12, day: 10, name: "Hari Raya Idul Adha (10 Dzulhijjah)" },
+  { month: 12, day: 11, name: "Hari Tasyrik (11-13 Dzulhijjah)" },
 ];
 
 const HIJRI_MONTHS = [
@@ -35,7 +43,7 @@ const HIJRI_MONTHS = [
   "Dzulhijjah"
 ];
 
-// Perkiraan jumlah hari per bulan Hijriah (rata-rata 29.53 hari)
+// Perkiraan akumulasi hari per bulan Hijriah
 function getHijriDayOfYear(month: number, day: number): number {
   const monthDays = [0, 30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325];
   return (monthDays[month - 1] || 0) + day;
@@ -59,7 +67,7 @@ export function HijriCalendarWidget() {
         defaultIdx = ISLAMIC_EVENTS.findIndex(e => e.month > monthNum);
       }
       if (defaultIdx === -1) {
-        defaultIdx = 0; // Wrap ke event pertama
+        defaultIdx = 0; // Wrap ke event pertama jika sudah di akhir tahun
       }
       setEventIndex(defaultIdx);
     });
@@ -94,7 +102,7 @@ export function HijriCalendarWidget() {
     relativeTimeLabel = `${diffDays} hari lagi`;
     badgeColor = "bg-primary/10 text-primary font-bold";
   } else {
-    relativeTimeLabel = `${Math.abs(diffDays)} hari yang lalu`;
+    relativeTimeLabel = `${Math.abs(diffDays)} hari lalu`;
     badgeColor = "bg-muted text-muted-foreground";
   }
 
@@ -151,10 +159,12 @@ export function HijriCalendarWidget() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-amber-500 shrink-0" />
-              <p className="text-[9px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-widest">Hari Besar Tahun Ini</p>
+              <p className="text-[9px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-widest">
+                Hari Besar ({eventIndex + 1}/{ISLAMIC_EVENTS.length})
+              </p>
             </div>
             
-            {/* Navigasi Event */}
+            {/* Navigasi Event Slider */}
             <div className="flex items-center gap-1">
               <button
                 onClick={handlePrevEvent}

@@ -134,20 +134,20 @@ export function HeroBentoGrid() {
               Zadify Workspace Ibadah
             </span>
           </div>
-          <h2 className="font-display text-2xl font-bold md:text-3xl bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
-            Pilih jalur kebutuhanmu
+          <h2 className="font-display text-2xl font-bold md:text-3xl text-foreground">
+            Mulai kumpulkan bekalmu hari ini
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Eksplorasi hirarki bento interaktif dengan perpaduan warna yang seimbang & memanjakan mata.
+            Akses cepat Al-Qur'an, edukasi bertahap, dan amalan sunnah harian.
           </p>
         </div>
 
         <Link
           href="/games"
           onClick={() => sfx.playWoosh()}
-          className="rounded-full border border-cyan-500/30 bg-cyan-950/30 backdrop-blur-md px-4 py-2 text-xs font-extrabold text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.25)] transition-all hover:bg-cyan-500 hover:text-slate-950 hover:shadow-[0_0_28px_rgba(6,182,212,0.5)] flex items-center gap-2 w-fit"
+          className="rounded-full border bg-card px-4 py-2 text-xs font-extrabold text-primary shadow-sm transition-all hover:bg-primary hover:text-primary-foreground flex items-center gap-2 w-fit"
         >
-          <Gamepad2 className="h-4 w-4" /> Arcade XP & Kuis
+          <Gamepad2 className="h-4 w-4" /> Arcade & Kuis ZP
         </Link>
       </div>
 
@@ -212,29 +212,29 @@ export function HeroBentoGrid() {
         transition={{ delay: 0.28 }}
         whileHover={{ scale: 1.008 }}
         whileTap={{ scale: 0.99 }}
-        className="mt-5 overflow-hidden rounded-3xl border border-cyan-500/30 bg-card/80 backdrop-blur-xl shadow-[0_0_30px_rgba(6,182,212,0.25)]"
+        className="mt-5 overflow-hidden rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow"
       >
         <Link
           href="/games"
           onClick={() => sfx.playWoosh()}
-          className="group flex flex-col gap-4 bg-gradient-to-r from-slate-950 via-cyan-950 to-blue-950 p-6 text-white md:flex-row md:items-center md:justify-between relative overflow-hidden"
+          className="group flex flex-col gap-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 p-6 text-white md:flex-row md:items-center md:justify-between relative overflow-hidden"
         >
-          <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none group-hover:bg-cyan-500/30 transition-all duration-700" />
+          <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none group-hover:bg-white/20 transition-all duration-700" />
           
           <div className="flex items-center gap-4 relative z-10">
-            <div className="rounded-2xl border border-cyan-400/30 bg-cyan-500/20 p-3.5 shadow-lg backdrop-blur-md group-hover:scale-105 group-hover:border-cyan-400 transition-all">
-              <Gamepad2 className="h-8 w-8 text-cyan-300 animate-pulse" />
+            <div className="rounded-2xl border border-white/20 bg-white/20 p-3.5 shadow-sm backdrop-blur-md group-hover:scale-105 transition-all">
+              <Gamepad2 className="h-8 w-8 text-white" />
             </div>
             <div>
-              <div className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-400/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-cyan-200">
-                <Sparkles className="h-3 w-3 text-cyan-300 fill-cyan-300" /> Gamifikasi & Daily Quests
+              <div className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                <Sparkles className="h-3 w-3 text-gold fill-gold" /> Gamifikasi Zad Points (ZP)
               </div>
-              <h3 className="font-display text-2xl font-extrabold text-white">Arcade Hub & Kuis Islami</h3>
-              <p className="text-xs font-medium text-cyan-100/80 mt-0.5">Trivia, tebak ayat, sambung ayat, memory match, dan Tajwid Ninja.</p>
+              <h3 className="font-display text-2xl font-extrabold text-white">Arcade & Kuis Islami</h3>
+              <p className="text-xs font-medium text-white/90 mt-0.5">Trivia, tebak ayat, sambung ayat, memory match, dan Tajwid Ninja.</p>
             </div>
           </div>
-          <div className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 px-5 py-2.5 text-xs font-extrabold text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-transform group-hover:scale-105 relative z-10 shrink-0">
-            Main Sekarang <Target className="h-4 w-4" />
+          <div className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-bold text-blue-600 shadow-sm transition-transform group-hover:scale-105 relative z-10 shrink-0">
+            Panen ZP Sekarang <Target className="h-4 w-4" />
           </div>
         </Link>
       </motion.div>

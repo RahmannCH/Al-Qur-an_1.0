@@ -70,7 +70,7 @@ export function SunnahTracker({ hijriDate, gregorianDate }: SunnahTrackerProps) 
         </div>
         <div>
           <h2 className="text-xl font-display font-bold">Amalan Sunnah</h2>
-          <p className="text-xs text-muted-foreground font-medium">Panen pahala dan XP ekstra</p>
+          <p className="text-xs text-muted-foreground font-medium">Panen pahala dan Zad Points (ZP) ekstra</p>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export function SunnahTracker({ hijriDate, gregorianDate }: SunnahTrackerProps) 
               <div className="flex items-center gap-3">
                 {!isCompleted && (
                   <span className="text-[10px] font-bold bg-amber-500/10 text-amber-600 px-2 py-1 rounded-md flex items-center gap-1">
-                    <Award className="h-3 w-3" /> +{deed.xp}
+                    <Award className="h-3 w-3" /> +{deed.xp} ZP
                   </span>
                 )}
                 <div className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${

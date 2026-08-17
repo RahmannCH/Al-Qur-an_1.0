@@ -43,7 +43,7 @@ function XpToast({ gain, onRemove }: { gain: any; onRemove: () => void }) {
         <Sparkles className="h-5 w-5 text-white" />
       </div>
       <div>
-        <p className="font-display font-bold text-lg leading-none">+{gain.amount} XP</p>
+        <p className="font-display font-bold text-lg leading-none">+{gain.amount} ZP</p>
         <p className="text-xs font-medium text-white/90 mt-0.5">{gain.reason}</p>
       </div>
     </motion.div>

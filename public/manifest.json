@@ -1,11 +1,11 @@
 {
-  "name": "Al-Qur'an Digital 1.0",
-  "short_name": "Al-Qur'an",
-  "description": "Aplikasi Al-Qur'an digital dengan terjemahan, audio murottal, dan fitur pembelajaran interaktif.",
+  "name": "Zadify: The Comprehensive Digital Al-Qur'an Provision for Muslims",
+  "short_name": "Zadify",
+  "description": "Zadify adalah ekosistem produktivitas Islami all-in-one: Al-Qur'an tajwid interaktif, live murottal per-ayat, kalkulator zakat & haji, gamifikasi bekal harian (Zad Points), dan AI Zad Mentor.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F9FAFB",
-  "theme_color": "#1E3A5F",
+  "theme_color": "#10B981",
   "orientation": "portrait",
   "icons": [
     {

@@ -33,7 +33,7 @@ function QuestCard({ quest }: { quest: DailyQuest }) {
           </div>
           <div>
             <p className="font-semibold text-sm">{quest.title}</p>
-            <p className="text-xs text-muted-foreground">+{quest.xpReward} XP</p>
+            <p className="text-xs text-muted-foreground">+{quest.xpReward} ZP</p>
           </div>
         </div>
         {quest.completed ? (
@@ -113,7 +113,7 @@ function LootboxModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               transition={{ duration: 0.5 }}
             >
               <div className="text-6xl mb-4">✨</div>
-              <h3 className="text-2xl font-display font-bold mb-2">+200 XP!</h3>
+              <h3 className="text-2xl font-display font-bold mb-2">+200 ZP!</h3>
               <p className="text-muted-foreground text-sm mb-6">
                 Terima kasih telah istiqamah hari ini. Besok akan ada misi baru!
               </p>

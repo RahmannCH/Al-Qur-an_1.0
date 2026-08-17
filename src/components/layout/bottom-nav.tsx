@@ -49,7 +49,7 @@ export function BottomNav() {
           <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0 flex flex-col gap-0 text-left">
             <SheetHeader className="p-6 text-left border-b bg-muted/30 m-0">
               <SheetTitle className="font-display text-2xl font-bold text-left m-0">Menu Lengkap</SheetTitle>
-              <SheetDescription className="text-left m-0">Eksplorasi seluruh fitur Al-Qur'an Digital</SheetDescription>
+              <SheetDescription className="text-left m-0">Eksplorasi seluruh bekal digital di Zadify</SheetDescription>
             </SheetHeader>
             <div className="overflow-y-auto overscroll-contain touch-pan-y p-5 pb-12 space-y-6 flex-1 text-left">
               {MENU_SECTIONS.map((section) => (

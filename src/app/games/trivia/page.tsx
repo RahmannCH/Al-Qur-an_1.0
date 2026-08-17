@@ -108,7 +108,7 @@ export default function QuizPage() {
           </div>
           <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">Kuis Islami Interaktif</h1>
           <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
-            Uji wawasan keislamanmu! Dapatkan XP dan lencana keberhasilan untuk setiap kuis yang kamu selesaikan.
+            Uji wawasan keislamanmu! Dapatkan Zad Points (ZP) dan lencana keberhasilan untuk setiap kuis yang kamu selesaikan.
           </p>
         </div>
 
@@ -173,8 +173,8 @@ export default function QuizPage() {
               <p className="text-3xl font-bold text-primary">{currentSession.score} / {currentSession.questions.length}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">XP Diperoleh</p>
-              <p className="text-3xl font-bold text-emerald-600">+{currentSession.score * 10} XP</p>
+              <p className="text-xs text-muted-foreground mb-1">Zad Points Diperoleh</p>
+              <p className="text-3xl font-bold text-emerald-600">+{currentSession.score * 10} ZP</p>
             </div>
           </div>
 
@@ -305,7 +305,7 @@ export default function QuizPage() {
                     {isCorrect ? "Jawabanmu Tepat!" : "Sayang Sekali, Salah"}
                   </h2>
                   <p className="text-sm font-medium opacity-80">
-                    {isCorrect ? "Kamu berhasil mendapatkan +10 XP" : "Tidak apa-apa, mari belajar dari kesalahan ini."}
+                    {isCorrect ? "Kamu berhasil mendapatkan +10 ZP" : "Tidak apa-apa, mari belajar dari kesalahan ini."}
                   </p>
                 </div>
               </div>

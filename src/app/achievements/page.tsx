@@ -15,8 +15,8 @@ export default function AchievementsPage() {
       <BackButton />
       
       <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold mb-2">Pencapaian</h1>
-        <p className="text-muted-foreground">Kumpulkan XP dan koleksi badge-nya</p>
+        <h1 className="text-3xl font-display font-bold mb-2">Pencapaian Bekal</h1>
+        <p className="text-muted-foreground">Kumpulkan Zad Points (ZP) dan koleksi lencana kebaikanmu</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3 mb-10">
@@ -32,13 +32,13 @@ export default function AchievementsPage() {
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-sm font-medium">
-              <span>{xp} XP</span>
-              <span className="text-white/70">{currentLvl.nextXp} XP</span>
+              <span>{xp} ZP</span>
+              <span className="text-white/70">{currentLvl.nextXp} ZP</span>
             </div>
             <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
                <motion.div className="h-full bg-white rounded-full" initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1 }} />
             </div>
-            <p className="text-xs text-white/70 text-right mt-1">Butuh {currentLvl.nextXp - xp} XP ke Level {currentLvl.level + 1}</p>
+            <p className="text-xs text-white/70 text-right mt-1">Butuh {currentLvl.nextXp - xp} ZP ke Level {currentLvl.level + 1}</p>
           </div>
         </motion.div>
 

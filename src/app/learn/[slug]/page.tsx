@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
@@ -10,11 +10,24 @@ import { LEARN_MODULES } from "@/app/learn/modules";
 import { useLearnProgressStore } from "@/store/learn-progress-store";
 import { useGamificationStore } from "@/store/gamification-store";
 import { sfx } from "@/lib/sfx";
-import { CheckCircle2, Sparkles, ArrowLeft, ArrowRight, Play, Brain, Check, X, Award, RotateCcw } from "lucide-react";
+import { 
+  CheckCircle2, 
+  Sparkles, 
+  ArrowLeft, 
+  ArrowRight, 
+  Play, 
+  Brain, 
+  Check, 
+  X, 
+  Award, 
+  RotateCcw, 
+  ExternalLink,
+  HelpCircle,
+  BookOpen
+} from "lucide-react";
 
 export default function LearnModulePage() {
   const params = useParams<{ slug: string }>();
-  const router = useRouter();
   
   const modIndex = LEARN_MODULES.findIndex((m) => m.slug === params.slug);
   const mod = LEARN_MODULES[modIndex];
@@ -23,12 +36,13 @@ export default function LearnModulePage() {
   const { markModuleCompleted } = useLearnProgressStore();
   const { addXp } = useGamificationStore();
   
-  // States
-  const [session, setSession] = useState<"materi" | "kuis" | "success">("materi");
+  // State Sesi: "materi" -> "kuis" -> "success" / "failed"
+  const [session, setSession] = useState<"materi" | "kuis" | "success" | "failed">("materi");
   const [currentQuizIdx, setCurrentQuizIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [calculatedPercentage, setCalculatedPercentage] = useState(0);
 
   if (!mod) {
     return (
@@ -63,6 +77,7 @@ export default function LearnModulePage() {
     if (isCorrect) {
       setScore(prev => prev + 1);
       sfx.playSuccess();
+      if (navigator.vibrate) navigator.vibrate([50, 50]);
     } else {
       sfx.playTap();
       if (navigator.vibrate) navigator.vibrate([100]);
@@ -76,19 +91,21 @@ export default function LearnModulePage() {
       setIsAnswered(false);
       sfx.playWoosh();
     } else {
-      // Hitung skor akhir
-      const finalPercentage = Math.round(((score + (selectedOption === mod.quiz[currentQuizIdx].correctIndex ? 1 : 0)) / mod.quiz.length) * 100);
+      // Hitung persentase akhir (4 soal = tiap benar 25%)
+      const finalScore = score + (selectedOption === mod.quiz[currentQuizIdx].correctIndex ? 1 : 0);
+      const finalPercentage = Math.round((finalScore / mod.quiz.length) * 100);
+      setCalculatedPercentage(finalPercentage);
       
       if (finalPercentage >= 70) {
-        // Lulus!
+        // Lulus! (Minimal 70%)
         markModuleCompleted(mod.slug, finalPercentage);
         addXp(50, `Menyelesaikan Modul: ${mod.name}`);
         setSession("success");
         sfx.playSuccess();
       } else {
-        // Gagal, kembali ke quiz
-        alert(`Skor kamu ${finalPercentage}%. Butuh minimal 70% untuk lulus. Yuk coba lagi!`);
-        handleStartQuiz();
+        // Tidak mencapai 70%, tampilkan layar motivasi failed interaktif
+        setSession("failed");
+        sfx.playTap();
       }
     }
   };
@@ -119,16 +136,29 @@ export default function LearnModulePage() {
               <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">{mod.desc}</p>
             </div>
 
-            {/* Video Embed */}
+            {/* Video Embed with Fallback Link */}
             {mod.youtubeId && (
-              <div className="mb-10 rounded-3xl overflow-hidden shadow-lg border-4 border-card bg-black aspect-video relative">
-                <iframe 
-                  src={`https://www.youtube.com/embed/${mod.youtubeId}?rel=0`} 
-                  title="YouTube video player" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                ></iframe>
+              <div className="mb-10 space-y-2">
+                <div className="rounded-3xl overflow-hidden shadow-lg border-4 border-card bg-black aspect-video relative">
+                  <iframe 
+                    src={`https://www.youtube-nocookie.com/embed/${mod.youtubeId}?rel=0&enablejsapi=1`} 
+                    title="YouTube video player" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  ></iframe>
+                </div>
+                <div className="flex justify-end pr-2">
+                  <a
+                    href={`https://www.youtube.com/watch?v=${mod.youtubeId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors font-medium bg-muted/40 hover:bg-muted/70 px-3 py-1.5 rounded-xl border border-border/50"
+                  >
+                    <span>Tonton langsung di YouTube</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
               </div>
             )}
 
@@ -154,13 +184,13 @@ export default function LearnModulePage() {
                 Siap Uji Pemahaman?
               </h3>
               <p className="text-sm font-medium text-muted-foreground mb-6">
-                Untuk membuka modul berikutnya, kamu harus mendapatkan skor minimal 70% di kuis ini.
+                Selesaikan 4 pertanyaan kuis dengan skor minimal 70% (minimal 3 benar) untuk membuka modul berikutnya.
               </p>
               <Button 
                 onClick={handleStartQuiz}
                 className="h-14 px-8 w-full md:w-auto rounded-2xl bg-gradient-to-r from-primary to-teal shadow-xl hover:scale-105 transition-transform text-white text-lg font-bold gap-2"
               >
-                <Play className="h-5 w-5 fill-white" /> Mulai Uji Pemahaman
+                <Play className="h-5 w-5 fill-white" /> Mulai Uji Pemahaman (4 Soal)
               </Button>
             </div>
           </motion.div>
@@ -183,12 +213,12 @@ export default function LearnModulePage() {
               </span>
             </div>
 
-            {/* Progress */}
+            {/* Progress Bar */}
             <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-8">
               <motion.div 
                 className="h-full bg-primary"
                 initial={{ width: 0 }}
-                animate={{ width: `${((currentQuizIdx) / mod.quiz.length) * 100}%` }}
+                animate={{ width: `${((currentQuizIdx + 1) / mod.quiz.length) * 100}%` }}
               />
             </div>
 
@@ -248,7 +278,7 @@ export default function LearnModulePage() {
                     onClick={handleNextQuiz} 
                     className="w-full h-14 rounded-2xl text-lg font-bold"
                   >
-                    {currentQuizIdx < mod.quiz.length - 1 ? "Pertanyaan Berikutnya" : "Lihat Hasil Akhir"}
+                    {currentQuizIdx < mod.quiz.length - 1 ? "Pertanyaan Berikutnya" : "Lihat Hasil Uji Pemahaman"}
                   </Button>
                 </motion.div>
               )}
@@ -256,7 +286,7 @@ export default function LearnModulePage() {
           </motion.div>
         )}
 
-        {/* ===================== SESI 3: SUCCESS & CELEBRATION ===================== */}
+        {/* ===================== SESI 3A: SUCCESS & CELEBRATION (≥ 70%) ===================== */}
         {session === "success" && (
           <motion.div
             key="success"
@@ -277,13 +307,13 @@ export default function LearnModulePage() {
             <div className="flex justify-center gap-4 mb-12">
               <div className="p-4 rounded-2xl bg-card border shadow-sm min-w-[120px]">
                 <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Skor Kuis</p>
-                <p className="text-3xl font-display font-bold text-primary">
-                  {Math.round((score / mod.quiz.length) * 100)}%
+                <p className="text-3xl font-display font-bold text-emerald-500">
+                  {calculatedPercentage}%
                 </p>
               </div>
               <div className="p-4 rounded-2xl bg-card border shadow-sm min-w-[120px]">
-                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">XP Diraih</p>
-                <p className="text-3xl font-display font-bold text-emerald-500">+50</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">ZP Diraih</p>
+                <p className="text-3xl font-display font-bold text-primary">+50 ZP</p>
               </div>
             </div>
 
@@ -305,6 +335,63 @@ export default function LearnModulePage() {
               <Link href="/learn">
                 <Button variant="ghost" className="w-full h-12 rounded-xl text-muted-foreground hover:text-foreground">
                   Kembali ke Roadmap
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ===================== SESI 3B: FAILED / MOTIVASI ULANG (< 70%) ===================== */}
+        {session === "failed" && (
+          <motion.div
+            key="failed"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="py-12 text-center"
+          >
+            <div className="inline-flex p-6 bg-amber-500/20 rounded-full mb-6 relative">
+              <div className="absolute inset-0 bg-amber-500/20 blur-2xl rounded-full animate-pulse" />
+              <RotateCcw className="h-20 w-20 text-amber-500 relative z-10" />
+            </div>
+
+            <h1 className="font-display font-bold text-3xl mb-3">Hampir Berhasil! ✨</h1>
+            <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
+              Skor kamu <span className="font-bold text-foreground">{calculatedPercentage}%</span>. Butuh minimal <span className="font-bold text-emerald-600">70% (3 dari 4 benar)</span> untuk membuka modul berikutnya. Yuk pelajari lagi atau coba ulangi kuisnya!
+            </p>
+
+            <div className="flex justify-center gap-4 mb-10">
+              <div className="p-4 rounded-2xl bg-card border border-amber-500/30 shadow-sm min-w-[120px]">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Skor Kamu</p>
+                <p className="text-3xl font-display font-bold text-amber-600">
+                  {calculatedPercentage}%
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-card border shadow-sm min-w-[120px]">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Target Lulus</p>
+                <p className="text-3xl font-display font-bold text-primary">70%</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <Button
+                onClick={handleStartQuiz}
+                className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold shadow-lg hover:scale-105 transition-all gap-2"
+              >
+                <RotateCcw className="h-4 w-4" /> Ulangi Kuis Sekarang
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSession("materi")}
+                className="flex-1 h-14 rounded-2xl font-bold border-2 hover:bg-muted gap-2"
+              >
+                <BookOpen className="h-4 w-4" /> Pelajari Materi Dulu
+              </Button>
+            </div>
+
+            <div className="mt-8">
+              <Link href="/learn">
+                <Button variant="ghost" className="text-xs text-muted-foreground hover:text-foreground">
+                  Kembali ke Roadmap Belajar
                 </Button>
               </Link>
             </div>
