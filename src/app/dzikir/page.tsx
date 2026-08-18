@@ -94,15 +94,17 @@ export default function DzikirPage() {
     if (navigator.vibrate) navigator.vibrate(50);
     sfx.playTap();
     const newCount = count + 1;
-    setCount(newCount);
     incrementDzikir(1);
 
-    if (newCount === target) {
+    if (newCount >= target) {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       sfx.playSuccess();
       addXp(10, `Dzikir ${selectedDzikir.latin} (${target}x) selesai`);
       setShowCelebrate(true);
+      setCount(0); // Reset otomatis ke 0 untuk putaran berikutnya!
       setTimeout(() => setShowCelebrate(false), 3200);
+    } else {
+      setCount(newCount);
     }
   };
 

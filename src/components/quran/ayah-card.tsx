@@ -166,8 +166,8 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
           ))}
         </div>
       ) : verse.text_uthmani_tajweed ? (
-        <div className="mb-4 text-right" dir="rtl" style={{ fontSize: `${fontSize}px` }}>
-          <TajweedText html={verse.text_uthmani_tajweed} />
+        <div className="mb-4 text-right" dir="rtl">
+          <TajweedText html={verse.text_uthmani_tajweed} fontSize={fontSize} />
         </div>
       ) : (
         <p
