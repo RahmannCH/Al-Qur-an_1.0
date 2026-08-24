@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePrayerStore, getWitaDate, getWitaTime } from "@/store/prayer-store";
 import { useGamificationStore } from "@/store/gamification-store";
 import { Check, Flame, Lock, CalendarCheck, X } from "lucide-react";
@@ -39,16 +39,16 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
   const { addXp } = useGamificationStore();
   const [now, setNow] = useState(() => getWitaTime());
 
-  // Perbarui waktu & reset hari sholat otomatis jika melewati jam 12 malam
+  // --- INITIALIZATION & TIME TICKER ---
   useEffect(() => {
-    checkAndResetDay(); // Jalankan saat pertama kali mount
+    checkAndResetDay();
     const timer = setInterval(() => {
       setNow(getWitaTime());
-      checkAndResetDay();
     }, 30000);
     return () => clearInterval(timer);
   }, [checkAndResetDay]);
 
+  // --- ACTIONS ---
   const handleToggle = (prayer: string) => {
     const wasChecked = todayPrayers.includes(prayer);
     togglePrayer(prayer);
@@ -69,7 +69,6 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
     return nowMin >= toMinutes(scheduleTime);
   };
 
-  // Rekap 7 hari terakhir (WITA)
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const key = shiftDateKey(todayKey, i - 6);
     const date = new Date(key + "T12:00:00");
@@ -84,7 +83,7 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
 
   return (
     <div className={`rounded-3xl border bg-card p-6 md:p-8 ${className}`}>
-      {/* Header */}
+      {/* --- HEADER --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-display font-bold mb-1">Tracker Sholat</h2>
@@ -101,9 +100,9 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      {/* Grid Side-by-Side */}
+      {/* --- MAIN GRID --- */}
       <div className="grid md:grid-cols-2 gap-8 items-start">
-        {/* Left Column: Today's Checklist */}
+        {/* --- LEFT COLUMN: TODAY CHECKLIST --- */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b">
             <Check className="h-5 w-5 text-emerald-500" />
@@ -167,7 +166,7 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
           </div>
         </div>
 
-        {/* Right Column: Rekap 7 Hari */}
+        {/* --- RIGHT COLUMN: 7-DAY RECAP --- */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b">
             <CalendarCheck className="h-5 w-5 text-primary" />
@@ -196,7 +195,6 @@ export function PrayerStreak({ className = "" }: { className?: string }) {
                     )}
                   </div>
 
-                  {/* Dots for prayers */}
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     {prayers.map((p) => {
                       const checked = day.prayers.includes(p);
