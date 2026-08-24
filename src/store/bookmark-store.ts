@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { createIndexedDBStorage } from "@/lib/idb-storage";
 
 interface BookmarkItem {
   verseKey: string;
@@ -25,6 +26,9 @@ export const useBookmarkStore = create<BookmarkStore>()(
         set((s) => ({ bookmarks: s.bookmarks.filter((b) => b.verseKey !== verseKey) })),
       isBookmarked: (verseKey) => get().bookmarks.some((b) => b.verseKey === verseKey),
     }),
-    { name: "quran-bookmarks" }
+    {
+      name: "quran-bookmarks",
+      storage: createJSONStorage(() => createIndexedDBStorage()),
+    }
   )
 );

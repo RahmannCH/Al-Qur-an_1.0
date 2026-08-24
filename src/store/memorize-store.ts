@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { createIndexedDBStorage } from "@/lib/idb-storage";
 
 interface MemorizeStore {
-  memorizedVerses: string[]; // List verseKey e.g. ["1:1", "1:2", "112:1"]
-  inProgressSurahs: number[]; // List surahId e.g. [1, 112, 114]
+  memorizedVerses: string[];
+  inProgressSurahs: number[];
   murajaahStreak: number;
   lastMurajaahDate: string | null;
 
@@ -18,7 +19,7 @@ export const useMemorizeStore = create<MemorizeStore>()(
   persist(
     (set, get) => ({
       memorizedVerses: [],
-      inProgressSurahs: [1, 112, 113, 114], // Default surah pendek yang sering dipelajari
+      inProgressSurahs: [1, 112, 113, 114],
       murajaahStreak: 0,
       lastMurajaahDate: null,
 
@@ -68,6 +69,7 @@ export const useMemorizeStore = create<MemorizeStore>()(
     }),
     {
       name: "zadify-memorize-storage",
+      storage: createJSONStorage(() => createIndexedDBStorage()),
     }
   )
 );

@@ -79,6 +79,7 @@ interface GamificationStore {
   lastQuestDate: string;
   lootboxAvailable: boolean;
 
+  addXP: (amount: number, source: string) => void;
   addXp: (amount: number, reason: string) => void;
   clearRecentXpGain: (id: string) => void;
   unlockBadge: (badgeId: string) => void;
@@ -105,6 +106,21 @@ export const useGamificationStore = create<GamificationStore>()(
       dailyQuests: [],
       lastQuestDate: "",
       lootboxAvailable: false,
+
+      // Single centralized mutation point for XP
+      addXP: (amount: number, source: string) => {
+        if (amount <= 0) return;
+        const id = Date.now().toString() + Math.random().toString();
+        set((state) => ({
+          xp: state.xp + amount,
+          recentXpGains: [...state.recentXpGains, { amount, reason: source, id }]
+        }));
+        get().checkMilestones();
+      },
+
+      addXp: (amount: number, reason: string) => {
+        get().addXP(amount, reason);
+      },
 
       checkAndResetQuests: (todayKey: string) => {
         const state = get();
@@ -153,25 +169,16 @@ export const useGamificationStore = create<GamificationStore>()(
         });
 
         if (pendingXp > 0) {
-          get().addXp(pendingXp, pendingReason);
+          get().addXP(pendingXp, pendingReason);
         }
       },
 
       claimLootbox: () => {
         const state = get();
         if (state.lootboxAvailable) {
-          get().addXp(200, "Membuka Peti Harian!");
+          get().addXP(200, "Membuka Peti Harian!");
           set({ lootboxAvailable: false });
         }
-      },
-
-      addXp: (amount, reason) => {
-        const id = Date.now().toString() + Math.random().toString();
-        set((state) => ({
-          xp: state.xp + amount,
-          recentXpGains: [...state.recentXpGains, { amount, reason, id }]
-        }));
-        get().checkMilestones();
       },
 
       clearRecentXpGain: (id) => {
@@ -186,6 +193,7 @@ export const useGamificationStore = create<GamificationStore>()(
           return { unlockedBadges: [...state.unlockedBadges, badgeId] };
         });
       },
+
       incrementRead: () => {
         set((state) => ({ readCount: state.readCount + 1 }));
         get().updateQuestProgress("read", 1);
@@ -197,6 +205,7 @@ export const useGamificationStore = create<GamificationStore>()(
         set((state) => ({ dzikirCount: state.dzikirCount + amount }));
         get().updateQuestProgress("dzikir", amount);
       },
+
       checkMilestones: () => {
         const state = get();
         const hour = new Date().getHours();
