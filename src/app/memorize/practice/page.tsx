@@ -10,9 +10,11 @@ import { getChapters, getVerses } from "@/lib/api";
 import { Chapter, Verse } from "@/types/quran";
 import { sfx } from "@/lib/sfx";
 import { useGamificationStore } from "@/store/gamification-store";
+import { useMemorizeStore } from "@/store/memorize-store";
 
 export default function MemorizePracticePage() {
   const { addXp } = useGamificationStore();
+  const { toggleMemorizedVerse, recordMurajaahSession, addInProgressSurah } = useMemorizeStore();
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<Chapter | null>(null);
   const [verses, setVerses] = useState<Verse[]>([]);
@@ -41,6 +43,8 @@ export default function MemorizePracticePage() {
       setIsPracticing(true);
       setCurrentVerseIndex(0);
       setMode("read");
+      addInProgressSurah(chapter.id);
+      recordMurajaahSession();
       sfx.playTap();
     } catch (error) {
       console.error(error);
@@ -238,9 +242,14 @@ export default function MemorizePracticePage() {
                 <Button 
                   size="lg"
                   className="rounded-xl h-16 px-8 gap-3 bg-emerald-500 hover:bg-emerald-600"
-                  onClick={() => { handleNext(); }}
+                  onClick={() => {
+                    if (selectedSurah && currentVerse) {
+                      toggleMemorizedVerse(`${selectedSurah.id}:${currentVerse.verse_number}`);
+                    }
+                    handleNext();
+                  }}
                 >
-                  <CheckCircle2 className="h-5 w-5" /> Hafal
+                  <CheckCircle2 className="h-5 w-5" /> Hafal (Mutqin)
                 </Button>
               </div>
 

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Bookmark, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, Bookmark, ChevronDown, ChevronUp, Volume2 } from "lucide-react";
 import { useBookmarkStore } from "@/store/bookmark-store";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { sfx } from "@/lib/sfx";
 
 interface Dua {
   id: number;
@@ -21,6 +22,22 @@ export function DuaCard({ dua }: { dua: Dua }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarkStore();
   const bookmarked = isBookmarked(`dua-${dua.id}`);
+
+  const handleSpeak = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    sfx.playTap();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.resume();
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(dua.arabic_text);
+      utterance.lang = "ar-SA";
+      utterance.rate = 0.8;
+      const voices = window.speechSynthesis.getVoices();
+      const arVoice = voices.find((v) => v.lang.startsWith("ar"));
+      if (arVoice) utterance.voice = arVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   const toggleBookmark = () => {
     if (bookmarked) {
@@ -90,6 +107,17 @@ export function DuaCard({ dua }: { dua: Dua }) {
               </div>
 
               <div className="flex items-center gap-2 pt-2">
+                <Tooltip>
+                  <TooltipTrigger
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-colors text-sm font-semibold"
+                    onClick={handleSpeak}
+                  >
+                    <Volume2 className="h-4 w-4" />
+                    Dengarkan
+                  </TooltipTrigger>
+                  <TooltipContent>Dengarkan pelafalan Arab</TooltipContent>
+                </Tooltip>
+
                 <Tooltip>
                   <TooltipTrigger
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors text-sm"

@@ -79,8 +79,11 @@ const METHODS: Method[] = [
   }
 ];
 
+import { useMemorizeStore } from "@/store/memorize-store";
+
 export default function MemorizePage() {
   const [selectedMethod, setSelectedMethod] = useState<Method | null>(null);
+  const { memorizedVerses, inProgressSurahs, murajaahStreak } = useMemorizeStore();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 min-h-screen">
@@ -107,8 +110,8 @@ export default function MemorizePage() {
             <CheckCircle2 className="h-5 w-5 text-emerald-600" />
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Hafalan Mutqin</p>
           </div>
-          <p className="text-3xl font-display font-bold text-emerald-600">0 Ayat</p>
-          <p className="text-xs text-muted-foreground mt-1">Siap untuk dimuraja'ah</p>
+          <p className="text-3xl font-display font-bold text-emerald-600">{memorizedVerses.length} Ayat</p>
+          <p className="text-xs text-muted-foreground mt-1">Tersimpan dalam database hafalan</p>
         </div>
 
         <div className="rounded-2xl border bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-6">
@@ -116,8 +119,8 @@ export default function MemorizePage() {
             <TrendingUp className="h-5 w-5 text-blue-600" />
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Sedang Dihafal</p>
           </div>
-          <p className="text-3xl font-display font-bold text-blue-600">0 Ayat</p>
-          <p className="text-xs text-muted-foreground mt-1">Masih dalam proses</p>
+          <p className="text-3xl font-display font-bold text-blue-600">{inProgressSurahs.length} Surah</p>
+          <p className="text-xs text-muted-foreground mt-1">Dalam proses tahfizh</p>
         </div>
 
         <div className="rounded-2xl border bg-gradient-to-br from-gold/10 to-amber-500/10 p-6">
@@ -125,8 +128,8 @@ export default function MemorizePage() {
             <Zap className="h-5 w-5 text-gold" />
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Streak Muraja'ah</p>
           </div>
-          <p className="text-3xl font-display font-bold text-gold">0 Hari</p>
-          <p className="text-xs text-muted-foreground mt-1">Konsistensi review harian</p>
+          <p className="text-3xl font-display font-bold text-gold">{murajaahStreak} Hari</p>
+          <p className="text-xs text-muted-foreground mt-1">Konsistensi review hafalan</p>
         </div>
       </div>
 

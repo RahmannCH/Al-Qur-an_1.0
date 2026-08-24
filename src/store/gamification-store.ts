@@ -11,12 +11,20 @@ export interface Badge {
 
 export const AVAILABLE_BADGES: Badge[] = [
   { id: "first_read", name: "Langkah Pertama", description: "Membaca ayat pertama", icon: "📖" },
-  { id: "night_owl", name: "Night Owl", description: "Membaca di atas jam 12 malam", icon: "🦉" },
-  { id: "streak_7", name: "Istiqomah 7", description: "Membaca 7 hari berturut-turut", icon: "🔥" },
-  { id: "hafiz_apprentice", name: "Murid Hafiz", description: "Selesaikan 1 Surah", icon: "🎓" },
-  { id: "jumuah_mubarak", name: "Jumu'ah Mubarak", description: "Buka Al-Kahfi di hari Jumat", icon: "🕌" },
-  { id: "chat_explorer", name: "Explorer", description: "Gunakan AI Chat 5 kali", icon: "🤖" },
-  { id: "dzikir_master", name: "Dzikir Master", description: "Lakukan 1000x Tasbih", icon: "📿" }
+  { id: "night_owl", name: "Night Owl", description: "Membaca Al-Qur'an di atas jam 12 malam", icon: "🦉" },
+  { id: "streak_7", name: "Istiqomah 7", description: "Membaca atau beribadah 7 hari berturut-turut", icon: "🔥" },
+  { id: "hafiz_apprentice", name: "Murid Hafiz", description: "Menghafal 1 Surah atau 10 Ayat Mutqin", icon: "🎓" },
+  { id: "jumuah_mubarak", name: "Jumu'ah Mubarak", description: "Buka Surah Al-Kahfi di hari Jumat", icon: "🕌" },
+  { id: "chat_explorer", name: "Explorer", description: "Diskusi dengan Zad Mentor AI sebanyak 5 kali", icon: "🤖" },
+  { id: "dzikir_master", name: "Dzikir Master", description: "Lakukan 1000x Tasbih & Dzikir", icon: "📿" },
+  { id: "early_bird", name: "Pejuang Subuh", description: "Aktif membaca/sholat di waktu Subuh", icon: "🌅" },
+  { id: "zakat_pioneer", name: "Perencana Syariat", description: "Menghitung Zakat atau Tabungan Haji", icon: "💰" },
+  { id: "tarbiyah_champion", name: "Mualaf Pembelajar", description: "Menyelesaikan modul di Roadmap Belajar", icon: "⭐" },
+  { id: "sunnah_lover", name: "Cinta Sunnah", description: "Menuntaskan amalan sunnah harian", icon: "💖" },
+  { id: "quran_marathon", name: "Pembaca Setia", description: "Membaca total 50 ayat", icon: "📜" },
+  { id: "hafiz_master", name: "Penjaga Al-Qur'an", description: "Menghafal 50 ayat Mutqin", icon: "👑" },
+  { id: "quiz_master", name: "Jawara Trivia", description: "Lulus Kuis dengan skor sempurna (100%)", icon: "🏆" },
+  { id: "hajj_planner", name: "Niat Rabbani", description: "Membuat target perencanaan Tabungan Haji", icon: "✈️" }
 ];
 
 export interface LevelInfo {
@@ -193,8 +201,10 @@ export const useGamificationStore = create<GamificationStore>()(
         const state = get();
         const hour = new Date().getHours();
         
-        if (state.readCount === 1) get().unlockBadge("first_read");
+        if (state.readCount >= 1) get().unlockBadge("first_read");
+        if (state.readCount >= 50) get().unlockBadge("quran_marathon");
         if (hour >= 0 && hour < 4 && state.readCount > 0) get().unlockBadge("night_owl");
+        if (hour >= 4 && hour <= 6) get().unlockBadge("early_bird");
         if (state.chatCount >= 5) get().unlockBadge("chat_explorer");
         if (state.dzikirCount >= 1000) get().unlockBadge("dzikir_master");
         
