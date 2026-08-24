@@ -12,6 +12,7 @@ interface LastRead {
 interface SettingsStore {
   fontSize: number;
   showTranslation: boolean;
+  showLatin: boolean;
   reciterId: number;
   lastRead: LastRead | null;
   userName: string;
@@ -20,6 +21,7 @@ interface SettingsStore {
 
   setFontSize: (size: number) => void;
   setShowTranslation: (show: boolean) => void;
+  setShowLatin: (show: boolean) => void;
   setReciterId: (id: number) => void;
   setLastRead: (lastRead: LastRead) => void;
   setUserName: (name: string) => void;
@@ -32,6 +34,7 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       fontSize: 28,
       showTranslation: true,
+      showLatin: true,
       reciterId: 7,
       lastRead: null,
       userName: "",
@@ -40,6 +43,7 @@ export const useSettingsStore = create<SettingsStore>()(
 
       setFontSize: (fontSize) => set({ fontSize }),
       setShowTranslation: (showTranslation) => set({ showTranslation }),
+      setShowLatin: (showLatin) => set({ showLatin }),
       setReciterId: (reciterId) => set({ reciterId }),
       setLastRead: (lastRead) => set({ lastRead }),
       setUserName: (userName) => set({ userName }),

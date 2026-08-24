@@ -1,9 +1,10 @@
 "use client";
 
 import { useBookmarkStore } from "@/store/bookmark-store";
+import { useSettingsStore } from "@/store/settings-store";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Bookmark, Copy, BookOpenText, Languages, Play } from "lucide-react";
+import { Bookmark, Copy, BookOpenText, Languages, Play, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
@@ -22,6 +23,8 @@ interface AyahCardProps {
 
 export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable = false, onPlay }: AyahCardProps) {
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarkStore();
+  const globalShowLatin = useSettingsStore((s) => s.showLatin);
+  const [localShowLatin, setLocalShowLatin] = useState(true);
   const [tafsirLoading, setTafsirLoading] = useState(false);
   const [tafsirText, setTafsirText] = useState("");
   const [showWordByWord, setShowWordByWord] = useState(false);
@@ -48,8 +51,22 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
     }
   };
 
-  const translation = verse.translations?.[0]?.text || "";
-  const cleanTranslation = translation.replace(/<[^>]*>/g, "");
+  // Terjemahan Bahasa Indonesia (Resource ID 33 atau fallback translation pertama)
+  const translationObj = verse.translations?.find((t) => t.resource_id === 33 || (t.resource_id !== 57 && !t.text.includes("Bismi Allahi")));
+  const rawTranslation = translationObj?.text || verse.translations?.[0]?.text || "";
+  const cleanTranslation = rawTranslation.replace(/<[^>]*>/g, "");
+
+  // Transliterasi Latin (Resource ID 57 atau fallback dari word-by-word)
+  const transliterationObj = verse.translations?.find((t) => t.resource_id === 57);
+  let latinText = transliterationObj?.text?.replace(/<[^>]*>/g, "") || "";
+  if (!latinText && verse.words) {
+    latinText = verse.words
+      .map((w) => w.transliteration?.text)
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  const isLatinActive = globalShowLatin && localShowLatin;
 
   return (
     <div
@@ -141,11 +158,22 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
       </div>
 
       <div className="mb-4 flex items-center justify-end gap-2">
+        {latinText && (
+          <button
+            onClick={() => setLocalShowLatin(!localShowLatin)}
+            className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+              isLatinActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-semibold" : "bg-muted hover:bg-accent text-muted-foreground"
+            }`}
+          >
+            <FileText className="h-3 w-3 inline mr-1" />
+            {isLatinActive ? "Latin Aktif" : "Latin"}
+          </button>
+        )}
         {verse.words && verse.words.length > 0 && (
           <button
             onClick={() => setShowWordByWord(!showWordByWord)}
             className={`text-xs px-2 py-1 rounded-lg border transition-all ${
-              showWordByWord ? "bg-primary text-primary-foreground border-primary" : "bg-muted hover:bg-accent"
+              showWordByWord ? "bg-primary text-primary-foreground border-primary" : "bg-muted hover:bg-accent text-muted-foreground"
             }`}
           >
             <Languages className="h-3 w-3 inline mr-1" />
@@ -177,6 +205,18 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
         >
           {verse.text_uthmani}
         </p>
+      )}
+
+      {/* Teks Transliterasi Latin */}
+      {isLatinActive && latinText && (
+        <div className="my-3 p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+            Transliterasi Latin
+          </p>
+          <p className="text-xs md:text-sm font-medium leading-relaxed italic text-emerald-700 dark:text-emerald-300">
+            {latinText}
+          </p>
+        </div>
       )}
 
       {showTranslation && cleanTranslation && (

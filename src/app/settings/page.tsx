@@ -12,7 +12,16 @@ import { RECITERS } from "@/lib/constants";
 import { ReminderWidget } from "@/components/home/reminder-widget";
 
 export default function SettingsPage() {
-  const { fontSize, setFontSize, reciterId, setReciterId, showTranslation, setShowTranslation } = useSettingsStore();
+  const { 
+    fontSize, 
+    setFontSize, 
+    reciterId, 
+    setReciterId, 
+    showTranslation, 
+    setShowTranslation,
+    showLatin,
+    setShowLatin 
+  } = useSettingsStore();
   const { theme, setTheme } = useTheme();
 
   return (
@@ -93,13 +102,28 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">Tampilkan Terjemahan</p>
-                <p className="text-sm text-muted-foreground">Tampilkan terjemahan di bawah ayat</p>
+                <p className="text-sm text-muted-foreground">Tampilkan terjemahan Indonesia di bawah ayat</p>
               </div>
               <Button
                 variant={showTranslation ? "default" : "outline"}
                 onClick={() => setShowTranslation(!showTranslation)}
               >
                 {showTranslation ? "Aktif" : "Nonaktif"}
+              </Button>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Tampilkan Teks Latin (Transliterasi)</p>
+                <p className="text-sm text-muted-foreground">Tampilkan panduan cara membaca ayat dalam ejaan Latin</p>
+              </div>
+              <Button
+                variant={showLatin ? "default" : "outline"}
+                onClick={() => setShowLatin(!showLatin)}
+              >
+                {showLatin ? "Aktif" : "Nonaktif"}
               </Button>
             </div>
           </div>

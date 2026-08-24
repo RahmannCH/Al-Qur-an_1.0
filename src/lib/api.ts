@@ -37,9 +37,9 @@ export async function getVerses(
   return fetcher<VersesResponse>(`/verses/by_chapter/${chapterId}`, {
     language,
     words: "true",
-    translations: "33",
+    translations: "33,57",
     fields: "text_uthmani,text_uthmani_tajweed",
-    word_fields: "text_uthmani",
+    word_fields: "text_uthmani,transliteration",
     translation_fields: "resource_name,text",
     page: String(page),
     per_page: String(perPage),
@@ -85,7 +85,19 @@ export function getVerseAudioUrl(surahId: number, verseNumber: number): string {
 }
 
 export async function searchQuran(query: string, language = "id", page = 1) {
-  return fetcher<{ search: { results: Array<{ verse_key: string; text: string; translations: Array<{ text: string }> }> } }>("/search", {
+  return fetcher<{
+    search: {
+      query: string;
+      total_results: number;
+      current_page: number;
+      total_pages: number;
+      results: Array<{
+        verse_key: string;
+        text: string;
+        translations: Array<{ text: string; name?: string }>;
+      }>;
+    };
+  }>("/search", {
     q: query,
     language,
     size: "20",
