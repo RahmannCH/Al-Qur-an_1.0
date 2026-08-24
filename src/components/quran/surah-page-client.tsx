@@ -1,15 +1,29 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { SurahAudioPlayer } from "@/components/quran/surah-audio-player";
+import dynamic from "next/dynamic";
 import { AyahList } from "@/components/quran/ayah-list";
 import { Button } from "@/components/ui/button";
 import { Headphones } from "lucide-react";
 import type { Verse, Chapter } from "@/types/quran";
 import { sfx } from "@/lib/sfx";
-import { TajweedLegendButton } from "@/components/quran/tajweed-legend";
-
 import { useLayoutState } from "@/components/layout/layout-context";
+
+// --- DYNAMIC IMPORTS ---
+const SurahAudioPlayer = dynamic(
+  () => import("@/components/quran/surah-audio-player").then((mod) => mod.SurahAudioPlayer),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+
+const TajweedLegendButton = dynamic(
+  () => import("@/components/quran/tajweed-legend").then((mod) => mod.TajweedLegendButton),
+  {
+    ssr: false,
+  }
+);
 
 interface SurahPageClientProps {
   verses: Verse[];

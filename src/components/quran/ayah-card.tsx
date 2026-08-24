@@ -1,16 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useBookmarkStore } from "@/store/bookmark-store";
 import { useSettingsStore } from "@/store/settings-store";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Bookmark, Copy, BookOpenText, Languages, Play, FileText } from "lucide-react";
+import { Bookmark, Copy, BookOpenText, Languages, Play, FileText, Share2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
-
-import { ShareAyatModal } from "@/components/quran/share-ayat-modal";
 import { TajweedText } from "@/components/quran/tajweed-text";
+
+// --- DYNAMIC IMPORTS ---
+const ShareAyatModal = dynamic(
+  () => import("@/components/quran/share-ayat-modal").then((mod) => mod.ShareAyatModal),
+  {
+    ssr: false,
+    loading: () => (
+      <button className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors text-muted-foreground opacity-50">
+        <Share2 className="h-4 w-4" />
+      </button>
+    ),
+  }
+);
 
 interface AyahCardProps {
   verse: Verse;

@@ -1,16 +1,45 @@
 "use client";
 
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
 import { PrayerHero } from "@/components/prayer/prayer-hero";
 import { PrayerList } from "@/components/prayer/prayer-list";
-import { PrayerStreak } from "@/components/prayer/prayer-streak";
-import { QiblaCompass } from "@/components/prayer/qibla-compass";
-import { SunnahTracker } from "@/components/prayer/sunnah-tracker";
-import { LocationModal } from "@/components/prayer/location-modal";
 import { BackButton } from "@/components/layout/back-button";
 import { Loader2, MapPin } from "lucide-react";
 import { usePrayerStore } from "@/store/prayer-store";
 import { gregorianToHijri } from "@/lib/prayer-api";
+
+// --- DYNAMIC IMPORTS ---
+const QiblaCompass = dynamic(
+  () => import("@/components/prayer/qibla-compass").then((mod) => mod.QiblaCompass),
+  {
+    ssr: false,
+    loading: () => <div className="h-80 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const SunnahTracker = dynamic(
+  () => import("@/components/prayer/sunnah-tracker").then((mod) => mod.SunnahTracker),
+  {
+    ssr: false,
+    loading: () => <div className="h-80 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const LocationModal = dynamic(
+  () => import("@/components/prayer/location-modal").then((mod) => mod.LocationModal),
+  {
+    ssr: false,
+  }
+);
+
+const PrayerStreak = dynamic(
+  () => import("@/components/prayer/prayer-streak").then((mod) => mod.PrayerStreak),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
 
 export default function PrayerTimesPage() {
   const { prayerSchedule, locationName, fetchAndSyncLocation } = usePrayerStore();
@@ -33,7 +62,6 @@ export default function PrayerTimesPage() {
   const now = new Date();
   const hijriNow = gregorianToHijri(now);
 
-  // Adapter dinamis untuk komponen child yang menggunakan tipe data lama
   const adapterPrayerTimes: any = {
     date: { 
       readable: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
@@ -53,6 +81,7 @@ export default function PrayerTimesPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 pb-32 min-h-screen">
       <BackButton />
       
+      {/* --- HEADER --- */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">Jadwal Sholat & Kiblat</h1>
         <div className="flex flex-wrap items-center gap-3">
@@ -63,18 +92,17 @@ export default function PrayerTimesPage() {
         </div>
       </div>
 
+      {/* --- HERO COUNTDOWN --- */}
       <div className="max-w-4xl mx-auto mb-8">
         <PrayerHero prayerTimes={adapterPrayerTimes} />
       </div>
       
-      {/* Grid Layout 3 Kolom Utama di Desktop */}
+      {/* --- 3-COLUMN MAIN GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 items-start">
-        {/* Kolom 1: Daftar Waktu Sholat */}
         <div className="md:col-span-6 lg:col-span-4 h-full">
           <PrayerList prayerTimes={adapterPrayerTimes} />
         </div>
         
-        {/* Kolom 2: Tracker Sunnah & Puasa */}
         <div className="md:col-span-6 lg:col-span-4 h-full">
           <SunnahTracker 
             hijriDate={adapterPrayerTimes.date.hijri} 
@@ -82,13 +110,12 @@ export default function PrayerTimesPage() {
           />
         </div>
 
-        {/* Kolom 3: Kompas Kiblat */}
         <div className="md:col-span-12 lg:col-span-4 h-full">
           <QiblaCompass />
         </div>
       </div>
 
-      {/* Full Width Tracker Bawah */}
+      {/* --- FULL WIDTH TRACKER --- */}
       <section className="mt-12">
         <PrayerStreak className="w-full shadow-lg" />
       </section>

@@ -1,4 +1,5 @@
 ﻿import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { getChapters } from "@/lib/api";
 import { SurahList } from "@/components/quran/surah-list";
 import { DailyAyat } from "@/components/home/daily-ayat";
@@ -6,18 +7,49 @@ import { ProgressWidget } from "@/components/home/progress-widget";
 import { UserLevelWidget } from "@/components/home/user-level-widget";
 import { DynamicThemeBanner } from "@/components/home/dynamic-theme-banner";
 import { PrayerWidget } from "@/components/home/prayer-widget";
-import { PrayerStreak } from "@/components/prayer/prayer-streak";
 import { LastReadCard } from "@/components/quran/last-read-card";
 import { HeroBentoGrid } from "@/components/home/hero-bento-grid";
-import { DailyQuestsWidget } from "@/components/home/daily-quests-widget";
 import { OnboardingModal } from "@/components/home/onboarding-modal";
 import { UserGreeting } from "@/components/home/user-greeting";
-import { HijriCalendarWidget } from "@/components/home/hijri-calendar-widget";
-import { AsmaulHusnaWidget } from "@/components/home/asmaul-husna-widget";
-import { MiniMurottalWidget } from "@/components/home/mini-murottal-widget";
 import { Loader2 } from "lucide-react";
 
-// Pisahkan fetching ke komponen khusus agar bisa di-Suspense
+// --- DYNAMIC IMPORTS ---
+const HijriCalendarWidget = dynamic(
+  () => import("@/components/home/hijri-calendar-widget").then((mod) => mod.HijriCalendarWidget),
+  {
+    loading: () => <div className="h-48 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const DailyQuestsWidget = dynamic(
+  () => import("@/components/home/daily-quests-widget").then((mod) => mod.DailyQuestsWidget),
+  {
+    loading: () => <div className="h-48 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const MiniMurottalWidget = dynamic(
+  () => import("@/components/home/mini-murottal-widget").then((mod) => mod.MiniMurottalWidget),
+  {
+    loading: () => <div className="h-24 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const AsmaulHusnaWidget = dynamic(
+  () => import("@/components/home/asmaul-husna-widget").then((mod) => mod.AsmaulHusnaWidget),
+  {
+    loading: () => <div className="h-48 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+const PrayerStreak = dynamic(
+  () => import("@/components/prayer/prayer-streak").then((mod) => mod.PrayerStreak),
+  {
+    loading: () => <div className="h-96 w-full rounded-3xl border bg-card/50 animate-pulse" />,
+  }
+);
+
+// --- ASYNC COMPONENT ---
 async function AsyncSurahList() {
   const chapters = await getChapters("id");
   return <SurahList chapters={chapters} />;
@@ -36,7 +68,7 @@ export default function Home() {
 
       <HeroBentoGrid />
 
-      {/* Baris Utama: Waktu & Gamifikasi (3 Kolom Seimbang di Desktop) */}
+      {/* --- ROW 1: TIME & QUESTS --- */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
         <div className="md:col-span-6 lg:col-span-4 flex flex-col gap-6">
           <PrayerWidget />
@@ -49,7 +81,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Baris Kedua: Aktivitas & Media */}
+      {/* --- ROW 2: ACTIVITIES & MEDIA --- */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
         <div className="md:col-span-12 lg:col-span-8 flex flex-col gap-6">
           <LastReadCard />
@@ -62,7 +94,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Tracker Sholat Full Width (Membentang dari Kiri ke Kanan) */}
+      {/* --- PRAYER TRACKER --- */}
       <section className="mb-12">
         <PrayerStreak className="w-full shadow-lg" />
       </section>
