@@ -3,20 +3,23 @@
   "short_name": "Zadify",
   "description": "Zadify adalah ekosistem produktivitas Islami all-in-one: Al-Qur'an tajwid interaktif, live murottal per-ayat, kalkulator zakat & haji, gamifikasi bekal harian (Zad Points), dan AI Zad Mentor.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F9FAFB",
-  "theme_color": "#10B981",
+  "theme_color": "#10b981",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

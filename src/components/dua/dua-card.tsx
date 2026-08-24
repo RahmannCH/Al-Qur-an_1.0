@@ -91,20 +91,10 @@ export function DuaCard({ dua }: { dua: Dua }) {
             transition={{ duration: 0.2 }}
           >
             <Separator />
-            <div className="p-5 space-y-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Transliterasi:</p>
-                <p className="text-sm italic text-muted-foreground">{dua.transliteration}</p>
-              </div>
-
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Artinya:</p>
-                <p className="text-sm leading-relaxed">{dua.translation_id}</p>
-              </div>
-
-              <div>
-                <p className="text-xs text-muted-foreground">{dua.source}</p>
-              </div>
+            <div className="p-5 space-y-3">
+              <p className="text-xs md:text-sm font-medium leading-relaxed italic text-emerald-600/90 dark:text-emerald-400/90">{dua.transliteration}</p>
+              <p className="text-xs md:text-sm leading-relaxed text-muted-foreground">{dua.translation_id}</p>
+              <p className="text-[11px] font-semibold text-muted-foreground/80">{dua.source}</p>
 
               <div className="flex items-center gap-2 pt-2">
                 <Tooltip>

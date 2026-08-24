@@ -1,64 +1,128 @@
-const CACHE_NAME = "alquran-cache-v1";
-const urlsToCache = [
+const STATIC_CACHE = "zadify-static-v2";
+const DYNAMIC_CACHE = "zadify-dynamic-v2";
+
+const ESSENTIAL_ROUTES = [
   "/",
+  "/quran",
+  "/prayer-times",
+  "/dzikir",
+  "/dua",
   "/manifest.json",
   "/icon-192x192.png",
-  "/icon-512x512.png",
-  "/prayer-times",
-  "/dua",
-  "/dzikir"
+  "/icon-512x512.png"
 ];
 
+// --- INSTALL EVENT ---
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
-  );
-});
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Cache hit - return response
-      if (response) {
-        return response;
-      }
-      return fetch(event.request).then(
-        (response) => {
-          // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== "basic") {
-            return response;
-          }
-
-          // Clone the response
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            // Only cache GET requests
-            if (event.request.method === "GET") {
-              cache.put(event.request, responseToCache);
-            }
-          });
-
-          return response;
-        }
+    caches.open(STATIC_CACHE).then(async (cache) => {
+      await Promise.allSettled(
+        ESSENTIAL_ROUTES.map((url) =>
+          cache.add(url).catch((err) => console.warn("SW precache failed for:", url, err))
+        )
       );
-    })
+    }).then(() => self.skipWaiting())
   );
 });
 
+// --- ACTIVATE EVENT ---
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
+        keys.map((key) => {
+          if (key !== STATIC_CACHE && key !== DYNAMIC_CACHE) {
+            return caches.delete(key);
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
+  );
+});
+
+// --- FETCH STRATEGIES ---
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+
+  // 1. Tangani Rute API Chat Saat Offline
+  if (url.pathname === "/api/chat" && event.request.method === "POST") {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return new Response(
+          JSON.stringify({
+            reply: "🌙 **Koneksi Terputus**\n\nZad Mentor sedang tidur karena perangkat Anda sedang berada dalam mode offline. Sambungkan kembali ke internet untuk melanjutkan sesi tanya jawab.",
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+            status: 200,
+          }
+        );
+      })
+    );
+    return;
+  }
+
+  // 2. Abaikan Request Non-GET
+  if (event.request.method !== "GET") {
+    return;
+  }
+
+  // 3. Cache-First untuk Aset Statis (Gambar, Font, Ikon)
+  if (
+    url.pathname.match(/\.(png|jpg|jpeg|svg|ico|webp|woff|woff2|ttf|eot)$/) ||
+    url.pathname.startsWith("/_next/image")
+  ) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // 4. Stale-While-Revalidate untuk Next.js Static Chunks
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.open(STATIC_CACHE).then((cache) => {
+        return cache.match(event.request).then((cached) => {
+          const fetchPromise = fetch(event.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          });
+          return cached || fetchPromise;
+        });
+      })
+    );
+    return;
+  }
+
+  // 5. Network-First dengan Offline Cache Fallback untuk Halaman Navigasi
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === "navigate") {
+            return caches.match("/");
+          }
+          return null;
+        });
+      })
   );
 });

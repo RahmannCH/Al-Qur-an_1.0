@@ -116,8 +116,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Tampilkan Teks Latin (Transliterasi)</p>
-                <p className="text-sm text-muted-foreground">Tampilkan panduan cara membaca ayat dalam ejaan Latin</p>
+                <p className="font-medium">Teks Latin</p>
+                <p className="text-sm text-muted-foreground">Tampilkan ejaan bacaan Latin di bawah ayat</p>
               </div>
               <Button
                 variant={showLatin ? "default" : "outline"}

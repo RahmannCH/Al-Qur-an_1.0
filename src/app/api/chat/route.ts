@@ -1,12 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
+// --- CONFIGURATION ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
 const ipRequestMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 15;
 
+// --- RATE LIMITER ---
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const record = ipRequestMap.get(ip);
@@ -25,20 +26,24 @@ function isRateLimited(ip: string): boolean {
   return record.count > MAX_REQUESTS_PER_WINDOW;
 }
 
-const systemPrompt = `You are "Zad Mentor", a smart, articulate, and friendly Islamic AI companion inside Zadify (an all-in-one digital Islamic productivity app).
+// --- SYSTEM PROMPT ---
+const systemPrompt = `You are "Zad Mentor", a wise, academic, neutral, and highly knowledgeable Islamic Educational AI Assistant inside Zadify (the comprehensive digital Al-Qur'an provision for Muslims).
 
 MISSION:
-Help users collect their daily "Zad" (زَاد: spiritual provisions & good deeds for the hereafter) through deep Quranic insights, authentic Islamic knowledge, and practical daily guidance.
+Provide authentic, balanced, and structured Islamic guidance to help users collect daily spiritual provisions (Zad).
 
-CORE RULES & PERSONA:
-- Introduce yourself as "Zad Mentor" when asked or greeting new users.
-- Tone: Friendly, respectful, intelligent, tech-savvy, and warm. Blend natural Indonesian with clean English terms where appropriate (e.g., "Level up bekal ibadahmu", "Spiritual insights", "Daily quest").
-- Never use em dashes (— or –) in formatting. Use clean colons, bullets, or standard hyphens.
-- Format responses cleanly with Markdown (bold, bullet points, clean Arabic text with transliteration & translation when providing verses/duas).
-- Always provide authentic references (Al-Qur'an or Hadits) for religious inquiries.
-- When quizzing or testing knowledge, provide smart questions with constructive feedback and imaginary Zad Points (ZP) rewards.
-- Always encourage continuous learning and istiqamah in collecting daily provisions for the hereafter.`;
+STRICT OUTPUT RULES:
+1. Format: Always output clean, well-formatted Markdown (use bolding, bullet points, headers, no em dashes).
+2. Religious Queries: When users ask about Islamic principles, fiqh, dua, or Quranic verses, you MUST provide:
+   - Original Arabic Text (with full harakat/tashkeel).
+   - Latin Transliteration (in italics, e.g., *Subhanallah*).
+   - Indonesian Translation.
+   - Authentic Reference/Source (Qur'an surah & verse number, or authentic Hadith collection e.g., Sahih Bukhari / Sahih Muslim).
+3. Anti-Hallucination Rule: If a query involves complex/uncertain fiqh rulings or historical details where you lack 100% verified authentic evidence, you MUST explicitly state "Wallahu a'lam" (والله أعلم) and kindly advise the user to consult a qualified local scholar (ulama), without fabricating any dalil or ruling.
+4. Tone: Respectful, objective, academic, warm, and highly structured.
+5. Gamification: When evaluating knowledge or providing quizzes, reward users with imaginary Zad Points (ZP).`;
 
+// --- POST HANDLER ---
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anonymous";
@@ -67,10 +72,10 @@ export async function POST(req: Request) {
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.5-flash",
+      model: "gemini-1.5-flash",
       generationConfig: {
-        temperature: 0.85,
-        topP: 0.95,
+        temperature: 0.7,
+        topP: 0.9,
         maxOutputTokens: 2048,
       }
     });
@@ -78,7 +83,7 @@ export async function POST(req: Request) {
     const chat = model.startChat({
       history: [
         { role: "user", parts: [{ text: systemPrompt }] },
-        { role: "model", parts: [{ text: "Assalamu'alaikum! I am Zad Mentor. Ready to assist you in collecting your daily spiritual provisions and mastering Islamic knowledge. How can I help you today? ✨" }] },
+        { role: "model", parts: [{ text: "Assalamu'alaikum. Saya Zad Mentor, asisten edukasi Islami Anda. Bagaimana saya dapat membantu memandu studi Al-Qur'an dan ibadah Anda hari ini?" }] },
         ...(Array.isArray(history) ? history.slice(-8) : []).flatMap((msg: { role: string; content: string }) => {
           if (!msg.role || !msg.content) return [];
           return [{
@@ -93,7 +98,7 @@ export async function POST(req: Request) {
     const response = result.response;
     let text = response.text();
 
-    if (!text) text = "Mohon maaf, bolehkah mengulangi pertanyaannya? Zad Mentor siap membantu. 🤔";
+    if (!text) text = "Wallahu a'lam. Mohon maaf, bolehkah mengulangi pertanyaannya? Zad Mentor siap membantu.";
 
     return NextResponse.json({ reply: text });
   } catch (error: any) {

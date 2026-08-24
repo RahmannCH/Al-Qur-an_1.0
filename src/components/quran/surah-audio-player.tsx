@@ -151,6 +151,18 @@ export function SurahAudioPlayer({
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const seekRatio = Math.max(0, Math.min(1, clickX / rect.width));
+    audio.currentTime = seekRatio * duration;
+    setCurrentTime(audio.currentTime);
+    setProgress(seekRatio * 100);
+    sfx.playTap();
+  };
+
   const handleClose = () => {
     const audio = audioRef.current;
     if (audio) {
@@ -221,11 +233,14 @@ export function SurahAudioPlayer({
               </div>
 
               <div className="mb-6 group">
-                <div className="h-2 bg-muted rounded-full overflow-hidden cursor-pointer relative">
+                <div 
+                  onClick={handleSeek}
+                  className="h-2.5 bg-muted rounded-full overflow-hidden cursor-pointer relative py-0.5 hover:h-3 transition-all"
+                >
                   <motion.div
-                    className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-primary to-teal"
+                    className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-primary to-teal rounded-full"
                     style={{ width: `${progress}%` }}
-                    transition={{ duration: 0.1 }}
+                    transition={{ duration: 0.05 }}
                   />
                 </div>
                 <div className="flex justify-between mt-2">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Star, CheckCircle2, Heart, Award, Info } from "lucide-react";
 import { useGamificationStore } from "@/store/gamification-store";
+import { usePrayerStore } from "@/store/prayer-store";
 import { sfx } from "@/lib/sfx";
 
 interface SunnahTrackerProps {
@@ -19,7 +20,7 @@ interface SunnahTrackerProps {
 
 export function SunnahTracker({ hijriDate, gregorianDate }: SunnahTrackerProps) {
   const { addXp } = useGamificationStore();
-  const [completedDeeds, setCompletedDeeds] = useState<string[]>([]);
+  const { todaySunnahDeeds, toggleSunnahDeed } = usePrayerStore();
 
   // Deteksi Puasa Sunnah Terdekat
   const dayNum = parseInt(hijriDate.day);
@@ -55,10 +56,11 @@ export function SunnahTracker({ hijriDate, gregorianDate }: SunnahTrackerProps) 
   }
 
   const handleToggleDeed = (id: string, xp: number, name: string) => {
-    if (completedDeeds.includes(id)) return; // Hanya bisa centang sekali per sesi browser
+    const success = toggleSunnahDeed(id);
+    if (!success) return;
 
     sfx.playSuccess();
-    setCompletedDeeds([...completedDeeds, id]);
+    if (navigator.vibrate) navigator.vibrate([50, 50]);
     addXp(xp, `Amalan Sunnah: ${name}`);
   };
 
@@ -98,7 +100,7 @@ export function SunnahTracker({ hijriDate, gregorianDate }: SunnahTrackerProps) 
         </h4>
         
         {dailyDeeds.map((deed, idx) => {
-          const isCompleted = completedDeeds.includes(deed.id);
+          const isCompleted = todaySunnahDeeds.includes(deed.id);
           
           return (
             <motion.button

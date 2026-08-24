@@ -49,6 +49,7 @@ function computeStreak(history: Record<string, string[]>, todayKey: string): num
 
 interface PrayerStore {
   todayPrayers: string[];
+  todaySunnahDeeds: string[];
   streak: number;
   lastOpenedDate: string;
   lastOpenedTimestamp: number;
@@ -60,6 +61,7 @@ interface PrayerStore {
   lastFetchedDate: string | null;
 
   togglePrayer: (prayer: string) => void;
+  toggleSunnahDeed: (deedId: string) => boolean;
   checkAndResetDay: () => void;
   fetchAndSyncLocation: () => Promise<void>;
   forceSyncLocation: () => Promise<boolean>;
@@ -70,6 +72,7 @@ export const usePrayerStore = create<PrayerStore>()(
   persist(
     (set, get) => ({
       todayPrayers: [],
+      todaySunnahDeeds: [],
       streak: 0,
       lastOpenedDate: getWitaDate(),
       lastOpenedTimestamp: Date.now(),
@@ -79,6 +82,14 @@ export const usePrayerStore = create<PrayerStore>()(
       longitude: null,
       prayerSchedule: null,
       lastFetchedDate: null,
+
+      toggleSunnahDeed: (deedId: string): boolean => {
+        const state = get();
+        state.checkAndResetDay();
+        if (state.todaySunnahDeeds.includes(deedId)) return false;
+        set({ todaySunnahDeeds: [...state.todaySunnahDeeds, deedId] });
+        return true;
+      },
 
       setManualLocation: async (cityName: string, lat: number, lng: number) => {
         const today = getWitaDate();
@@ -237,6 +248,7 @@ export const usePrayerStore = create<PrayerStore>()(
 
           set({
             todayPrayers: [],
+            todaySunnahDeeds: [],
             lastOpenedDate: today,
             lastOpenedTimestamp: Date.now(),
             history: newHistory,

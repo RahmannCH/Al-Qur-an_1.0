@@ -13,11 +13,11 @@ const TAJWID_ROUNDS = [
     targetRule: "Qalqalah",
     description: "Pantulan huruf (ق، ط، ب، ج، د) berharakat sukun",
     words: [
-      { text: "أَحَدٌ", isTarget: true }, // Dal
+      { text: "أَحَدٌ", isTarget: true },
       { text: "اللَّهُ", isTarget: false },
-      { text: "خَلَقَ", isTarget: true }, // Qaf
+      { text: "خَلَقْنَا", isTarget: true },
       { text: "النَّاسِ", isTarget: false },
-      { text: "يَلِدْ", isTarget: true }, // Dal
+      { text: "يَلِدْ", isTarget: true },
     ]
   },
   {

@@ -173,18 +173,18 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
         {latinText && (
           <button
             onClick={() => setLocalShowLatin(!localShowLatin)}
-            className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+            className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
               isLatinActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-semibold" : "bg-muted hover:bg-accent text-muted-foreground"
             }`}
           >
             <FileText className="h-3 w-3 inline mr-1" />
-            {isLatinActive ? "Latin Aktif" : "Latin"}
+            Latin
           </button>
         )}
         {verse.words && verse.words.length > 0 && (
           <button
             onClick={() => setShowWordByWord(!showWordByWord)}
-            className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+            className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
               showWordByWord ? "bg-primary text-primary-foreground border-primary" : "bg-muted hover:bg-accent text-muted-foreground"
             }`}
           >
@@ -219,22 +219,17 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
         </p>
       )}
 
-      {/* Teks Transliterasi Latin */}
+      {/* --- LATIN & TRANSLATION --- */}
       {isLatinActive && latinText && (
-        <div className="my-3 p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
-            Transliterasi Latin
-          </p>
-          <p className="text-xs md:text-sm font-medium leading-relaxed italic text-emerald-700 dark:text-emerald-300">
-            {latinText}
-          </p>
-        </div>
+        <p className="my-2.5 text-xs md:text-sm font-medium leading-relaxed italic text-emerald-600/90 dark:text-emerald-400/90">
+          {latinText}
+        </p>
       )}
 
       {showTranslation && cleanTranslation && (
         <>
-          <Separator className="my-4" />
-          <p className="text-sm leading-relaxed text-muted-foreground">{cleanTranslation}</p>
+          <Separator className="my-3 opacity-60" />
+          <p className="text-xs md:text-sm leading-relaxed text-muted-foreground">{cleanTranslation}</p>
         </>
       )}
     </div>
