@@ -129,12 +129,11 @@ function LootboxModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 }
 
 export function DailyQuestsWidget() {
-  const { dailyQuests, lastQuestDate, lootboxAvailable, checkAndResetQuests } = useGamificationStore();
+  const { dailyQuests, lootboxAvailable, checkAndResetQuests } = useGamificationStore();
   const [showLootbox, setShowLootbox] = useState(false);
 
   useEffect(() => {
-    const today = getWitaDate();
-    checkAndResetQuests(today);
+    checkAndResetQuests();
   }, [checkAndResetQuests]);
 
   useEffect(() => {

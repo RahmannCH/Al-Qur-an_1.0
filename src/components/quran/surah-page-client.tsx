@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { SurahAudioPlayer } from "@/components/quran/surah-audio-player";
 import { AyahList } from "@/components/quran/ayah-list";
 import { Button } from "@/components/ui/button";
@@ -9,16 +9,24 @@ import type { Verse, Chapter } from "@/types/quran";
 import { sfx } from "@/lib/sfx";
 import { TajweedLegendButton } from "@/components/quran/tajweed-legend";
 
+import { useLayoutState } from "@/components/layout/layout-context";
+
 interface SurahPageClientProps {
   verses: Verse[];
   chapter: Chapter;
 }
 
 export function SurahPageClient({ verses, chapter }: SurahPageClientProps) {
+  const { setHasActiveFloatingBar } = useLayoutState();
   const [showPlayer, setShowPlayer] = useState(false);
   const [highlightedAyah, setHighlightedAyah] = useState<number | null>(null);
   const [initialAyah, setInitialAyah] = useState(1);
   const [visibleCount, setVisibleCount] = useState(20);
+
+  useEffect(() => {
+    setHasActiveFloatingBar(showPlayer);
+    return () => setHasActiveFloatingBar(false);
+  }, [showPlayer, setHasActiveFloatingBar]);
 
   const handleAyahChange = useCallback((ayahNumber: number) => {
     setHighlightedAyah(ayahNumber);

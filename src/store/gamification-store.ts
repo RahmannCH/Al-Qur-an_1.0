@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { getWitaDate } from "./prayer-store";
 
 export interface Badge {
   id: string;
@@ -76,7 +77,8 @@ interface GamificationStore {
   dzikirCount: number;
   
   dailyQuests: DailyQuest[];
-  lastQuestDate: string;
+  lastOpenedDate: string;
+  lastOpenedTimestamp: number;
   lootboxAvailable: boolean;
 
   addXP: (amount: number, source: string) => void;
@@ -87,8 +89,7 @@ interface GamificationStore {
   incrementChat: () => void;
   incrementDzikir: (amount: number) => void;
   checkMilestones: () => void;
-  
-  checkAndResetQuests: (todayKey: string) => void;
+  checkAndResetQuests: () => void;
   updateQuestProgress: (type: "read" | "dzikir" | "sholat", amount: number) => void;
   claimLootbox: () => void;
 }
@@ -103,16 +104,21 @@ export const useGamificationStore = create<GamificationStore>()(
       readCount: 0,
       chatCount: 0,
       dzikirCount: 0,
-      dailyQuests: [],
-      lastQuestDate: "",
+      dailyQuests: [
+        { id: "q1", type: "read", title: "Baca 10 Ayat", target: 10, progress: 0, xpReward: 50, completed: false },
+        { id: "q2", type: "dzikir", title: "Tasbih 33x", target: 33, progress: 0, xpReward: 50, completed: false },
+        { id: "q3", type: "sholat", title: "Ceklis 3 Waktu Sholat", target: 3, progress: 0, xpReward: 100, completed: false },
+      ],
+      lastOpenedDate: getWitaDate(),
+      lastOpenedTimestamp: Date.now(),
       lootboxAvailable: false,
 
-      // Single centralized mutation point for XP
       addXP: (amount: number, source: string) => {
         if (amount <= 0) return;
         const id = Date.now().toString() + Math.random().toString();
         set((state) => ({
           xp: state.xp + amount,
+          lastOpenedTimestamp: Date.now(),
           recentXpGains: [...state.recentXpGains, { amount, reason: source, id }]
         }));
         get().checkMilestones();
@@ -122,19 +128,26 @@ export const useGamificationStore = create<GamificationStore>()(
         get().addXP(amount, reason);
       },
 
-      checkAndResetQuests: (todayKey: string) => {
+      checkAndResetQuests: () => {
+        const today = getWitaDate();
         const state = get();
-        if (state.lastQuestDate !== todayKey) {
+        if (today > state.lastOpenedDate || !state.dailyQuests || state.dailyQuests.length === 0) {
           const freshQuests: DailyQuest[] = [
             { id: "q1", type: "read", title: "Baca 10 Ayat", target: 10, progress: 0, xpReward: 50, completed: false },
             { id: "q2", type: "dzikir", title: "Tasbih 33x", target: 33, progress: 0, xpReward: 50, completed: false },
             { id: "q3", type: "sholat", title: "Ceklis 3 Waktu Sholat", target: 3, progress: 0, xpReward: 100, completed: false },
           ];
-          set({ dailyQuests: freshQuests, lastQuestDate: todayKey, lootboxAvailable: false });
+          set({
+            dailyQuests: freshQuests,
+            lastOpenedDate: today,
+            lastOpenedTimestamp: Date.now(),
+            lootboxAvailable: false
+          });
         }
       },
 
       updateQuestProgress: (type, amount) => {
+        get().checkAndResetQuests();
         let pendingXp = 0;
         let pendingReason = "";
 
@@ -160,6 +173,7 @@ export const useGamificationStore = create<GamificationStore>()(
           if (updated) {
             return { 
               dailyQuests: newQuests, 
+              lastOpenedTimestamp: Date.now(),
               lootboxAvailable: finallyAllCompleted && !state.lootboxAvailable && state.dailyQuests.some(q => !q.completed)
                 ? true 
                 : state.lootboxAvailable 

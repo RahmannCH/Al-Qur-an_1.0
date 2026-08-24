@@ -3,6 +3,28 @@ import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+const ipRequestMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 15;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = ipRequestMap.get(ip);
+
+  if (!record) {
+    ipRequestMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  if (now > record.resetTime) {
+    ipRequestMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  record.count += 1;
+  return record.count > MAX_REQUESTS_PER_WINDOW;
+}
+
 const systemPrompt = `You are "Zad Mentor", a smart, articulate, and friendly Islamic AI companion inside Zadify (an all-in-one digital Islamic productivity app).
 
 MISSION:
@@ -19,6 +41,15 @@ CORE RULES & PERSONA:
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "anonymous";
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { reply: "⚠️ **Terlalu Banyak Permintaan!**\n\nMaaf, Anda melakukan terlalu banyak pertanyaan dalam waktu singkat. Mohon tunggu 1 menit sebelum bertanya kembali." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { message, history } = body;
 

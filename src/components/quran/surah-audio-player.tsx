@@ -36,10 +36,19 @@ export function SurahAudioPlayer({
   // Dapatkan MP3 link untuk ayat aktif
   const audioUrl = getVerseAudioUrl(surahId, currentAyah);
 
-  // Sync state ketika initialAyah berubah secara eksternal (misal user klik tombol play di card lain)
+  useEffect(() => {
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.src = "";
+        audio.load();
+      }
+    };
+  }, []);
+
   useEffect(() => {
     setCurrentAyah(initialAyah);
-    // Auto-play jika dirubah eksternal
     const audio = audioRef.current;
     if (audio) {
       audio.load();

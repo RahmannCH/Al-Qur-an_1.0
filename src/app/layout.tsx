@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Amiri, Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { LayoutProvider } from "@/components/layout/layout-context";
+import { MainContent } from "@/components/layout/main-content";
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/layout/footer";
@@ -53,19 +55,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <TooltipProvider>
-            <ServiceWorkerRegistry />
-            <ReminderChecker />
-            <TimeThemeSync />
-            <AnimatedBackground />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <BottomNav />
-            <FloatingAIChat />
-            <XpToastContainer />
-            <Analytics />
-          </TooltipProvider>
+          <LayoutProvider>
+            <TooltipProvider>
+              <ServiceWorkerRegistry />
+              <ReminderChecker />
+              <TimeThemeSync />
+              <AnimatedBackground />
+              <Header />
+              <MainContent>{children}</MainContent>
+              <Footer />
+              <BottomNav />
+              <FloatingAIChat />
+              <XpToastContainer />
+              <Analytics />
+            </TooltipProvider>
+          </LayoutProvider>
         </ThemeProvider>
       </body>
     </html>

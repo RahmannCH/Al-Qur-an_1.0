@@ -11,16 +11,17 @@ interface PrayerSchedule {
   Isha: string;
 }
 
-const WITA_OFFSET_MS = 8 * 3600 * 1000;
-
 export function getWitaDate(date: Date = new Date()): string {
-  return new Date(date.getTime() + WITA_OFFSET_MS).toISOString().split("T")[0];
+  const d = new Date(date);
+  d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 480);
+  return d.toISOString().split("T")[0];
 }
 
 export function getWitaTime(date: Date = new Date()): string {
-  const d = new Date(date.getTime() + WITA_OFFSET_MS);
-  const hh = String(d.getUTCHours()).padStart(2, "0");
-  const mm = String(d.getUTCMinutes()).padStart(2, "0");
+  const d = new Date(date);
+  d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 480);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
   return `${hh}:${mm}`;
 }
 
@@ -33,16 +34,14 @@ function shiftDateKey(key: string, deltaDays: number): string {
   return `${yy}-${mm}-${dd}`;
 }
 
-const DAILY_TOTAL = 5;
-
 function computeStreak(history: Record<string, string[]>, todayKey: string): number {
   let count = 0;
   const today = history[todayKey];
-  if (today && today.length === DAILY_TOTAL) count++;
+  if (today && today.length === 5) count++;
   for (let i = 1; i <= 365; i++) {
     const key = shiftDateKey(todayKey, -i);
     const day = history[key];
-    if (day && day.length === DAILY_TOTAL) count++;
+    if (day && day.length === 5) count++;
     else break;
   }
   return count;
@@ -51,7 +50,8 @@ function computeStreak(history: Record<string, string[]>, todayKey: string): num
 interface PrayerStore {
   todayPrayers: string[];
   streak: number;
-  lastCheckDate: string;
+  lastOpenedDate: string;
+  lastOpenedTimestamp: number;
   history: Record<string, string[]>;
   locationName: string;
   latitude: number | null;
@@ -71,7 +71,8 @@ export const usePrayerStore = create<PrayerStore>()(
     (set, get) => ({
       todayPrayers: [],
       streak: 0,
-      lastCheckDate: getWitaDate(),
+      lastOpenedDate: getWitaDate(),
+      lastOpenedTimestamp: Date.now(),
       history: {},
       locationName: "Mendeteksi Lokasi...",
       latitude: null,
@@ -91,7 +92,7 @@ export const usePrayerStore = create<PrayerStore>()(
             lastFetchedDate: today,
           });
         } catch (err) {
-          console.error("Gagal set manual location", err);
+          console.error(err);
         }
       },
 
@@ -125,7 +126,6 @@ export const usePrayerStore = create<PrayerStore>()(
                 }
               },
               async () => {
-                // Denied GPS
                 const fallbackData = await getPrayerTimes();
                 set({
                   prayerSchedule: fallbackData.timings as PrayerSchedule,
@@ -143,9 +143,9 @@ export const usePrayerStore = create<PrayerStore>()(
       },
 
       fetchAndSyncLocation: async () => {
+        get().checkAndResetDay();
         const today = getWitaDate();
 
-        // Return if already fetched today to prevent spamming API
         if (get().lastFetchedDate === today && get().prayerSchedule) {
           return;
         }
@@ -179,18 +179,16 @@ export const usePrayerStore = create<PrayerStore>()(
                 }
               },
               async () => {
-                // Denied GPS
                 const fallbackData = await getPrayerTimes();
                 set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "Akses GPS Ditolak - Default (Banjarbaru)", lastFetchedDate: today });
               }
             );
           } else {
-            // Not supported
             const fallbackData = await getPrayerTimes();
             set({ prayerSchedule: fallbackData.timings as PrayerSchedule, locationName: "GPS Tidak Didukung - Default (Banjarbaru)", lastFetchedDate: today });
           }
         } catch (error) {
-          console.error("Gagal sinkronisasi waktu sholat", error);
+          console.error(error);
         }
       },
 
@@ -202,7 +200,6 @@ export const usePrayerStore = create<PrayerStore>()(
         if (isChecked) return;
         const newPrayers = [...state.todayPrayers, prayer];
 
-        // Integrasi dengan Daily Quest Gamification (pindah ke async IIFE agar tidak memblokir state)
         (async () => {
           const gamificationStore = (await import("./gamification-store")).useGamificationStore.getState();
           gamificationStore.updateQuestProgress("sholat", 1);
@@ -218,6 +215,7 @@ export const usePrayerStore = create<PrayerStore>()(
           todayPrayers: newPrayers,
           history: newHistory,
           streak: computeStreak(newHistory, todayKey),
+          lastOpenedTimestamp: Date.now(),
         });
       },
 
@@ -225,15 +223,13 @@ export const usePrayerStore = create<PrayerStore>()(
         const today = getWitaDate();
         const state = get();
 
-        if (state.lastCheckDate !== today) {
+        if (today > state.lastOpenedDate) {
           const newHistory = { ...state.history };
 
-          // Simpan sisa checklist hari kemarin ke riwayat
           if (state.todayPrayers.length > 0) {
-            newHistory[state.lastCheckDate] = state.todayPrayers;
+            newHistory[state.lastOpenedDate] = state.todayPrayers;
           }
 
-          // Pertahankan hanya 7 hari terakhir
           const cutoff = shiftDateKey(today, -6);
           for (const key of Object.keys(newHistory)) {
             if (key < cutoff) delete newHistory[key];
@@ -241,7 +237,8 @@ export const usePrayerStore = create<PrayerStore>()(
 
           set({
             todayPrayers: [],
-            lastCheckDate: today,
+            lastOpenedDate: today,
+            lastOpenedTimestamp: Date.now(),
             history: newHistory,
             streak: computeStreak(newHistory, today),
           });

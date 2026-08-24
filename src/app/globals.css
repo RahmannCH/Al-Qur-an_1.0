@@ -41,6 +41,10 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --z-sticky: 40;
+  --z-drawer: 50;
+  --z-modal: 60;
+  --z-toast: 70;
 }
 
 :root {

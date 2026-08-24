@@ -25,6 +25,14 @@ export function MiniMurottalWidget() {
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.src = "";
+        audio.load();
+      }
+    };
   }, []);
 
   const togglePlay = (e: React.MouseEvent) => {
