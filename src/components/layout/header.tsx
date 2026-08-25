@@ -35,7 +35,11 @@ import {
   Shield,
   Coins,
   Smile,
-  ShieldCheck
+  ShieldCheck,
+  BarChart3,
+  BookHeart,
+  Swords,
+  Cloud
 } from "lucide-react";
 import {
   Sheet,
@@ -57,6 +61,7 @@ export const MENU_SECTIONS = [
       { href: "/dzikir", label: "Tasbih & Dzikir", icon: Sparkles, desc: "Counter haptic & list bacaan dzikir" },
       { href: "/dua", label: "Koleksi Doa Harian", icon: Heart, desc: "Doa mustajab, transliterasi & makna" },
       { href: "/ruhiyah", label: "P3K Jiwa (Ruhiyah)", icon: Lightbulb, desc: "Bimbingan kalbu & spiritual first aid" },
+      { href: "/tadabbur", label: "Jurnal Tadabbur", icon: BookHeart, desc: "Catatan refleksi per-ayat Al-Qur'an" },
     ],
   },
   {
@@ -87,12 +92,15 @@ export const MENU_SECTIONS = [
       { href: "/games/harf-le", label: "Harf-le (Wordle Arab)", icon: Grid, desc: "Tebak akar kata Al-Qur'an" },
       { href: "/games/tajwid-ninja", label: "Tajwid Ninja", icon: Zap, desc: "Latihan refleks deteksi tajwid" },
       { href: "/games/memory", label: "Memory Match", icon: Boxes, desc: "Cocokkan kosakata Arab & artinya" },
+      { href: "/games/pvp", label: "PvP Quiz Arena", icon: Swords, desc: "Tanding kuis melawan AI rival" },
       { href: "/achievements", label: "Zad Points & Lencana", icon: Trophy, desc: "Level bekal & koleksi badge" },
+      { href: "/achievements/leaderboard", label: "Liga & Leaderboard", icon: BarChart3, desc: "Peringkat ZP mingguan & divisi liga" },
     ],
   },
   {
     title: "Utilitas & Pengaturan",
     items: [
+      { href: "/analytics", label: "Statistik & Analitik", icon: BarChart3, desc: "Heatmap konsistensi & grafik khatam" },
       { href: "/search", label: "Pencarian Ayat", icon: Search, desc: "Cari ayat, kata kunci & arti" },
       { href: "/bookmarks", label: "Ayat Tersimpan", icon: Bookmark, desc: "Daftar ayat & doa favorit" },
       { href: "/settings", label: "Pengaturan & Alarm", icon: Settings, desc: "Font, Qari & Pengingat Harian" },

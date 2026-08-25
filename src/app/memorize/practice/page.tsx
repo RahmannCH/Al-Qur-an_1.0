@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackButton } from "@/components/layout/back-button";
 import { Button } from "@/components/ui/button";
-import { Brain, CheckCircle2, RefreshCcw, Search, Loader2, Play, Pause, Mic, XCircle } from "lucide-react";
+import { Brain, CheckCircle2, RefreshCcw, Search, Loader2, Play, Pause, Mic, XCircle, MicOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { getChapters, getVerses } from "@/lib/api";
 import { Chapter, Verse } from "@/types/quran";
 import { sfx } from "@/lib/sfx";
 import { useGamificationStore } from "@/store/gamification-store";
 import { useMemorizeStore } from "@/store/memorize-store";
+import { createVoiceEngine, isSpeechRecognitionSupported, compareArabicTexts } from "@/lib/speech-recognition";
 
 export default function MemorizePracticePage() {
   const { addXp } = useGamificationStore();
@@ -26,6 +27,41 @@ export default function MemorizePracticePage() {
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [mode, setMode] = useState<"read" | "hide" | "test">("read");
+
+  // Voice Engine State
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [voiceAccuracy, setVoiceAccuracy] = useState<number | null>(null);
+  const voiceSupported = typeof window !== "undefined" && isSpeechRecognitionSupported();
+
+  const startVoiceTest = () => {
+    if (!voiceSupported || !currentVerse) return;
+    setVoiceTranscript("");
+    setVoiceAccuracy(null);
+
+    const engine = createVoiceEngine({
+      lang: "ar-SA",
+      continuous: true,
+      interimResults: true,
+      onStart: () => setIsListening(true),
+      onResult: (result) => {
+        setVoiceTranscript(result.transcript);
+        if (result.isFinal && currentVerse) {
+          const comparison = compareArabicTexts(result.transcript, currentVerse.text_uthmani || "");
+          setVoiceAccuracy(comparison.accuracy);
+          if (comparison.accuracy >= 70) {
+            sfx.playSuccess();
+            addXp(10, "Voice Hafalan Benar");
+          }
+        }
+      },
+      onEnd: () => setIsListening(false),
+      onError: () => setIsListening(false),
+    });
+
+    engine?.start();
+    setTimeout(() => engine?.stop(), 15000);
+  };
 
   useEffect(() => {
     getChapters().then((data) => {
@@ -228,18 +264,67 @@ export default function MemorizePracticePage() {
 
           {mode === "test" && (
             <>
-              <p className="text-center text-muted-foreground mb-8">
+              <p className="text-center text-muted-foreground mb-6">
                 Lafalkan ayat ini dan cek kebenarannya:
               </p>
+
+              {/* Voice Test Button */}
+              {voiceSupported && (
+                <div className="w-full mb-6">
+                  <button
+                    onClick={startVoiceTest}
+                    disabled={isListening}
+                    className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-sm transition-all ${
+                      isListening
+                        ? "bg-rose-500/20 text-rose-500 border-2 border-rose-500 animate-pulse"
+                        : "bg-primary/10 text-primary border-2 border-primary/30 hover:bg-primary/20"
+                    }`}
+                  >
+                    {isListening ? (
+                      <>
+                        <MicOff className="h-5 w-5" />
+                        Mendengarkan... (15 detik)
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-5 w-5" />
+                        Uji Hafalan dengan Suara (Bahasa Arab)
+                      </>
+                    )}
+                  </button>
+
+                  {voiceTranscript && (
+                    <div className="mt-3 p-4 bg-muted/50 rounded-2xl border text-center">
+                      <p className="text-xs text-muted-foreground mb-1">Hasil Deteksi Suara:</p>
+                      <p className="font-arabic text-xl leading-loose" dir="rtl">{voiceTranscript}</p>
+                      {voiceAccuracy !== null && (
+                        <div className="mt-2 text-sm font-bold">
+                          Akurasi:{" "}
+                          <span
+                            className={
+                              voiceAccuracy >= 70
+                                ? "text-emerald-600"
+                                : "text-rose-600"
+                            }
+                          >
+                            {voiceAccuracy}% {voiceAccuracy >= 70 ? "✓ Baik!" : "✗ Perlu latihan"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-4">
-                <Button 
+                <Button
                   size="lg"
                   className="rounded-xl h-16 px-8 gap-3 bg-rose-500 hover:bg-rose-600"
                   onClick={() => { setShowHint(true); sfx.playTap(); }}
                 >
                   <XCircle className="h-5 w-5" /> Lupa
                 </Button>
-                <Button 
+                <Button
                   size="lg"
                   className="rounded-xl h-16 px-8 gap-3 bg-emerald-500 hover:bg-emerald-600"
                   onClick={() => {

@@ -2,6 +2,7 @@
 
 import { useSettingsStore } from "@/store/settings-store";
 import { useGamificationStore } from "@/store/gamification-store";
+import { useAnalyticsStore } from "@/store/analytics-store";
 import { useEffect, useRef } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 import { AyahCard } from "./ayah-card";
@@ -49,6 +50,7 @@ export function AyahList({
               if (!readAyahs.current.has(verseNum)) {
                 readAyahs.current.add(verseNum);
                 incrementRead();
+                useAnalyticsStore.getState().logReading(1, 0.5);
                 if (readAyahs.current.size % 5 === 0) {
                   addXp(5, "Membaca 5 ayat");
                 }
