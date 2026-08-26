@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 import { TajweedText } from "@/components/quran/tajweed-text";
+import { extractTargetArabicStems, isArabicWordMatched } from "@/lib/arabic-matcher";
 
 // --- DYNAMIC IMPORTS ---
 const ShareAyatModal = dynamic(
@@ -31,9 +32,10 @@ interface AyahCardProps {
   showTranslation: boolean;
   isPlayable?: boolean;
   onPlay?: () => void;
+  searchQuery?: string;
 }
 
-export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable = false, onPlay }: AyahCardProps) {
+export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable = false, onPlay, searchQuery = "" }: AyahCardProps) {
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarkStore();
   const globalShowLatin = useSettingsStore((s) => s.showLatin);
   const [localShowLatin, setLocalShowLatin] = useState(true);
@@ -229,7 +231,20 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
       {showTranslation && cleanTranslation && (
         <>
           <Separator className="my-3 opacity-60" />
-          <p className="text-xs md:text-sm leading-relaxed text-muted-foreground">{cleanTranslation}</p>
+          <p className="text-xs md:text-sm leading-relaxed text-muted-foreground">
+            {searchQuery.trim() ? (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: cleanTranslation.replace(
+                    new RegExp(`(${searchQuery.trim()})`, "gi"),
+                    '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1 rounded border border-amber-500/30">$1</mark>'
+                  ),
+                }}
+              />
+            ) : (
+              cleanTranslation
+            )}
+          </p>
         </>
       )}
     </div>

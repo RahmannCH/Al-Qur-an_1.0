@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AyahList } from "@/components/quran/ayah-list";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,9 @@ interface SurahPageClientProps {
 }
 
 export function SurahPageClient({ verses, chapter }: SurahPageClientProps) {
+  const searchParams = useSearchParams();
+  const highlightQuery = searchParams.get("highlight") || "";
+
   const { setHasActiveFloatingBar } = useLayoutState();
   const [showPlayer, setShowPlayer] = useState(false);
   const [highlightedAyah, setHighlightedAyah] = useState<number | null>(null);
@@ -94,6 +98,7 @@ export function SurahPageClient({ verses, chapter }: SurahPageClientProps) {
         visibleCount={visibleCount}
         setVisibleCount={setVisibleCount}
         onPlayAyah={handlePlayAyah}
+        searchQuery={highlightQuery}
       />
 
       {showPlayer && (

@@ -14,6 +14,7 @@ interface AyahListProps {
   visibleCount: number;
   setVisibleCount: React.Dispatch<React.SetStateAction<number>>;
   onPlayAyah?: (ayahNumber: number) => void;
+  searchQuery?: string;
 }
 
 export function AyahList({
@@ -23,6 +24,7 @@ export function AyahList({
   visibleCount,
   setVisibleCount,
   onPlayAyah,
+  searchQuery = "",
 }: AyahListProps) {
   const { fontSize, showTranslation } = useSettingsStore();
   const { setLastRead } = useSettingsStore();
@@ -93,6 +95,7 @@ export function AyahList({
               showTranslation={showTranslation}
               isPlayable={true}
               onPlay={() => onPlayAyah?.(verse.verse_number)}
+              searchQuery={searchQuery}
             />
           </div>
         );

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { searchQuran, getVerseAudioUrl } from "@/lib/api";
 import { BackButton } from "@/components/layout/back-button";
 import { sfx } from "@/lib/sfx";
+import { extractTargetArabicStems, isArabicWordMatched } from "@/lib/arabic-matcher";
 
 interface SearchResultItem {
   verse_key: string;
@@ -107,10 +108,40 @@ export default function SearchPage() {
       <span
         dangerouslySetInnerHTML={{
           __html: htmlText
-            .replace(/<em>/g, '<mark class="bg-amber-500/20 text-amber-900 dark:text-amber-300 font-bold px-1 rounded">')
+            .replace(/<em>/g, '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">')
             .replace(/<\/em>/g, '</mark>'),
         }}
       />
+    );
+  };
+
+  // Helper untuk meng-highlight kata Arab yang berkesinambungan dengan kata kunci terjemahan
+  const renderHighlightedArabic = (arabicText: string, searchQuery: string) => {
+    const rawClean = arabicText.replace(/<[^>]*>/g, "");
+    if (!searchQuery.trim()) return rawClean;
+
+    const stems = extractTargetArabicStems(searchQuery);
+    const words = rawClean.split(" ");
+
+    return (
+      <span>
+        {words.map((word, wIdx) => {
+          const isMatch = isArabicWordMatched(word, stems, searchQuery);
+
+          if (isMatch) {
+            return (
+              <span
+                key={wIdx}
+                className="inline-block bg-amber-500/25 text-amber-500 font-bold px-1.5 py-0.5 mx-0.5 rounded-lg border border-amber-500/40 shadow-sm transition-all duration-300"
+              >
+                {word}{" "}
+              </span>
+            );
+          }
+
+          return <span key={wIdx}>{word} </span>;
+        })}
+      </span>
     );
   };
 
@@ -207,7 +238,7 @@ export default function SearchPage() {
                 >
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <Link
-                      href={`/surah/${surahId}#verse-${ayahNum}`}
+                      href={`/surah/${surahId}?highlight=${encodeURIComponent(query)}#verse-${ayahNum}`}
                       onClick={() => sfx.playWoosh()}
                       className="flex items-center gap-2 font-display font-bold text-base text-primary hover:underline"
                     >
@@ -236,7 +267,7 @@ export default function SearchPage() {
                         {isCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                       </Button>
 
-                      <Link href={`/surah/${surahId}#verse-${ayahNum}`} onClick={() => sfx.playWoosh()}>
+                      <Link href={`/surah/${surahId}?highlight=${encodeURIComponent(query)}#verse-${ayahNum}`} onClick={() => sfx.playWoosh()}>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -249,9 +280,9 @@ export default function SearchPage() {
                     </div>
                   </div>
 
-                  {/* Teks Arab */}
+                  {/* Teks Arab dengan Highlighting Sinkron */}
                   <p className="font-arabic text-2xl md:text-3xl text-right leading-loose text-primary mb-4" dir="rtl">
-                    {result.text.replace(/<[^>]*>/g, "")}
+                    {renderHighlightedArabic(result.text, query)}
                   </p>
 
                   {/* Teks Terjemahan dengan Highlighting */}
