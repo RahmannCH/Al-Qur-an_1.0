@@ -101,25 +101,32 @@ export default function SearchPage() {
     audio.play().catch(err => console.error("Audio error:", err));
   };
 
-  // Helper untuk membersihkan dan meng-highlight teks pencarian
+  // Helper untuk membersihkan dan meng-highlight teks pencarian secara presisi murni
   const renderHighlightedText = (htmlText: string, searchQuery: string) => {
-    let formatted = htmlText;
+    // 1. Bersihkan seluruh tag <em>/</em> bawaan API agar tidak salah sorot kata lain
+    const cleanText = htmlText.replace(/<\/?em>/gi, "");
 
-    // Jika sudah ada tag <em> dari API, ubah jadi <mark>
-    if (formatted.includes("<em>")) {
-      formatted = formatted
-        .replace(/<em>/g, '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">')
-        .replace(/<\/em>/g, '</mark>');
-    } else if (searchQuery.trim()) {
-      // Fallback highlight mandiri untuk stopwords
-      const qWords = searchQuery.trim().split(/\s+/).filter((w) => w.length >= 2);
-      for (const qw of qWords) {
-        formatted = formatted.replace(
-          new RegExp(`(${qw})`, "gi"),
-          '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">$1</mark>'
-        );
-      }
+    if (!searchQuery.trim()) {
+      return <span>{cleanText}</span>;
     }
+
+    // 2. Ekstrak kata kunci pencarian murni dari input pengguna
+    const qWords = searchQuery
+      .trim()
+      .split(/\s+/)
+      .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+      .filter((w) => w.length >= 2);
+
+    if (qWords.length === 0) {
+      return <span>{cleanText}</span>;
+    }
+
+    // 3. Bangun regex eksklusif hanya untuk kata yang dicari user
+    const pattern = new RegExp(`(${qWords.join("|")})`, "gi");
+    const formatted = cleanText.replace(
+      pattern,
+      '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">$1</mark>'
+    );
 
     return (
       <span
