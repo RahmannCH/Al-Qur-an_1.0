@@ -1,4 +1,6 @@
-// --- ARABIC NORMALIZATION ---
+import type { Word } from "@/types/quran";
+
+// Normalisasi karakter Arab (menghapus harakat & menyatukan bentuk alif/ya/ta marbuthah)
 export function removeHarakat(text: string): string {
   if (!text) return "";
   return text
@@ -8,7 +10,25 @@ export function removeHarakat(text: string): string {
     .replace(/ى/g, "ي");
 }
 
-// --- VOCABULARY DICTIONARY ---
+// Stemming sederhana kata Bahasa Indonesia (menghilangkan imbuhan umum agar cocok dengan kamus kata dasar)
+export function stemIndonesianWord(word: string): string {
+  if (!word) return "";
+  let w = word.toLowerCase().trim();
+  
+  // Hapus tanda baca
+  w = w.replace(/[^a-z0-9]/g, "");
+
+  // Hapus akhiran (-mu, -nya, -ku, -kah, -lah, -pun, -kan, -an, -i)
+  w = w.replace(/(kah|lah|pun|mu|nya|ku)$/g, "");
+  w = w.replace(/(kan|an|i)$/g, "");
+
+  // Hapus awalan (memper-, meng-, men-, mem-, me-, ber-, ter-, di-, se-)
+  w = w.replace(/^(memper|meng|men|mem|me|ber|ter|di|se)/g, "");
+
+  return w;
+}
+
+// Kamus kata kunci Al-Qur'an umum untuk fallback cepat
 const COMMON_WORD_MAP: Record<string, string[]> = {
   allah: ["الله", "لله", "بالله", "والله", "تالله"],
   sungguh: ["ان", "قد", "لقد", "وان", "فان", "لئن"],
@@ -42,7 +62,7 @@ const COMMON_WORD_MAP: Record<string, string[]> = {
   kafir: ["كفر", "كفروا", "كافر", "الكافر", "كافرين", "الكافرين", "كفار"],
   petunjuk: ["هدي", "الهدي", "مهتدين", "يهدي", "اهدنا"],
   sesat: ["ضل", "ضلوا", "ضالين", "الضالين", "ضلال"],
-  pahal: ["اجر", "الاجر", "ثواب", "الثواب", "جزاء"],
+  pahala: ["اجر", "الاجر", "ثواب", "الثواب", "جزاء"],
   dosa: ["ذنب", "ذنوب", "اثم", "الاثم", "سيئات", "خطيئه"],
   hari: ["يوم", "اليوم", "ايام", "الايام"],
   kiamat: ["ساعه", "الساعه", "قيامه", "القيامه", "واقعه", "القارعه", "حاقه"],
@@ -61,7 +81,7 @@ const COMMON_WORD_MAP: Record<string, string[]> = {
   syukur: ["شكر", "الشكر", "شاكرين", "الشاكرين", "تشكرون", "شكور"],
   saksi: ["شهد", "شاهد", "شهيد", "الشهيد", "شهداء", "يشهدون"],
   rahmat: ["رحمه", "الرحمه", "رحيم", "الرحيم", "رحمن", "الرحمن", "يرحم"],
-  penyayang: ["رحيم", "الرحيم", "رحمن", "الرحمن", "راحمين"],
+  penyayang: ["رحيم", "الرحيم", "رحمن", "الرحمن", "راhmin"],
   pengasih: ["رحمن", "الرحمن", "رؤوف"],
   perang: ["قتال", "القتال", "قاتلوا", "جهاد", "حرب"],
   damai: ["سلم", "السلم", "سلام", "السلام", "صلح"],
@@ -75,7 +95,6 @@ const COMMON_WORD_MAP: Record<string, string[]> = {
   harta: ["مال", "المال", "اموال", "اموالهم", "اموالكم"],
 };
 
-// --- QUERY MATCHING UTILITIES ---
 export function extractTargetArabicStems(query: string): string[] {
   if (!query) return [];
   const cleanQ = query.toLowerCase().trim();
@@ -83,36 +102,87 @@ export function extractTargetArabicStems(query: string): string[] {
   
   const stems = new Set<string>();
 
-  // Check direct query match
   for (const w of words) {
     if (!w) continue;
     if (COMMON_WORD_MAP[w]) {
-      COMMON_WORD_MAP[w].forEach((stem) => stems.add(stem));
+      COMMON_WORD_MAP[w].forEach((s) => stems.add(s));
+    }
+    const stemmed = stemIndonesianWord(w);
+    if (stemmed && COMMON_WORD_MAP[stemmed]) {
+      COMMON_WORD_MAP[stemmed].forEach((s) => stems.add(s));
     }
   }
 
-  // Check 2-word phrase matches
   for (let i = 0; i < words.length - 1; i++) {
     const phrase = `${words[i]}${words[i + 1]}`;
     if (COMMON_WORD_MAP[phrase]) {
-      COMMON_WORD_MAP[phrase].forEach((stem) => stems.add(stem));
+      COMMON_WORD_MAP[phrase].forEach((s) => stems.add(s));
     }
   }
 
   return Array.from(stems);
 }
 
+// 100% Dynamic Matcher: Mencocokkan kata Arab langsung dari data `words` per kata API
+export function isWordMatchingQuery(
+  word: Word,
+  searchQuery: string,
+  targetStems: string[]
+): boolean {
+  if (!searchQuery || !searchQuery.trim()) return false;
+  const q = searchQuery.toLowerCase().trim();
+  const qWords = q.split(/\s+/).map((w) => w.replace(/[^a-z0-9]/g, "")).filter(Boolean);
+
+  // 1. Cek terjemahan kata Indonesia (word.translation.text)
+  if (word.translation?.text) {
+    const wordTrans = word.translation.text.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+    for (const qw of qWords) {
+      if (qw.length >= 2 && wordTrans.includes(qw)) {
+        return true;
+      }
+      const stemmedQw = stemIndonesianWord(qw);
+      if (stemmedQw.length >= 3 && wordTrans.includes(stemmedQw)) {
+        return true;
+      }
+    }
+  }
+
+  // 2. Cek transliterasi Latin kata (word.transliteration.text)
+  if (word.transliteration?.text) {
+    const wordLatin = word.transliteration.text.toLowerCase().replace(/[^a-z0-9]/g, "");
+    for (const qw of qWords) {
+      if (qw.length >= 2 && wordLatin.includes(qw)) {
+        return true;
+      }
+    }
+  }
+
+  // 3. Cek pencocokan kata Arab murni
+  if (word.text_uthmani) {
+    const normalizedWord = removeHarakat(word.text_uthmani);
+    const normalizedQuery = removeHarakat(q);
+    if (normalizedQuery && normalizedQuery.length >= 2 && normalizedWord.includes(normalizedQuery)) {
+      return true;
+    }
+    for (const stem of targetStems) {
+      if (normalizedWord === stem || normalizedWord.includes(stem)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 export function isArabicWordMatched(arabicWord: string, targetStems: string[], rawQuery: string): boolean {
   if (!arabicWord) return false;
   const normalizedWord = removeHarakat(arabicWord);
 
-  // 1. Direct Arabic query search match
   const normalizedQuery = removeHarakat(rawQuery.trim());
   if (normalizedQuery && normalizedQuery.length >= 2 && normalizedWord.includes(normalizedQuery)) {
     return true;
   }
 
-  // 2. Dictionary stems match
   for (const stem of targetStems) {
     if (normalizedWord === stem || normalizedWord.includes(stem)) {
       return true;

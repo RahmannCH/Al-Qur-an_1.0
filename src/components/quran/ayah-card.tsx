@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react";
 import type { Verse, Chapter } from "@/types/quran";
 import { TajweedText } from "@/components/quran/tajweed-text";
-import { extractTargetArabicStems, isArabicWordMatched } from "@/lib/arabic-matcher";
+import { extractTargetArabicStems, isArabicWordMatched, isWordMatchingQuery } from "@/lib/arabic-matcher";
 
 // --- DYNAMIC IMPORTS ---
 const ShareAyatModal = dynamic(
@@ -198,14 +198,22 @@ export function AyahCard({ verse, chapter, fontSize, showTranslation, isPlayable
 
       {showWordByWord && verse.words ? (
         <div className="mb-4 flex flex-wrap gap-x-4 gap-y-6 justify-end leading-[2.2] font-arabic" dir="rtl" style={{ fontSize: `${fontSize}px` }}>
-          {verse.words.map((word) => (
-            <span key={word.id} className="inline-flex flex-col items-center group cursor-default">
-              <span className="text-primary group-hover:text-gold transition-colors">{word.text_uthmani}</span>
-              <span className="text-[10px] text-muted-foreground font-sans mt-1 text-center max-w-[80px] leading-tight">
-                {word.translation?.text || ""}
+          {verse.words.map((word) => {
+            const stems = extractTargetArabicStems(searchQuery);
+            const isMatch = searchQuery.trim() ? isWordMatchingQuery(word, searchQuery, stems) : false;
+            return (
+              <span key={word.id} className={`inline-flex flex-col items-center group cursor-default p-1 rounded-xl transition-all ${
+                isMatch ? "bg-amber-500/25 border border-amber-500/40 ring-2 ring-amber-500/30" : ""
+              }`}>
+                <span className={`${isMatch ? "text-amber-500 font-bold" : "text-primary group-hover:text-gold"} transition-colors`}>{word.text_uthmani}</span>
+                <span className={`text-[10px] font-sans mt-1 text-center max-w-[85px] leading-tight ${
+                  isMatch ? "text-amber-700 dark:text-amber-300 font-bold" : "text-muted-foreground"
+                }`}>
+                  {word.translation?.text || ""}
+                </span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </div>
       ) : verse.text_uthmani_tajweed ? (
         <div className="mb-4 text-right" dir="rtl">
