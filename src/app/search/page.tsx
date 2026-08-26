@@ -102,14 +102,29 @@ export default function SearchPage() {
   };
 
   // Helper untuk membersihkan dan meng-highlight teks pencarian
-  const renderHighlightedText = (htmlText: string) => {
-    // API Quran.com search membungkus match dengan tag <em>
+  const renderHighlightedText = (htmlText: string, searchQuery: string) => {
+    let formatted = htmlText;
+
+    // Jika sudah ada tag <em> dari API, ubah jadi <mark>
+    if (formatted.includes("<em>")) {
+      formatted = formatted
+        .replace(/<em>/g, '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">')
+        .replace(/<\/em>/g, '</mark>');
+    } else if (searchQuery.trim()) {
+      // Fallback highlight mandiri untuk stopwords
+      const qWords = searchQuery.trim().split(/\s+/).filter((w) => w.length >= 2);
+      for (const qw of qWords) {
+        formatted = formatted.replace(
+          new RegExp(`(${qw})`, "gi"),
+          '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">$1</mark>'
+        );
+      }
+    }
+
     return (
       <span
         dangerouslySetInnerHTML={{
-          __html: htmlText
-            .replace(/<em>/g, '<mark class="bg-amber-500/25 text-amber-900 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">')
-            .replace(/<\/em>/g, '</mark>'),
+          __html: formatted,
         }}
       />
     );
@@ -288,7 +303,7 @@ export default function SearchPage() {
                   {/* Teks Terjemahan dengan Highlighting */}
                   {translationItem && (
                     <div className="pt-3 border-t text-xs md:text-sm text-foreground/90 leading-relaxed font-medium">
-                      {renderHighlightedText(translationItem.text)}
+                      {renderHighlightedText(translationItem.text, query)}
                     </div>
                   )}
                 </motion.div>

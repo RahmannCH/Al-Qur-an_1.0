@@ -85,6 +85,18 @@ export function getVerseAudioUrl(surahId: number, verseNumber: number): string {
 }
 
 export async function searchQuran(query: string, language = "id", page = 1) {
+  // Jika di browser (client-side), panggil proxy internal /api/search agar aman dari stopword filter
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&language=${language}&page=${page}&size=20`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("Internal search API failed, falling back to direct:", e);
+    }
+  }
+
   return fetcher<{
     search: {
       query: string;
